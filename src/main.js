@@ -1,9 +1,10 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { app, protocol, BrowserWindow } from "electron"
+import { app, protocol, BrowserWindow, ipcMain } from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
 import fs from "fs"
+import {savedStore} from "./electron/initialize";
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
@@ -16,6 +17,7 @@ const createWindow = async () => {
         protocol.registerBufferProtocol(scheme, Protocol); /* eng-disable PROTOCOL_HANDLER_JS_CHECK */
     }
     
+    console.log("create window")
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
@@ -27,11 +29,13 @@ const createWindow = async () => {
             nodeIntegrationInSubFrames: false,
             contextIsolation: true,
             enableRemoteModule: false,
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "electron/preload.js"),
             /* eng-disable PRELOAD_JS_CHECK */
             disableBlinkFeatures: "Auxclick"
         }
     });
+    
+    savedStore.mainBinding(ipcMain, mainWindow, fs)
     
     if (isDev) {
         mainWindow.loadURL(`${selfHost}/dist`).then();
