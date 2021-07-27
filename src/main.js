@@ -17,7 +17,6 @@ const createWindow = async () => {
         protocol.registerBufferProtocol(scheme, Protocol); /* eng-disable PROTOCOL_HANDLER_JS_CHECK */
     }
     
-    console.log("create window")
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 600,

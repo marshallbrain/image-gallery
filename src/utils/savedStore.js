@@ -1,13 +1,17 @@
 import {namespaceStore} from "./ipcCommands";
 import {app} from "electron"
 import dotProp from "dot-prop";
+import fs from "fs";
+import pathModule from "path";
 
 const defaultOptions = {
     debug: false,
     reset: false,
+    fileCache: true,
     path: "",
     filename: "settings",
     extension: ".json",
+    defaultData: {},
 };
 
 export const getEntry = `${namespaceStore}get-sync`
@@ -22,24 +26,69 @@ export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
 
 export default class SavedStore {
     
-    #fileData = {test: "!!!!"}
-    
     constructor(options = {}) {
-        this.options = defaultOptions;
+        this.options = options && {...defaultOptions, ...options}
+        this.fileData = {}
+        this.file = pathModule.join(
+            this.options.path !== "" ? this.options.path : app.getPath("userData"),
+            `${this.options.filename}${this.options.extension}`
+        )
+        fs.mkdir(this.options.path, { recursive: true }, (err) => {
+            if (err) throw err;
+        });
+        
+        this.fileData = this.readFile()
+        
+    }
     
-        if (typeof options !== "undefined") {
-            this.options = Object.assign(this.options, options);
+    readFile = () => {
+        let data = ""
+        try {
+            data = JSON.parse(fs.readFileSync(this.file, 'utf8'))
+        } catch (e) {
+            if(e.code === "ENOENT") {
+                data = this.options.defaultData
+                
+                data = JSON.stringify(data)
+                
+                fs.writeFileSync(this.file, data);
+                data = this.options.defaultData
+            } else {
+            
+            }
+        }
+        return data
+    }
+    
+    writeFile = () => {
+        try {
+            fs.writeFileSync(this.file, this.fileData, 'utf8')
+        } catch (e) {
         }
     }
     
-    mainBinding(ipcMain, browserWindow, fs, ) {
+    mainBinding(ipcMain, browserWindow, fs) {
         
         ipcMain.on(getEntry, (event, args) => {
-            event.returnValue = dotProp.get(this.#fileData, args)
+            if (!this.options.fileCache) {
+                this.fileData = this.readFile()
+            }
+            event.returnValue = dotProp.get(this.fileData, args)
         })
     
         ipcMain.on(getEntryAsyncResponse, (event, args) => {
-            event.reply(getEntryAsyncResponse+args, dotProp.get(this.#fileData, args))
+            if (!this.options.fileCache) {
+                this.fileData = this.readFile()
+            }
+            event.reply(getEntryAsyncResponse+args, dotProp.get(this.fileData, args))
+        })
+        
+        ipcMain.on(setEntry, (event, [key, value]) => {
+            if (!this.options.fileCache) {
+                this.fileData = this.readFile()
+            }
+            dotProp.set(this.fileData, key, value)
+            this.writeFile(this.fileData)
         })
     
     }
@@ -60,7 +109,8 @@ export const preloadBindings = (ipcRenderer, fs) => {
                 func(data)
             })
         },
-        set: () => {
+        set: (key, value) => {
+            ipcRenderer.sendSync(setEntry, key, value)
         },
         setRequest: () => {
         },

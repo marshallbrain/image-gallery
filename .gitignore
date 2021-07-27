@@ -97,10 +97,5 @@ dist/
 # VSCode specific
 .vscode/
 
-# Logfile specific for development builds
-dev-scripts/webpack-dev-server.log
-dev-scripts/webpack-dev-server-error.log
-
-# License-specific files
-license.data
-public.key 
+# Dev resources
+dev-resources/
