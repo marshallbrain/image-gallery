@@ -62,8 +62,13 @@ export default class SavedStore {
     
     writeFile = () => {
         try {
-            fs.writeFileSync(this.file, this.fileData, 'utf8')
+            let data = this.fileData
+    
+            data = JSON.stringify(data)
+            
+            fs.writeFileSync(this.file, data, 'utf8')
         } catch (e) {
+            console.log(e)
         }
     }
     
@@ -83,12 +88,12 @@ export default class SavedStore {
             event.reply(getEntryAsyncResponse+args, dotProp.get(this.fileData, args))
         })
         
-        ipcMain.on(setEntry, (event, [key, value]) => {
+        ipcMain.on(setEntry, (event, key, value) => {
             if (!this.options.fileCache) {
                 this.fileData = this.readFile()
             }
-            dotProp.set(this.fileData, key, value)
-            this.writeFile(this.fileData)
+            this.fileData = dotProp.set(this.fileData, key, value)
+            this.writeFile()
         })
     
     }

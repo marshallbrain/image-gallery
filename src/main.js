@@ -79,9 +79,6 @@ app.on("web-contents-created", (event, contents) => {
         /* eng-disable LIMIT_NAVIGATION_JS_CHECK  */
         const parsedUrl = new URL(navigationUrl)
         const validOrigins = [selfHost]
-    
-        console.log(validOrigins)
-        console.log(parsedUrl.origin)
         
         // Log and prevent the app from navigating to a new page if that page's origin is not whitelisted
         if (!validOrigins.includes(parsedUrl.origin)) {
