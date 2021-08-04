@@ -1,19 +1,9 @@
-import {namespaceStore} from "./ipcCommands";
 import {app} from "electron"
 import dotProp from "dot-prop";
 import fs from "fs";
 import pathModule from "path";
 import {isDev} from "./utilities";
-
-export const getEntry = `${namespaceStore}get-sync`
-export const getEntryAsyncRequest = `${namespaceStore}get-req-`
-export const getEntryAsyncResponse = `${namespaceStore}get-res-`
-export const setEntry = `${namespaceStore}set-sync`
-export const setEntryAsyncRequest = `${namespaceStore}set-req-`
-export const setEntryAsyncResponse = `${namespaceStore}set-res-`
-export const deleteEntry = `${namespaceStore}del-sync`
-export const deleteEntryAsyncRequest = `${namespaceStore}del-req-`
-export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
+import {getEntry, getEntryAsyncResponse, setEntry} from "./ipcCommands";
 
 const defaultOptions = {
     debug: false,
@@ -39,7 +29,7 @@ const readFile = () => {
             
             data = JSON.stringify(data)
             
-            fs.writeFileSync(file, data);
+            // fs.writeFileSync(file, data)
             data = options.defaultData
         } else {
         
@@ -53,7 +43,7 @@ const writeFile = () => {
         
         data = JSON.stringify(data)
         
-        fs.writeFileSync(file, data, 'utf8')
+        // fs.writeFileSync(file, data, 'utf8')
     } catch (e) {
         console.log(e)
     }
@@ -77,27 +67,27 @@ export default {
                 //         if (err) throw err;
                 //     }
                 // );
-                return "dev-resources"
+                return pathModule.join(app.getAppPath(), `../dev-resources`)
             }
-            if (this.options.path) {
-                return this.options.path
+            if (options.path) {
+                return options.path
             }
-            if (process.env.PORTABLE_EXECUTABLE_DIR) {
-                // fs.mkdir(
-                //     "data",
-                //     {recursive: true},
-                //     (err) => {
-                //         if (err) throw err;
-                //     }
-                // );
-                return pathModule.join(process.env.PORTABLE_EXECUTABLE_DIR, "data")
-            }
-            return app.getPath("userData")
+            // if (process.env.PORTABLE_EXECUTABLE_DIR) {
+            //     // fs.mkdir(
+            //     //     "data",
+            //     //     {recursive: true},
+            //     //     (err) => {
+            //     //         if (err) throw err;
+            //     //     }
+            //     // );
+            //     return pathModule.join(process.env.PORTABLE_EXECUTABLE_DIR, "data")
+            // }
+            // return app.getPath("userData")
         }
         
-        file = pathModule.join(getPath(), `${this.options.filename}${this.options.extension}`)
+        file = pathModule.join(getPath(), `${options.filename}${options.extension}`)
         console.log(file)
-        // this.fileData = this.readFile()
+        fileData = readFile()
         
     },
     mainBinding(ipcMain, browserWindow, fs) {

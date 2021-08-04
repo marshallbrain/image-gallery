@@ -1,7 +1,6 @@
-import {getEntry, getEntryAsyncResponse, setEntry} from "../../utils/savedStore";
+import {getEntry, getEntryAsyncResponse, setEntry} from "../../utils/ipcCommands";
 
-export default (ipcRenderer, fs) => {
-    
+export const savedStorePreload = (ipcRenderer) => {
     return {
         get: (key) => {
             return ipcRenderer.sendSync(getEntry, key)
