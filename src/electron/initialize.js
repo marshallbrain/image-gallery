@@ -1,9 +1,17 @@
-import SavedStore from "../utils/savedStore";
-import {app} from "electron";
-import pathModule from "path";
+import savedStore from "../utils/savedStore";
 
-export const savedStore = new SavedStore({
-    path: pathModule.join(app.getAppPath(), "../dev-resources"),
-    defaultData: {"test": "YES"},
-    fileCache: false
-})
+export default (createWindow) => {
+    savedStore.initialize({
+        fileCache: false
+    })
+    
+    createWindow("index.html").then()
+}
+
+// sharp(pathModule.join(app.getAppPath(), "../dev-resources/Medivh_full.jpg"))
+//     .resize({height: 192})
+//     .jpeg({
+//         quality: 50,
+//         mozjpeg: true
+//     })
+//     .toFile(pathModule.join(app.getAppPath(), "../dev-resources/thumbnail.jpg")).then()

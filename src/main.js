@@ -4,12 +4,13 @@ import { app, protocol, BrowserWindow, ipcMain } from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
 import fs from "fs"
-import {savedStore} from "./electron/initialize";
+import initialize from "./electron/initialize";
+import savedStore from "./utils/savedStore";
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-const createWindow = async () => {
+const windowSetup = async (htmlFile, x = 800, y = 600) => {
     
     if (!isDev) {
         // Needs to happen before creating/loading the browser window;
@@ -17,12 +18,12 @@ const createWindow = async () => {
         protocol.registerBufferProtocol(scheme, Protocol); /* eng-disable PROTOCOL_HANDLER_JS_CHECK */
     }
     
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+    const createdWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
         title: "Application is currently initializing...",
         webPreferences: {
-            devTools: true,
+            devTools: isDev,
             nodeIntegration: false,
             nodeIntegrationInWorker: false,
             nodeIntegrationInSubFrames: false,
@@ -34,14 +35,15 @@ const createWindow = async () => {
         }
     });
     
-    savedStore.mainBinding(ipcMain, mainWindow, fs)
+    savedStore.mainBinding(ipcMain, createdWindow, fs)
     
     if (isDev) {
-        mainWindow.loadURL(`${selfHost}/dist`).then();
+        createdWindow.loadURL(`${selfHost}/dist/${htmlFile}`).then();
     } else {
-        mainWindow.loadURL(`${scheme}://rse/index.html`).then();
-        console.log()
+        createdWindow.loadURL(`${scheme}://rse/${htmlFile}`).then();
     }
+    
+    return createdWindow
 
 }
 
@@ -57,7 +59,9 @@ protocol.registerSchemesAsPrivileged([{
     }
 }]);
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+    initialize(windowSetup)
+})
 
 app.on("window-all-closed", () => {
     // On macOS it is common for applications and their menu bar
@@ -68,11 +72,11 @@ app.on("window-all-closed", () => {
     }
 });
 
-app.on("activate", () => {
-    if (win === null) {
-        createWindow().then(r => {})
-    }
-});
+// app.on("activate", () => {
+//     if (win === null) {
+//         windowSetup().then(r => {})
+//     }
+// });
 
 app.on("web-contents-created", (event, contents) => {
     contents.on("will-navigate", (contentsEvent, navigationUrl) => {
