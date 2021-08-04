@@ -1,9 +1,10 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { app, protocol, BrowserWindow } from "electron"
+import { app, protocol, BrowserWindow, ipcMain } from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
 import fs from "fs"
+import {savedStore} from "./electron/initialize";
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
@@ -27,11 +28,13 @@ const createWindow = async () => {
             nodeIntegrationInSubFrames: false,
             contextIsolation: true,
             enableRemoteModule: false,
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "electron/preload.js"),
             /* eng-disable PRELOAD_JS_CHECK */
             disableBlinkFeatures: "Auxclick"
         }
     });
+    
+    savedStore.mainBinding(ipcMain, mainWindow, fs)
     
     if (isDev) {
         mainWindow.loadURL(`${selfHost}/dist`).then();
@@ -76,9 +79,6 @@ app.on("web-contents-created", (event, contents) => {
         /* eng-disable LIMIT_NAVIGATION_JS_CHECK  */
         const parsedUrl = new URL(navigationUrl)
         const validOrigins = [selfHost]
-    
-        console.log(validOrigins)
-        console.log(parsedUrl.origin)
         
         // Log and prevent the app from navigating to a new page if that page's origin is not whitelisted
         if (!validOrigins.includes(parsedUrl.origin)) {

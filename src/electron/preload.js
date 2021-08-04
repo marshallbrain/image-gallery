@@ -1,8 +1,13 @@
+require("@babel/register");
+const fs = require("fs");
+const {preloadBindings} = require("../utils/savedStore");
 const {contextBridge, ipcRenderer} = require("electron");
+
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld("api", {
+    savedStore: preloadBindings(ipcRenderer, fs),
     send: (channel, ...data) => {
         if ([].includes(channel)) {
             ipcRenderer.send(channel, data);

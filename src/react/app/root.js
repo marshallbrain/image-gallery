@@ -6,12 +6,13 @@ export const ChangeThemeContext = React.createContext({
     toggleColorMode: () => {},
 })
 
+console.log(window.api.savedStore.get("test"))
+
 function Root(props) {
     
     return (
         <div>
-            !!!!!!!!!!!!!!!!!!!!!!
-            <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+            Success
         </div>
     );
 }
