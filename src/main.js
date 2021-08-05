@@ -10,7 +10,7 @@ import savedStore from "./utils/savedStore";
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-const windowSetup = async (htmlFile, x = 800, y = 600) => {
+const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600) => {
     
     if (!isDev) {
         // Needs to happen before creating/loading the browser window;
@@ -19,7 +19,7 @@ const windowSetup = async (htmlFile, x = 800, y = 600) => {
     }
     
     const createdWindow = new BrowserWindow({
-        width: 1200,
+        width: 1400,
         height: 800,
         title: "Application is currently initializing...",
         webPreferences: {
@@ -29,13 +29,14 @@ const windowSetup = async (htmlFile, x = 800, y = 600) => {
             nodeIntegrationInSubFrames: false,
             contextIsolation: true,
             enableRemoteModule: false,
-            preload: path.join(__dirname, "electron/preload.js"),
+            preload: path.join(__dirname, "electron/preloads/preload.js"),
             /* eng-disable PRELOAD_JS_CHECK */
             disableBlinkFeatures: "Auxclick"
         }
     });
     
     savedStore.mainBinding(ipcMain, createdWindow, fs)
+    menuBuilder(createdWindow, app.name).buildMenu();
     
     if (isDev) {
         createdWindow.loadURL(`${selfHost}/dist/${htmlFile}`).then();

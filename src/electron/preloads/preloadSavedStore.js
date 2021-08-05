@@ -1,4 +1,4 @@
-import {getEntry, getEntryAsyncResponse, setEntry} from "../../utils/ipcCommands";
+import {getEntry, getEntryAsyncRequest, getEntryAsyncResponse, setEntry} from "../../utils/ipcCommands";
 
 export const savedStorePreload = (ipcRenderer) => {
     return {
@@ -6,7 +6,7 @@ export const savedStorePreload = (ipcRenderer) => {
             return ipcRenderer.sendSync(getEntry, key)
         },
         getRequest: (key) => {
-            ipcRenderer.send(getEntryAsyncResponse, key)
+            ipcRenderer.send(getEntryAsyncRequest, key)
         },
         getResponse: (entry, func) => {
             ipcRenderer.once(getEntryAsyncResponse + key, (event, data) => {

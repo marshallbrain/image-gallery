@@ -1,19 +1,51 @@
 import React, {useEffect} from "react";
-import {TextField} from "@material-ui/core";
+import {ThemeProvider} from "@emotion/react";
+import {createTheme, CssBaseline} from "@material-ui/core";
+import App from "../components/App";
 import("./root.css")
 
 export const ChangeThemeContext = React.createContext({
     toggleColorMode: () => {},
 })
 
-console.log(window.api.savedStore.get("test"))
-
 function Root(props) {
     
+    const [themeOptions, setThemeOptions] = React.useState(
+        {
+            palette: {
+                mode: 'light',
+            }
+        }
+    )
+    
+    const colorMode = React.useMemo(
+        () => ({
+            toggleColorMode: () => {
+                return setThemeOptions((prevMode) => ({
+                    ...prevMode,
+                    palette: {
+                        mode: prevMode.palette.mode === 'light' ? 'dark' : 'light'
+                    }
+                }));
+            },
+        }),
+        [],
+    );
+    
+    const theme = React.useMemo(
+        () => {
+            return createTheme(themeOptions)
+        },
+        [themeOptions],
+    );
+    
     return (
-        <div>
-            Success
-        </div>
+            <ChangeThemeContext.Provider value={colorMode}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <App/>
+                </ThemeProvider>
+            </ChangeThemeContext.Provider>
     );
 }
 

@@ -2,6 +2,7 @@ export const namespaceStore = "store-"
 export const system = "system-"
 
 export const openImportDialogChannel = "openImportDialog"
+export const importImagesChannel = "importImages"
 
 export const getEntry = `${namespaceStore}get-sync`
 export const getEntryAsyncRequest = `${namespaceStore}get-req-`
@@ -18,4 +19,5 @@ export const loggerSubscribeChannel = `${system}loggerSubscribe`
 
 export const ipcChannels = new Set([
     openImportDialogChannel,
+    importImagesChannel
 ])

@@ -1,3 +1,4 @@
+import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
 
 export default (createWindow) => {
@@ -5,7 +6,7 @@ export default (createWindow) => {
         fileCache: false
     })
     
-    createWindow("index.html").then()
+    createWindow("index.html", MainMenu).then()
 }
 
 // sharp(pathModule.join(app.getAppPath(), "../dev-resources/Medivh_full.jpg"))

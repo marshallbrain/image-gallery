@@ -20,7 +20,7 @@ let fileData = {}
 let file = null
 
 const readFile = () => {
-    let data = ""
+    let data = {}
     try {
         data = JSON.parse(fs.readFileSync(file, 'utf8'))
     } catch (e) {
@@ -29,7 +29,7 @@ const readFile = () => {
             
             data = JSON.stringify(data)
             
-            // fs.writeFileSync(file, data)
+            fs.writeFileSync(file, data)
             data = options.defaultData
         } else {
         
@@ -41,9 +41,9 @@ const writeFile = () => {
     try {
         let data = fileData
         
-        data = JSON.stringify(data)
-        
-        // fs.writeFileSync(file, data, 'utf8')
+        data = JSON.stringify(data, null, 4)
+        fs.writeFile(file, data, () => {
+        })
     } catch (e) {
         console.log(e)
     }
@@ -60,29 +60,11 @@ export default {
         
         const getPath = () => {
             if (isDev) {
-                // fs.mkdir(
-                //     "dev-resources",
-                //     {recursive: true},
-                //     (err) => {
-                //         if (err) throw err;
-                //     }
-                // );
                 return pathModule.join(app.getAppPath(), `../dev-resources`)
             }
             if (options.path) {
                 return options.path
             }
-            // if (process.env.PORTABLE_EXECUTABLE_DIR) {
-            //     // fs.mkdir(
-            //     //     "data",
-            //     //     {recursive: true},
-            //     //     (err) => {
-            //     //         if (err) throw err;
-            //     //     }
-            //     // );
-            //     return pathModule.join(process.env.PORTABLE_EXECUTABLE_DIR, "data")
-            // }
-            // return app.getPath("userData")
         }
         
         file = pathModule.join(getPath(), `${options.filename}${options.extension}`)
@@ -112,6 +94,7 @@ export default {
             }
             fileData = dotProp.set(fileData, key, value)
             writeFile()
+            event.returnValue = "done"
         })
         
     }
