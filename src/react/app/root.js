@@ -8,6 +8,10 @@ export const ChangeThemeContext = React.createContext({
     toggleColorMode: () => {},
 })
 
+window.api.system.registerListener.log((...data) => {
+    console.log(...data)
+})
+
 function Root(props) {
     
     const [themeOptions, setThemeOptions] = React.useState(

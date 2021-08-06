@@ -1,13 +1,22 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
+import {ipcMain} from "electron";
+import {importImagesChannel} from "../utils/ipcCommands";
+import system from "./system";
 
 export default (createWindow) => {
+    
     savedStore.initialize({
         fileCache: false
     })
     
     createWindow("index.html", MainMenu).then((window) => {
+        system.setLoggingWindow(window)
         createChannelListeners()
+    
+        console.log = (...data) => {
+            system.log(...data)
+        }
     })
     
 }

@@ -15,7 +15,7 @@ export const deleteEntryAsyncRequest = `${namespaceStore}del-req-`
 export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
 
 export const logChannel = `${system}log`
-export const loggerSubscribeChannel = `${system}loggerSubscribe`
+export const logFeedChannel = `${system}logFeed`
 
 export const ipcChannels = new Set([
     openImportDialogChannel,

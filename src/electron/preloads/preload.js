@@ -4,11 +4,13 @@ const fs = require("fs");
 const {contextBridge, ipcRenderer} = require("electron");
 const {ipcChannels, logChannel} = require("../../utils/ipcCommands");
 const {savedStorePreload} = require("./preloadSavedStore");
+const {systemPreload} = require("./preloadSystem");
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld("api", {
     savedStore: savedStorePreload(ipcRenderer, fs),
+    system: systemPreload(ipcRenderer),
     send: (channel, ...data) => {
         if (ipcChannels.has(channel)) {
             ipcRenderer.send(channel, data);
