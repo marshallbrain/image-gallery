@@ -10,7 +10,7 @@
     "build:main": "cross-env NODE_ENV=production webpack --config ./build-utils/configs/webpack.prod.main.js",
     "build:render": "cross-env NODE_ENV=production webpack --config ./build-utils/configs/webpack.prod.renderer.js",
     "dev": "npm run dev:render",
-    "dev:main": "cross-env NODE_ENV=development electron -r ./build-utils/scripts/BabelRegister ./src/main.js",
+    "dev:main": "cross-env NODE_ENV=development electron -r ./build-utils/scripts/BabelRegister src/main.ts",
     "dev:render": "cross-env NODE_ENV=development webpack serve --config ./build-utils/configs/webpack.dev.renderer.js",
     "package": "webpack --config ./build-utils/configs/webpack.cleanup.js && npm run build && electron-builder build --publish never",
     "postinstall": "electron-builder install-app-deps"
