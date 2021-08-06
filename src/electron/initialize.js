@@ -6,7 +6,18 @@ export default (createWindow) => {
         fileCache: false
     })
     
-    createWindow("index.html", MainMenu).then()
+    createWindow("index.html", MainMenu).then((window) => {
+        createChannelListeners()
+    })
+    
+}
+
+const createChannelListeners = () => {
+    
+    ipcMain.on(importImagesChannel, (event, [files, mappers]) => {
+        console.log(files, mappers)
+    })
+    
 }
 
 // sharp(pathModule.join(app.getAppPath(), "../dev-resources/Medivh_full.jpg"))
