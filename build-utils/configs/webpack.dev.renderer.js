@@ -9,9 +9,10 @@ const { spawn } = require("child_process")
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const port = process.env.PORT || 3000;
-const publicPath = `http://localhost:${port}/dist`;
+const publicPath = `http://localhost:${port}/dist/`;
 
 module.exports = merge(base, {
+    devtool: "source-map",
     mode: 'development',
     target: "web",
     entry: ["./src/react/index.js"],
@@ -62,7 +63,6 @@ module.exports = merge(base, {
         compress: true,
         noInfo: false,
         stats: 'errors-only',
-        inline: true,
         lazy: false,
         hot: true,
         headers: {'Access-Control-Allow-Origin': '*'},
@@ -87,7 +87,6 @@ module.exports = merge(base, {
         new webpack.EnvironmentPlugin({
             NODE_ENV: 'development',
         }),
-    
         new webpack.LoaderOptionsPlugin({
             debug: true,
         }),

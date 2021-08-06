@@ -6,11 +6,12 @@ import path from 'path';
 import fs from "fs"
 import initialize from "./electron/initialize";
 import savedStore from "./utils/savedStore";
+import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600) => {
+const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools = true) => {
     
     if (!isDev) {
         // Needs to happen before creating/loading the browser window;
@@ -43,6 +44,22 @@ const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600) => {
     } else {
         createdWindow.loadURL(`${scheme}://rse/${htmlFile}`).then();
     }
+    
+    if (isDev) {
+        
+        // Errors are thrown if the dev tools are opened
+        // before the DOM is ready
+        createdWindow.webContents.once("dom-ready", async () => {
+            await installExtension(REACT_DEVELOPER_TOOLS)
+                .then((name) => console.log(`Added Extension: ${name}`))
+                .catch((err) => console.log("An error occurred: ", err))
+                .finally(() => {
+                    require("electron-debug")(); // https://github.com/sindresorhus/electron-debug
+                    createdWindow.webContents.openDevTools();
+                });
+        });
+    }
+    
     
     return createdWindow
 
