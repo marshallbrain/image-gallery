@@ -3,9 +3,10 @@ import {ThemeProvider} from "@emotion/react";
 import {createTheme, CssBaseline, ThemeOptions} from "@material-ui/core";
 import App from "../components/App";
 import "./root.css"
+import preloadTypes from "../../electron/preloads/preloadTypes";
 
 declare global {
-    interface Window { api: any; }
+    interface Window { api: preloadTypes; }
 }
 
 export const ChangeThemeContext = React.createContext({

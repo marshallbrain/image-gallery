@@ -4,7 +4,7 @@ import {BrowserWindow} from "electron";
 let loggingWindow: BrowserWindow
 
 export default {
-    registerBindings: (browserWindow: BrowserWindow) => {
+    registerBindings: (_browserWindow: BrowserWindow) => {
     
     },
     setLoggingWindow: (browserWindow: BrowserWindow) => {
