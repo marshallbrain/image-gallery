@@ -2,7 +2,7 @@ require("@babel/register");
 
 const fs = require("fs");
 const {contextBridge, ipcRenderer} = require("electron");
-const {ipcChannels, logChannel} = require("../../utils/ipcCommands");
+const {logChannel, ipcChannels} = require("../ipcCommands");
 const {savedStorePreload} = require("./preloadSavedStore");
 const {systemPreload} = require("./preloadSystem");
 

@@ -1,9 +1,9 @@
 import React from "react";
 import {ThemeProvider} from "@emotion/react";
 import {createTheme, CssBaseline, ThemeOptions} from "@material-ui/core";
-import App from "../components/App";
+import App from "@components/App";
 import "./root.css"
-import preloadTypes from "../../electron/preloads/preloadTypes";
+import preloadTypes from "@electron/preloads/preloadTypes";
 
 declare global {
     interface Window { api: preloadTypes; }

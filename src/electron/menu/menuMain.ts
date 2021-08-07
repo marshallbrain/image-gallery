@@ -1,5 +1,5 @@
-import {isDev} from "../../utils/utilities";
 import {handleMenuItemClick} from "./menuActions";
+import {isDev} from "@utils/utilities";
 
 export default [
     {

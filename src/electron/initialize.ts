@@ -1,9 +1,10 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
 import {BrowserWindow, ipcMain} from "electron";
-import {importImagesChannel} from "../utils/ipcCommands";
+import {importImagesChannel} from "./ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
+import {importImages} from "./database/importImages";
 
 export default (createWindow: WindowSetupFunction) => {
     
@@ -25,7 +26,7 @@ export default (createWindow: WindowSetupFunction) => {
 const createChannelListeners = () => {
     
     ipcMain.on(importImagesChannel, (_event, [files, mappers]) => {
-        console.log(files, mappers)
+        importImages(files, mappers)
     })
     
 }

@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {importImagesChannel} from "../../../../utils/ipcCommands";
+import {importImagesChannel} from "@electron/ipcCommands";
 
 function ImportImages(props: PropTypes) {
     
@@ -30,7 +30,7 @@ function ImportImages(props: PropTypes) {
     const [name, setName] = React.useState(defaultMap.name)
     const [filters, setFilters] = React.useState<Filter[]>(defaultMap.filters)
     const [transforms, setTransforms] = React.useState<Transform[]>(defaultMap.transforms)
-    const [files, setFiles] = React.useState<FileList>()
+    const [files, setFiles] = React.useState<ImageFile[]>()
     
     React.useEffect(() => {
         const data = window.api.savedStore.get("json mappings")
@@ -104,7 +104,12 @@ function ImportImages(props: PropTypes) {
     }
     const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawFiles = event.target.files as FileList
-        setFiles(rawFiles)
+        const files: ImageFile[] = []
+        for (let i = 0; i < rawFiles.length; i++) {
+            const f = rawFiles[i]
+            files.push({name: f.name, path: f.path, type: f.type})
+        }
+        setFiles(files)
     }
     const importImages = () => {
         window.api.send(importImagesChannel, files, mappers)
@@ -210,6 +215,11 @@ interface PropTypes {
     close: () => void
 }
 
+export interface ImageFile {
+    name: string
+    path: string
+    type: string
+}
 export interface Mapper {
     name: string
     filters: Filter[]

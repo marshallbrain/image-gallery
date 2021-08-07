@@ -3,7 +3,7 @@ import dotProp from "dot-prop";
 import fs from "fs";
 import pathModule from "path";
 import {isDev} from "./utilities";
-import {getEntry, getEntryAsyncResponse, setEntry} from "./ipcCommands";
+import {getEntry, getEntryAsyncResponse, setEntry} from "@electron/ipcCommands";
 
 export interface UserOptions {
     debug?: boolean

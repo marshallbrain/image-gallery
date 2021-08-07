@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import ImportImages from "./dialogs/import_images/ImportImages";
-import {openImportDialogChannel} from "../../utils/ipcCommands";
+import {openImportDialogChannel} from "@electron/ipcCommands";
 
 function PersistentDialogs() {
     

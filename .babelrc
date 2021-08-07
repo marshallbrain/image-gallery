@@ -5,7 +5,10 @@
             {
                 "cwd": "babelrc",
                 "alias": {
-                    "React": "./src/react/"
+                    "@app": "./src/react/app",
+                    "@components": "./src/react/components",
+                    "@electron": "./src/electron",
+                    "@utils": "./src/utils"
                 }
             },
             "@babel/plugin-syntax-dynamic-import"

@@ -10,7 +10,7 @@ import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-install
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-// export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
+export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
 const windowSetup = async (
     htmlFile: string,
     menu: any[] ,

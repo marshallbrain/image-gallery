@@ -19,7 +19,14 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["react/app/*"],
+      "@components/*": ["react/components/*"],
+      "@electron/*": ["electron/*"],
+      "@utils/*": ["utils/*"]
+    }
   },
   "include": [
     "src"
