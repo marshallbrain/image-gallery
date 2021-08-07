@@ -8,7 +8,7 @@ export const savedStorePreload = (ipcRenderer) => {
         getRequest: (key) => {
             ipcRenderer.send(getEntryAsyncRequest, key)
         },
-        getResponse: (entry, func) => {
+        getResponse: (key, func) => {
             ipcRenderer.once(getEntryAsyncResponse + key, (event, data) => {
                 func(data)
             })

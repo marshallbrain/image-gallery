@@ -2,17 +2,17 @@ import React, {useEffect} from 'react';
 import ImportImages from "./dialogs/import_images/ImportImages";
 import {openImportDialogChannel} from "../../utils/ipcCommands";
 
-function PersistentDialogs(props) {
+function PersistentDialogs() {
     
     const [importImages, setImportImages] = React.useState(true);
     
-    const handleOpen = (name) => () => {
+    const handleOpen = (name: string) => () => {
         switch (name) {
             case "importImages": setImportImages(true)
         }
     };
     
-    const handleClose = (name) => () => {
+    const handleClose = (name: string) => () => {
         switch (name) {
             case "importImages": setImportImages(false)
         }

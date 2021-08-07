@@ -1,16 +1,17 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
-import {ipcMain} from "electron";
+import {BrowserWindow, ipcMain} from "electron";
 import {importImagesChannel} from "../utils/ipcCommands";
 import system from "./system";
+import {WindowSetupFunction} from "../main";
 
-export default (createWindow) => {
+export default (createWindow: WindowSetupFunction) => {
     
     savedStore.initialize({
         fileCache: false
     })
     
-    createWindow("index.html", MainMenu).then((window) => {
+    createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)
         createChannelListeners()
     
@@ -23,7 +24,7 @@ export default (createWindow) => {
 
 const createChannelListeners = () => {
     
-    ipcMain.on(importImagesChannel, (event, [files, mappers]) => {
+    ipcMain.on(importImagesChannel, (_event, [files, mappers]) => {
         console.log(files, mappers)
     })
     

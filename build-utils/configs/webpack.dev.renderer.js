@@ -24,7 +24,7 @@ module.exports = merge(base, {
         rules: [
             {
                 // loads .js/jsx files
-                test: /\.jsx?$/,
+                test: /\.[jt]sx?$/,
                 exclude: /node_modules/,
                 use: [{
                     loader: require.resolve('babel-loader'),

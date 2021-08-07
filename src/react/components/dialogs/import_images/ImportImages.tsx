@@ -20,26 +20,30 @@ import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
 import {importImagesChannel} from "../../../../utils/ipcCommands";
 
-function ImportImages(props) {
+function ImportImages(props: PropTypes) {
     
     const {open, close} = props
     
     const [openDelete, setOpenDelete] = React.useState(false)
-    const [mappers, setMappers] = React.useState([])
+    const [mappers, setMappers] = React.useState<Mapper[]>([])
     const [mapper, setMapper] = React.useState(-1)
-    const [name, setName] = React.useState("")
-    const [filters, setFilters] = React.useState([{"path": "", "value": ""}])
-    const [transforms, setTransforms] = React.useState([{"prop": "", "metadata": ""}])
-    const [files, setFiles] = React.useState([])
+    const [name, setName] = React.useState(defaultMap.name)
+    const [filters, setFilters] = React.useState<Filter[]>(defaultMap.filters)
+    const [transforms, setTransforms] = React.useState<Transform[]>(defaultMap.transforms)
+    const [files, setFiles] = React.useState<FileList>()
     
     React.useEffect(() => {
         const data = window.api.savedStore.get("json mappings")
-        setMappers(data)
-        setData(data[0] || {})
+        if (data.length > 0) {
+            setMappers(data)
+            setMapper(0)
+            setData(data[0])
+        }
     }, [])
     React.useEffect(() => {
-        const map = {name, filters, transforms}
-        if (name !== "" && (mapper === -1 || mappers.length === 0)) {
+        if (name.length == 0) return
+        const map: Mapper = {name, filters, transforms}
+        if ((mapper == -1 || mappers.length == 0)) {
             mappers.push(map)
         } else if (mappers.length > 0) {
             mappers[mapper] = map
@@ -69,42 +73,38 @@ function ImportImages(props) {
             setData(mappers[0])
         } else {
             setMapper(-1);
-            setData({})
+            setData({
+                name: "",
+                filters: [{"path": "", "value": ""}],
+                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+            })
         }
         
     }
-    const handleSetMapper = (event) => {
-        setMapper(event.target.value);
-        if (event.target.value === -1) {
-            setData({})
-        } else {
-            setData(mappers[event.target.value])
-        }
-    }
-    const setData = (data) => {
-        if (Object.keys(data).length === 0) {
-            data = {
+    const handleSetMapper = (event: React.ChangeEvent<{value: unknown}>) => {
+        const index = event.target.value as number
+        setMapper(index);
+        if (index === -1) {
+            setData({
                 name: "",
                 filters: [{"path": "", "value": ""}],
-                transforms: [{"prop": "", "metadata": ""}],
-            }
+                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+            })
+        } else {
+            setData(mappers[index])
         }
+    }
+    const setData = (data: Mapper) => {
         setName(data.name)
         setFilters(data.filters)
         setTransforms(data.transforms)
     }
-    const handleName = (event) => {
-        setName(event.target.value);
+    const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value.trim());
     }
-    const handleFiles = (event) => {
-        const rawFiles = event.target.files
-        
-        const newFiles = []
-        for (const rawFile of rawFiles) {
-            newFiles.push({name: rawFile.name, path: rawFile.path, type: rawFile.type})
-        }
-        
-        setFiles(newFiles)
+    const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const rawFiles = event.target.files as FileList
+        setFiles(rawFiles)
     }
     const importImages = () => {
         window.api.send(importImagesChannel, files, mappers)
@@ -164,9 +164,7 @@ function ImportImages(props) {
                         </Button>
                     </label>
                     <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
-                        Images selected: {files.length} {"{"}{files.map((f) => {
-                        return f.name
-                    }).join(", ")}{"}"}
+                        Images selected: {files ? files.length: 0}
                     </Typography>
                 </Stack>
                 <Divider sx={{marginTop: 2, marginBottom: 2}}/>
@@ -206,5 +204,38 @@ const Input = styled('input')({
     display: 'none',
     imageText: {}
 });
+
+interface PropTypes {
+    open: boolean
+    close: () => void
+}
+
+export interface Mapper {
+    name: string
+    filters: Filter[]
+    transforms: Transform[]
+}
+export interface Filter {
+    path: string
+    value: string
+}
+export interface Transform {
+    prop: string
+    metadata: Metadata
+}
+export enum Metadata {
+    Empty = "",
+    Title = "Title",
+    Tags = "Tags",
+    Author = "Author",
+    Site = "Site",
+    Source = "Source"
+}
+
+const defaultMap: Mapper = {
+    name: "",
+    filters: [{"path": "", "value": ""}],
+    transforms: [{"prop": "", "metadata": Metadata.Empty}],
+}
 
 export default ImportImages;

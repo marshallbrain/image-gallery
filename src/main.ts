@@ -1,9 +1,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { app, protocol, BrowserWindow, ipcMain } from "electron"
+import {app, protocol, BrowserWindow, ipcMain, Menu} from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
-import fs from "fs"
 import initialize from "./electron/initialize";
 import savedStore from "./utils/savedStore";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
@@ -11,7 +10,14 @@ import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-install
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools = true) => {
+// export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
+const windowSetup = async (
+    htmlFile: string,
+    menu: any[] ,
+    x = 1400,
+    y = 800,
+    openDevTools = true
+) => {
     
     if (!isDev) {
         // Needs to happen before creating/loading the browser window;
@@ -20,8 +26,8 @@ const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools
     }
     
     const createdWindow = new BrowserWindow({
-        width: 1400,
-        height: 800,
+        width: x,
+        height: y,
         title: "Application is currently initializing...",
         webPreferences: {
             devTools: isDev,
@@ -35,9 +41,14 @@ const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools
             disableBlinkFeatures: "Auxclick"
         }
     });
+
+    const buildMenu = () => {
+        const builtMenu = Menu.buildFromTemplate(menu);
+        createdWindow.setMenu(builtMenu)
+    }
     
-    savedStore.mainBinding(ipcMain, createdWindow, fs)
-    menuBuilder(createdWindow, app.name).buildMenu();
+    savedStore.mainBinding(ipcMain)
+    buildMenu()
     
     if (isDev) {
         createdWindow.loadURL(`${selfHost}/dist/${htmlFile}`).then();
@@ -46,6 +57,8 @@ const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools
     }
     
     if (isDev) {
+
+        process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
         
         // Errors are thrown if the dev tools are opened
         // before the DOM is ready
@@ -55,7 +68,7 @@ const windowSetup = async (htmlFile, menuBuilder, x = 800, y = 600, openDevTools
                 .catch((err) => console.log("An error occurred: ", err))
                 .finally(() => {
                     require("electron-debug")(); // https://github.com/sindresorhus/electron-debug
-                    createdWindow.webContents.openDevTools();
+                    openDevTools && createdWindow.webContents.openDevTools();
                 });
         });
     }
@@ -96,7 +109,7 @@ app.on("window-all-closed", () => {
 //     }
 // });
 
-app.on("web-contents-created", (event, contents) => {
+app.on("web-contents-created", (_, contents) => {
     contents.on("will-navigate", (contentsEvent, navigationUrl) => {
         /* eng-disable LIMIT_NAVIGATION_JS_CHECK  */
         const parsedUrl = new URL(navigationUrl)
@@ -115,7 +128,7 @@ app.on("web-contents-created", (event, contents) => {
     
     contents.on("will-redirect", (contentsEvent, navigationUrl) => {
         const parsedUrl = new URL(navigationUrl)
-        const validOrigins = []
+        const validOrigins: string[] = []
         
         // Log and prevent the app from redirecting to a new page
         if (!validOrigins.includes(parsedUrl.origin)) {
@@ -129,9 +142,10 @@ app.on("web-contents-created", (event, contents) => {
     })
     
     // https://electronjs.org/docs/tutorial/security#11-verify-webview-options-before-creation
-    contents.on("will-attach-webview", (contentsEvent, webPreferences, params) => {
+    contents.on("will-attach-webview", (_event, webPreferences, _params) => {
         // Strip away preload scripts if unused or verify their location is legitimate
         delete webPreferences.preload;
+        // @ts-ignore
         delete webPreferences.preloadURL;
         
         // Disable Node.js integration
@@ -143,7 +157,7 @@ app.on("web-contents-created", (event, contents) => {
     // https://github.com/electron/electron/pull/24517#issue-447670981
     contents.setWindowOpenHandler(({url}) => {
         const parsedUrl = new URL(url);
-        const validOrigins = []
+        const validOrigins: string[] = []
         
         // Log and prevent opening up a new window
         if (!validOrigins.includes(parsedUrl.origin)) {
