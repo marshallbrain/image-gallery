@@ -15,31 +15,29 @@ import {
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import React from "react";
+import {Metadata, Transform} from "./ImportImages";
 
-export function Transforms(props) {
-    
-    const metadataEntries = [
-        "Title",
-        "Tags",
-        "Author",
-        "Site",
-        "Source"
-    ]
+export function Transforms(props: PropTypes) {
+
     const {transforms, setTransforms} = props
-    
-    const updateTransforms = (index, type, value) => {
-        transforms[index][type] = value
+
+    const updateTransforms = (index: number, type: "prop" | "metadata", value: Metadata | string) => {
+        if (type === "prop") {
+            transforms[index].prop = value
+        } else {
+            transforms[index].metadata = value as Metadata
+        }
         setTransforms([...transforms])
     }
     const addTransforms = () => {
-        transforms.push({"prop": "", "metadata": ""})
+        transforms.push({"prop": "", "metadata": Metadata.Empty})
         setTransforms([...transforms])
     }
-    const removeTransforms = (index) => {
+    const removeTransforms = (index: number) => {
         transforms.splice(index, 1)
         setTransforms([...transforms])
     }
-    
+
     return (
         <Accordion>
             <AccordionSummary expandIcon={<KeyboardArrowDownRoundedIcon/>}>
@@ -47,7 +45,7 @@ export function Transforms(props) {
             </AccordionSummary>
             <AccordionDetails>
                 <Stack spacing={2}>
-                    {transforms.map(({prop, metadata}, index) => {
+                    {transforms.map(({prop, metadata}: Transform, index: number) => {
                         return (
                             <Stack
                                 direction={"row"}
@@ -73,14 +71,16 @@ export function Transforms(props) {
                                             updateTransforms(index, "metadata", event.target.value)
                                         }}
                                     >
-                                        {metadataEntries.map((name) => {
-                                            return (<MenuItem
-                                                value={name.toLowerCase()}
-                                                key={name.toLowerCase()}
-                                            >
-                                                <span>{name}</span>
-                                            </MenuItem>)
-                                        })}
+                                        {Object.values(Metadata)
+                                            .filter((value) => value != Metadata.Empty)
+                                            .map(value => {
+                                                return (
+                                                    <MenuItem value={value} key={value}>
+                                                        <span>{value}</span>
+                                                    </MenuItem>
+                                                )
+                                            })
+                                        }
                                     </Select>
                                 </FormControl>
                                 <IconButton onClick={() => {
@@ -102,5 +102,10 @@ export function Transforms(props) {
             </AccordionDetails>
         </Accordion>
     )
-    
+
+}
+
+interface PropTypes {
+    transforms: Transform[]
+    setTransforms: (transforms: Transform[]) => void
 }

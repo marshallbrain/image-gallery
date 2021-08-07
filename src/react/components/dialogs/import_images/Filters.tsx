@@ -11,12 +11,13 @@ import {
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import React from "react";
+import {Filter} from "./ImportImages";
 
-export function Filters(props) {
+export function Filters(props: PropTypes) {
     
     const {filters, setFilters} = props
     
-    const updateFilters = (index, type, value) => {
+    const updateFilters = (index: number, type: "path" | "value", value: string) => {
         filters[index][type] = value
         setFilters([...filters])
     }
@@ -24,7 +25,7 @@ export function Filters(props) {
         filters.push({"path": "", "value": ""})
         setFilters([...filters])
     }
-    const removeFilter = (index) => {
+    const removeFilter = (index: number) => {
         filters.splice(index, 1)
         setFilters([...filters])
     }
@@ -79,4 +80,9 @@ export function Filters(props) {
             </AccordionDetails>
         </Accordion>
     )
+}
+
+interface PropTypes {
+    filters: Filter[]
+    setFilters: (filters: Filter[]) => void
 }

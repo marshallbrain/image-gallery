@@ -1,8 +1,8 @@
 interface types {
     savedStore: {
-        get: (key: string) => void
+        get: (key: string) => any
         getRequest: (key: string) => void
-        getResponse: (key: string, func: (data: any) => void) => void
+        getResponse: (key: string, func: (data: any) => void) => any
         set: (key: string, value: any) => void
         setRequest: () => void
         setResponse: () => void
