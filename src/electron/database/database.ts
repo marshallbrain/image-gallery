@@ -1,6 +1,19 @@
-import sqlite3 from "sqlite3";
+import sqlite3 from "better-sqlite3";
 import pathModule from "path";
 import {app} from "electron";
+import updateDatabase from "@electron/database/updateDatabase";
+
+export const currentDBVersion = 2
+const db = new sqlite3(pathModule.join(app.getAppPath(), "../dev-resources/database.db"))
+
+export default () => {
+    app.on("window-all-closed", () => {
+        db.close()
+    })
+
+    updateDatabase(db)
+
+}
 
 const db = new sqlite3.Database(pathModule.join(app.getAppPath(), "../dev-resources/database.db"))
 
