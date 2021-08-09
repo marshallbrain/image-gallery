@@ -1,5 +1,3 @@
-import {DBDataType} from "@electron/database/database";
-
 export type ColumnConstraints =
     "primary key" |
     "not null" |
@@ -7,16 +5,12 @@ export type ColumnConstraints =
 
 export type DBStructure = {
     images: {
-        name: string
-        columns: {
-            name: string
-            dataType: DBDataType
-            constraints?: ColumnConstraints[]
-        }[]
+        name: string,
+        strut: string
     }
 }
 
-const columnNames = {
+const cols = {
     images: {
         image_id: "image_id",
         title: "title",
@@ -27,22 +21,12 @@ const columnNames = {
 const dbStrut: DBStructure = {
     images: {
         name: "images",
-        columns: [
-            {
-                name: columnNames.images.image_id,
-                dataType: "integer",
-                constraints: ["primary key"]
-            },
-            {
-                name: columnNames.images.title,
-                dataType: "text"
-            },
-            {
-                name: columnNames.images.original_metadata,
-                dataType: "text"
-            }
-        ]
-    },
+        strut: "(" +
+            `${cols.images.image_id} integer primary key,` +
+            `${cols.images.title} text,` +
+            `${cols.images.original_metadata} text` +
+            ")"
+    }
 }
 
 export interface PastDBStrut {
@@ -52,35 +36,23 @@ export interface PastDBStrut {
     }
 }
 
-export const pastDBStrut: { [key: number]: PastDBStrut } = {
+export const pastDBStrut: {[key: number]: PastDBStrut} = {
     1: {
         database: {
             images: {
                 name: "images",
-                columns: [
-                    {
-                        name: "image_id",
-                        dataType: "integer",
-                        constraints: ["primary key"]
-                    },
-                    {
-                        name: "title",
-                        dataType: "text",
-                        constraints: ["not null"]
-                    },
-                    {
-                        name: "original_metadata",
-                        dataType: "text",
-                        constraints: ["not null"]
-                    }
-                ]
+                strut: "(" +
+                    `${cols.images.image_id} integer primary key,` +
+                    `${cols.images.title} text not null,` +
+                    `${cols.images.original_metadata} text not null,` +
+                    ")"
             }
         },
         columnMapping: {
             images: [
-                columnNames.images.image_id,
-                columnNames.images.title,
-                columnNames.images.original_metadata
+                cols.images.image_id,
+                cols.images.title,
+                cols.images.original_metadata
             ]
         }
     }
