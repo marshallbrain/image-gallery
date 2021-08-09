@@ -18,6 +18,8 @@ const cols = {
     }
 }
 
+export const columns = cols
+
 const dbStrut: DBStructure = {
     images: {
         name: "images",
@@ -42,9 +44,9 @@ export const pastDBStrut: {[key: number]: PastDBStrut} = {
             images: {
                 name: "images",
                 strut: "(" +
-                    `${cols.images.image_id} integer primary key,` +
-                    `${cols.images.title} text not null,` +
-                    `${cols.images.original_metadata} text not null,` +
+                    `image_id integer primary key,` +
+                    `title text not null,` +
+                    `original_metadata text not null,` +
                     ")"
             }
         },
