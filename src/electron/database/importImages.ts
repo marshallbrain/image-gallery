@@ -1,6 +1,7 @@
-import {ImageFile, Mapper, Metadata, Transform} from "@components/dialogs/import_images/ImportImages";
+import {ImageFile, Mapper, Transform} from "@components/dialogs/import_images/ImportImages";
 import fs from "fs";
 import dotProp from "dot-prop";
+import {insert} from "@electron/database/database";
 
 export const importImages = (files: ImageFile[], mappers: Mapper[]) => {
     if (files.length == 0) return
@@ -18,13 +19,13 @@ export const importImages = (files: ImageFile[], mappers: Mapper[]) => {
                     break
                 }
             }
-            const data: {[key in Metadata]?: string} = {}
+            const data: {[key: string]: string} = {}
             for (const map of maps) {
                 data[map.metadata] = jsonData[map.prop]
             }
-            console.log(data)
+            insert("images", data)
         } catch (e) {
-            console.log(e)
+            console.log(e.message)
         }
     }
 }

@@ -15,7 +15,22 @@ export default () => {
 
 }
 
-const db = new sqlite3.Database(pathModule.join(app.getAppPath(), "../dev-resources/database.db"))
+export interface InsertData {
+    [key: string]: string | number
+}
+export const insert = (database: string, data: InsertData) => {
+    const keys = Object.keys(data)
+    const values = Object.values(data)
+    db.prepare(`
+        insert into ${database} (${keys.map(value => value.toLowerCase()).join(",")})
+        values(${values.map(() => "?").join(",")})
+    `).run(values)
+}
+export const insertAll = (database: string, data: [][]) => {
+
+}
+
+export type DBDataType = "integer" | "real" | "text"
 
 /*
 
