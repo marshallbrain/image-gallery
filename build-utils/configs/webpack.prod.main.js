@@ -7,7 +7,7 @@ module.exports = [
     merge(base, {
         mode: "production",
         target: "electron-main",
-        entry: ["./src/main.js"],
+        entry: ["./src/main.ts"],
         devtool: false,
         output: {
             path: path.resolve(__dirname, "../../build"), // Where all the output files get dropped after webpack is done with them
@@ -28,7 +28,7 @@ module.exports = [
         },
     }),
     merge(base, {
-        entry: './src/electron/preload.js',
+        entry: './src/electron/preloads/preload.js',
         target: 'electron-preload',
         output: {
             path: path.join(__dirname, '../../build'),

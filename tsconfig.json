@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2018",
+    "sourceMap": true,
+    "jsx": "react",
+    "strict": true,
+    "pretty": true,
+    "lib": ["dom", "esnext"],
+    "declaration": true,
+    "declarationMap": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["react/app/*"],
+      "@components/*": ["react/components/*"],
+      "@electron/*": ["electron/*"],
+      "@utils/*": ["utils/*"]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}
