@@ -5,12 +5,15 @@ import {importImagesChannel} from "./ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
 import {importImages} from "./database/importImages";
+import database from "@electron/database/database";
 
 export default (createWindow: WindowSetupFunction) => {
     
     savedStore.initialize({
         fileCache: false
     })
+
+    database()
     
     createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)
@@ -19,6 +22,7 @@ export default (createWindow: WindowSetupFunction) => {
         console.log = (...data) => {
             system.log(...data)
         }
+
     })
     
 }
