@@ -1,6 +1,6 @@
 import {DBDataType} from "@electron/database/database";
 
-type ColumnConstraints =
+export type ColumnConstraints =
     "primary key" |
     "not null" |
     "unique"
@@ -11,7 +11,7 @@ export type DBStructure = {
         columns: {
             name: string
             dataType: DBDataType
-            constraints?: ColumnConstraints[] | ColumnConstraints
+            constraints?: ColumnConstraints[]
         }[]
     }
 }
@@ -20,7 +20,7 @@ const columnNames = {
     images: {
         image_id: "image_id",
         title: "title",
-        json: "json"
+        original_metadata: "original_metadata"
     }
 }
 
@@ -31,27 +31,28 @@ const dbStrut: DBStructure = {
             {
                 name: columnNames.images.image_id,
                 dataType: "integer",
-                constraints: "primary key"
+                constraints: ["primary key"]
             },
             {
                 name: columnNames.images.title,
                 dataType: "text"
             },
             {
-                name: columnNames.images.json,
+                name: columnNames.images.original_metadata,
                 dataType: "text"
             }
         ]
     },
 }
 
-export interface ColumnMapping {
-    [key: string]: {
-            [key: string]: string
-        }
+export interface PastDBStrut {
+    database: DBStructure,
+    columnMapping: {
+        [key: string]: string[]
+    }
 }
 
-export const pastDBStrut: {[key: number]: {database: DBStructure, columnMapping: ColumnMapping}} = {
+export const pastDBStrut: { [key: number]: PastDBStrut } = {
     1: {
         database: {
             images: {
@@ -60,27 +61,27 @@ export const pastDBStrut: {[key: number]: {database: DBStructure, columnMapping:
                     {
                         name: "image_id",
                         dataType: "integer",
-                        constraints: "primary key"
+                        constraints: ["primary key"]
                     },
                     {
                         name: "title",
                         dataType: "text",
-                        constraints: "not null"
+                        constraints: ["not null"]
                     },
                     {
-                        name: "json",
+                        name: "original_metadata",
                         dataType: "text",
-                        constraints: "not null"
+                        constraints: ["not null"]
                     }
                 ]
             }
         },
         columnMapping: {
-            images: {
-                image_id: columnNames.images.image_id,
-                title: columnNames.images.title,
-                json: columnNames.images.json
-            }
+            images: [
+                columnNames.images.image_id,
+                columnNames.images.title,
+                columnNames.images.original_metadata
+            ]
         }
     }
 }

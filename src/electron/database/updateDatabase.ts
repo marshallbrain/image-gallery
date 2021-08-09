@@ -1,18 +1,21 @@
 import {Database} from "better-sqlite3";
-import dbStructure, {pastDBStrut} from "@electron/database/dbStructure";
+import dbStructure, {ColumnConstraints, PastDBStrut, pastDBStrut} from "@electron/database/dbStructure";
+import {AnyObject} from "@utils/utilities";
+import {DBDataType} from "@electron/database/database";
 
 export default (db: Database) => {
-    const userVersion = db.pragma("user_version", { simple: true }) as number
+    const userVersion = db.pragma("user_version", {simple: true}) as number
+    if (userVersion == 0) createDB(db)
     const userStrut = pastDBStrut[userVersion]
     const [tableDelta, columnMap] = getTableDelta(userStrut)
-    console.log(tableDelta, columnMap)
+    updateDB(db, tableDelta, columnMap)
 
     // db.pragma(`user_version = ${currentDBVersion}`)
 }
 
 const getTableDelta = (userStrut: PastDBStrut) => {
-    const dbUpdate: any = {}
-    const columnMap: any = {}
+    const dbUpdate: DBDelta = {}
+    const columnMap: AnyObject = {}
     for (const key of Object.keys(dbStructure)) {
         // @ts-ignore
         const table = dbStructure[key]
@@ -28,13 +31,37 @@ const getTableDelta = (userStrut: PastDBStrut) => {
 }
 
 const createDB = (db: Database) => {
-    db.prepare(`
-        create table if not exists images (
-            image_id integer primary key,
-            title text,
-            json text
-        )
-    `).run()
+}
+
+const updateDB = (db: Database, tableDelta: DBDelta, columnMap: AnyObject) => {
+    for (const [key, table] of Object.entries(tableDelta)) {
+        db.prepare(`
+            create table if not exists ${table.name}Temp(${
+            table.columns
+                .map(column => [
+                    column.name, 
+                    column.dataType, 
+                    column.constraints && column.constraints.join(" ")
+                    ].join(" "))
+                .join(", ")
+            });
+        `).run()
+        db.prepare(`
+            insert into ${table.name}Temp (${columnMap[key].join(", ")})
+            select * from ${table.name}
+        `).run()
+    }
+}
+
+export interface DBDelta {
+    [key: string]: {
+        name: string
+        columns: {
+            name: string
+            dataType: DBDataType
+            constraints?: ColumnConstraints[]
+        }[]
+    }
 }
 
 // INSERT INTO {insert into table} ({list of columns in order as related to other table})

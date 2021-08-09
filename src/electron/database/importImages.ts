@@ -23,6 +23,7 @@ export const importImages = (files: ImageFile[], mappers: Mapper[]) => {
             for (const map of maps) {
                 data[map.metadata] = jsonData[map.prop]
             }
+            data.original_metadata = JSON.stringify(jsonData)
             insert("images", data)
         } catch (e) {
             console.log(e.message)
