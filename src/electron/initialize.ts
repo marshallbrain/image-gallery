@@ -6,6 +6,7 @@ import system from "./system";
 import {WindowSetupFunction} from "../main";
 import {importImages} from "./database/importImages";
 import database from "@electron/database/database";
+import updateDatabase from "@electron/database/updateDatabase";
 
 export default (createWindow: WindowSetupFunction) => {
     
@@ -14,6 +15,7 @@ export default (createWindow: WindowSetupFunction) => {
     })
 
     database()
+    updateDatabase()
     
     createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)

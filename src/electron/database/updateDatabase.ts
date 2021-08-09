@@ -1,14 +1,15 @@
-import {Database} from "better-sqlite3";
 import dbStructure, {PastDBStrut, pastDBStrut} from "@electron/database/dbStructure";
+import {currentDBVersion, db} from "@electron/database/database";
 
-export default (db: Database) => {
+export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
-    if (userVersion == 0) createDB(db)
+    if (userVersion == currentDBVersion) return
+    if (userVersion == 0) createDB()
     const userStrut = pastDBStrut[userVersion]
     const [tableDelta, columnMap] = getTableDelta(userStrut)
-    updateDB(db, tableDelta as DBDelta, columnMap as {[key: string]: string[]})
+    updateDB(tableDelta as DBDelta, columnMap as {[key: string]: string[]})
 
-    // db.pragma(`user_version = ${currentDBVersion}`)
+    db.pragma(`user_version = ${currentDBVersion}`)
 }
 
 const getTableDelta = (userStrut: PastDBStrut) => {
@@ -25,21 +26,20 @@ const getTableDelta = (userStrut: PastDBStrut) => {
     return [dbUpdate, columnMap]
 }
 
-const createDB = (db: Database) => {
-}
+const createDB = db.transaction( () => {
+    db.prepare(`create table ${dbStructure.images.name}Temp ${dbStructure.images.strut};`).run()
+})
 
-const updateDB = (db: Database, tableDelta: DBDelta, columnMap: {[key: string]: string[]}) => {
-    db.transaction(() => {
-        for (const [key, table] of Object.entries(tableDelta)) {
-            db.prepare(`create table ${table.name}Temp ${table.strut};`).run()
-            db.prepare(
-                `insert into ${table.name}Temp (${columnMap[key].join(", ")}) select * from ${table.name}`
-            ).run()
-            db.prepare(`drop table if exists ${table.name}`).run()
-            db.prepare(`alter table ${table.name}Temp rename to ${table.name};`).run()
-        }
-    })()
-}
+const updateDB = db.transaction((tableDelta: DBDelta, columnMap: {[key: string]: string[]}) => {
+    for (const [key, table] of Object.entries(tableDelta)) {
+        db.prepare(`create table ${table.name}Temp ${table.strut};`).run()
+        db.prepare(
+            `insert into ${table.name}Temp (${columnMap[key].join(", ")}) select * from ${table.name}`
+        ).run()
+        db.prepare(`drop table if exists ${table.name}`).run()
+        db.prepare(`alter table ${table.name}Temp rename to ${table.name};`).run()
+    }
+})
 
 export interface DBDelta {
     [key: string]: {
