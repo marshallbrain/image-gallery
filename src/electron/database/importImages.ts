@@ -9,16 +9,14 @@ import {app} from "electron";
 
 export const importImages = (files: ImageFile[], mappers: Mapper[]) => {
     if (files.length == 0) return
-    const newImagePaths: {from: string, to: string}[] = []
-    insertMetadata(files, mappers, newImagePaths)
-    console.log(newImagePaths)
+    const newImagePaths = insertMetadata(files, mappers)
+    for (const file of newImagePaths) {
+        fs.copyFile(file.from, file.to, () => {})
+    }
 }
 
-const insertMetadata = db.transaction((
-    files: ImageFile[],
-    mappers: Mapper[],
-    newImagePaths: {from: string, to: string}[]
-) => {
+const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) => {
+    const newImagePaths: {from: string, to: string}[] = []
     const cols = Object.values(columns.images).slice(1)
     const insert = db.prepare(
         `insert into images (${cols.join(", ")}) values (${cols.map(() => "?").join(", ")})`
@@ -46,14 +44,14 @@ const insertMetadata = db.transaction((
         })
 
         const imageId = insert.run(data).lastInsertRowid
-        console.log(imageId)
         const newFile = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/${imageId}${filePath.ext}`)
         newImagePaths.push({from: file.path, to: newFile})
     }
+    return newImagePaths
 })
 
 const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
-    if (jsonData == undefined) for (const mapper of mappers) {
+    if (jsonData != undefined) for (const mapper of mappers) {
         let matches = true
         for (const filter of mapper.filters) {
             matches = matches && dotProp.get(jsonData, filter.path) === filter.value
