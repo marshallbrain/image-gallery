@@ -1,4 +1,4 @@
-import {getEntry, getEntryAsyncRequest, getEntryAsyncResponse, setEntry} from "@electron/ipcCommands";
+import {getEntry, getEntryAsyncRequest, getEntryAsyncResponse, setEntry} from "@utils/ipcCommands";
 
 export const savedStorePreload = (ipcRenderer) => {
     return {

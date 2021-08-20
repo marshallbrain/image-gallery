@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {importImagesChannel, reimportImagesChannel} from "@electron/ipcCommands";
+import {channels} from "@utils/ipcCommands";
 
 function ImportImages(props: PropTypes) {
     
@@ -112,7 +112,7 @@ function ImportImages(props: PropTypes) {
         setFiles(files)
     }
     const importImages = () => {
-        window.api.send((reimport)? reimportImagesChannel: importImagesChannel, files, mappers)
+        window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
         close()
     }
     

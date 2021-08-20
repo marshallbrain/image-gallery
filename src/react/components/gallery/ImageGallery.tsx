@@ -1,20 +1,20 @@
 import React, {useEffect} from 'react';
 import {Paper} from "@material-ui/core";
-import {importImagesCompleteChannel} from "@electron/ipcCommands";
 import Integer from "Integer";
 import {sqlImageSearch} from "@utils/sqlQueries";
+import {channels} from "@utils/ipcCommands";
 
 function ImageGallery() {
 
     const [images, setImages] = React.useState<{image_id: Integer.IntLike, title: string}[]>([])
 
     useEffect(() => {
-        window.api.receive(importImagesCompleteChannel, () => {
+        window.api.receive(channels.importImagesComplete, () => {
             getImages()
         })
         getImages()
         return function cleanup() {
-            window.api.removeAll(importImagesCompleteChannel)
+            window.api.removeAll(channels.importImagesComplete)
         };
     }, [])
 

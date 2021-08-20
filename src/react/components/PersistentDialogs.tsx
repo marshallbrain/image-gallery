@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import ImportImages from "./dialogs/import_images/ImportImages";
-import {openImportDialogChannel, openReimportDialogChannel} from "@electron/ipcCommands";
+import {channels} from "@utils/ipcCommands";
 
 function PersistentDialogs() {
     
@@ -22,11 +22,11 @@ function PersistentDialogs() {
     };
     
     useEffect(() => {
-        window.api.receive(openImportDialogChannel, handleOpen("importImages"))
-        window.api.receive(openReimportDialogChannel, handleOpen("reimportImages"))
+        window.api.receive(channels.openImportDialog, handleOpen("importImages"))
+        window.api.receive(channels.openReimportDialog, handleOpen("reimportImages"))
         return function cleanup() {
-            window.api.removeAll(openImportDialogChannel)
-            window.api.removeAll(openReimportDialogChannel)
+            window.api.removeAll(channels.openImportDialog)
+            window.api.removeAll(channels.openReimportDialog)
         };
     }, [])
     

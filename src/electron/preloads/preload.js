@@ -2,10 +2,10 @@ require("@babel/register");
 
 const fs = require("fs");
 const {contextBridge, ipcRenderer} = require("electron");
-const {logChannel, ipcChannels} = require("../ipcCommands");
 const {savedStorePreload} = require("./preloadSavedStore");
 const {systemPreload} = require("./preloadSystem");
 const {databasePreload} = require("./preloadDatabase");
+const {ipcChannels, logChannel} = require("../../utils/ipcCommands");
 
 // Expose protected methods that allow the renderer process to use
 // the ipcRenderer without exposing the entire object

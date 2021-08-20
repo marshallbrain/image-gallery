@@ -17,18 +17,13 @@ export const logFeedChannel = `${system}logFeed`
 
 export const sqlSelectChannel = `${namespaceSql}select`
 
-export const openImportDialogChannel = "openImportDialog"
-export const importImagesChannel = "importImages"
-export const importImagesCompleteChannel = "importImagesComplete"
-export const openReimportDialogChannel = "openReimportDialog"
-export const reimportImagesChannel = "reimportImages"
-export const reimportImagesCompleteChannel = "reimportImagesComplete"
+export const channels = {
+    openImportDialog: "openImportDialog",
+    importImages: "importImages",
+    importImagesComplete: "importImagesComplete",
+    openReimportDialog: "openReimportDialog",
+    reimportImages: "reimportImages",
+    reimportImagesComplete: "reimportImagesComplete"
+}
 
-export const ipcChannels = new Set([
-    openImportDialogChannel,
-    importImagesChannel,
-    importImagesCompleteChannel,
-    openReimportDialogChannel,
-    reimportImagesChannel,
-    reimportImagesCompleteChannel
-])
+export const ipcChannels = new Set(Object.values(channels))

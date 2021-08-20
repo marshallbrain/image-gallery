@@ -1,7 +1,7 @@
 import sqlite3, {Database} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
-import {sqlSelectChannel} from "@electron/ipcCommands";
+import {sqlSelectChannel} from "@utils/ipcCommands";
 
 export const db: Database = new sqlite3(pathModule.join(app.getAppPath(), "../dev-resources/database.db"), { verbose: console.log })
 
