@@ -23,7 +23,7 @@ function PersistentDialogs() {
         return function cleanup() {
             window.api.removeAll(openImportDialogChannel)
         };
-    })
+    }, [])
     
     return (
         <React.Fragment>
