@@ -4,7 +4,7 @@ import {openImportDialogChannel} from "@electron/ipcCommands";
 
 function PersistentDialogs() {
     
-    const [importImages, setImportImages] = React.useState(true);
+    const [importImages, setImportImages] = React.useState(false);
     
     const handleOpen = (name: string) => () => {
         switch (name) {

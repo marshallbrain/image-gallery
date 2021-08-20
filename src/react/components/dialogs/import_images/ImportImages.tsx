@@ -76,7 +76,7 @@ function ImportImages(props: PropTypes) {
             setData({
                 name: "",
                 filters: [{"path": "", "value": ""}],
-                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+                transforms: [{"prop": "", "metadata": ""}],
             })
         }
         
@@ -88,7 +88,7 @@ function ImportImages(props: PropTypes) {
             setData({
                 name: "",
                 filters: [{"path": "", "value": ""}],
-                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+                transforms: [{"prop": "", "metadata": ""}],
             })
         } else {
             setData(mappers[index])
@@ -231,21 +231,17 @@ export interface Filter {
 }
 export interface Transform {
     prop: string
-    metadata: Metadata
-}
-export enum Metadata {
-    Empty = "",
-    Title = "Title",
-    Tags = "Tags",
-    Author = "Author",
-    Site = "Site",
-    Source = "Source"
+    metadata: string
 }
 
 const defaultMap: Mapper = {
     name: "",
     filters: [{"path": "", "value": ""}],
-    transforms: [{"prop": "", "metadata": Metadata.Empty}],
+    transforms: [{"prop": "", "metadata": ""}],
 }
+
+export const metadataColumns: string[] = [
+    "Name"
+]
 
 export default ImportImages;

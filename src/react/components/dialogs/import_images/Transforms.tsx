@@ -15,22 +15,22 @@ import {
 import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
 import React from "react";
-import {Metadata, Transform} from "./ImportImages";
+import {metadataColumns, Transform} from "./ImportImages";
 
 export function Transforms(props: PropTypes) {
 
     const {transforms, setTransforms} = props
 
-    const updateTransforms = (index: number, type: "prop" | "metadata", value: Metadata | string) => {
+    const updateTransforms = (index: number, type: "prop" | "metadata", value: string) => {
         if (type === "prop") {
             transforms[index].prop = value
         } else {
-            transforms[index].metadata = value as Metadata
+            transforms[index].metadata = value
         }
         setTransforms([...transforms])
     }
     const addTransforms = () => {
-        transforms.push({"prop": "", "metadata": Metadata.Empty})
+        transforms.push({"prop": "", "metadata": ""})
         setTransforms([...transforms])
     }
     const removeTransforms = (index: number) => {
@@ -71,8 +71,7 @@ export function Transforms(props: PropTypes) {
                                             updateTransforms(index, "metadata", event.target.value)
                                         }}
                                     >
-                                        {Object.values(Metadata)
-                                            .filter((value) => value != Metadata.Empty)
+                                        {Object.values(metadataColumns)
                                             .map(value => {
                                                 return (
                                                     <MenuItem value={value} key={value}>
