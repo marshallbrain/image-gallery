@@ -15,7 +15,7 @@ export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
 export const logChannel = `${system}log`
 export const logFeedChannel = `${system}logFeed`
 
-export const sqlGetChannel = `${namespaceSql}get`
+export const sqlSelectChannel = `${namespaceSql}select`
 
 export const openImportDialogChannel = "openImportDialog"
 export const importImagesChannel = "importImages"

@@ -1,9 +1,8 @@
 import sqlite3, {Database} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
-import {sqlGetChannel} from "@electron/ipcCommands";
+import {sqlSelectChannel} from "@electron/ipcCommands";
 
-export const currentDBVersion = 2
 export const db: Database = new sqlite3(pathModule.join(app.getAppPath(), "../dev-resources/database.db"), { verbose: console.log })
 
 export default () => {
@@ -16,11 +15,8 @@ export default () => {
 }
 
 const createChannelListeners = () => {
-    ipcMain.on(sqlGetChannel, (event, {channel}) => {
-        const response = db.prepare("" +
-            "select image_id, title " +
-            "from images"
-        ).all()
+    ipcMain.on(sqlSelectChannel, (event, {channel, query}) => {
+        const response = db.prepare(query).all()
         event.reply(channel, response)
     })
 }
