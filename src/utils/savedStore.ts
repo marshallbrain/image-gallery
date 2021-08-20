@@ -98,14 +98,14 @@ export default {
             if (!options.fileCache) {
                 fileData = readFile()
             }
-            event.returnValue = dotProp.get(fileData, args)
+            event.returnValue = dotProp.get(fileData, args, {})
         })
 
         ipcMain.on(getEntryAsyncResponse, (event, args) => {
             if (!options.fileCache) {
                 fileData = readFile()
             }
-            event.reply(getEntryAsyncResponse + args, dotProp.get(fileData, args))
+            event.reply(getEntryAsyncResponse + args, dotProp.get(fileData, args, {}))
         })
 
         ipcMain.on(setEntry, (event, key, value) => {
