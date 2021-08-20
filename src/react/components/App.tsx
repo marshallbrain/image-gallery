@@ -1,13 +1,13 @@
 import React from 'react';
 import PersistentDialogs from "./PersistentDialogs";
-import Home from "./Home";
+import ImageGallery from "@components/gallery/ImageGallery";
 
 function App() {
     
     return (
         <React.Fragment>
             <PersistentDialogs />
-            <Home />
+            <ImageGallery />
         </React.Fragment>
     );
 }

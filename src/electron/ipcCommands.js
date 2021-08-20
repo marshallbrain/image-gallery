@@ -1,8 +1,6 @@
 export const namespaceStore = "store-"
+export const namespaceSql = "sql-"
 export const system = "system-"
-
-export const openImportDialogChannel = "openImportDialog"
-export const importImagesChannel = "importImages"
 
 export const getEntry = `${namespaceStore}get-sync`
 export const getEntryAsyncRequest = `${namespaceStore}get-req-`
@@ -16,6 +14,12 @@ export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
 
 export const logChannel = `${system}log`
 export const logFeedChannel = `${system}logFeed`
+
+export const sqlGetChannel = `${namespaceSql}get`
+
+export const openImportDialogChannel = "openImportDialog"
+export const importImagesChannel = "importImages"
+export const importImagesCompleteChannel = "importImagesCompleteChannel"
 
 export const ipcChannels = new Set([
     openImportDialogChannel,
