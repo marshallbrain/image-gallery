@@ -6,7 +6,7 @@ import path from 'path';
 import initialize from "./electron/initialize";
 import savedStore from "./utils/savedStore";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
-import pathModule from "path";
+import registerFileProtocols from "@electron/registerFileProtocols";
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
@@ -93,12 +93,7 @@ protocol.registerSchemesAsPrivileged([{
 
 app.whenReady().then(() => {
     initialize(windowSetup)
-
-    protocol.registerFileProtocol('preview', (request, callback) => {
-        const path = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/`)
-        const pathname = decodeURI(request.url.replace('preview://', path) + ".jpg");
-        callback(pathname);
-    });
+    registerFileProtocols()
 })
 
 app.on("window-all-closed", () => {
