@@ -51,7 +51,7 @@ const readFile = () => {
             fs.writeFileSync(file, data)
             data = options.defaultData
         } else {
-
+            console.log(e.message)
         }
     }
     return data
