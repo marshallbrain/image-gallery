@@ -1,6 +1,6 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 3
+const currentDBVersion = 4
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -19,27 +19,32 @@ const createDB = db.transaction( () => {
 })
 
 const update = (version: number) => {
-    if (version == 2) {
+    if (version == 3) {
         transferTable(
             "images",
             "(" +
             "image_id integer primary key," +
             "title text," +
             "author text," +
+            "extension text," +
             "original_metadata text" +
             ")",
-            "title, original_metadata",
-            "title, original_metadata")
-        version = 3
+            "image_id, title, author, original_metadata",
+            "*")
+        version = 4
     }
     db.pragma(`user_version = ${currentDBVersion}`)
 }
 
 const transferTable = (name: string, strut: string, transformFrom: string, transformTo: string) => {
-    db.prepare(`create table ${name}Temp ${strut};`).run()
-    db.prepare(`insert into ${name}Temp (${transformFrom}) select ${transformTo} from ${name}`).run()
-    db.prepare(`drop table if exists ${name}`).run()
-    db.prepare(`alter table ${name}Temp rename to ${name};`).run()
+    try {
+        db.prepare(`create table ${name}Temp ${strut};`).run()
+        db.prepare(`insert into ${name}Temp (${transformFrom}) select ${transformTo} from ${name}`).run()
+        db.prepare(`drop table if exists ${name}`).run()
+        db.prepare(`alter table ${name}Temp rename to ${name};`).run()
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 // export default () => {
