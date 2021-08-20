@@ -6,7 +6,7 @@ import path from "path";
 import pathModule from "path";
 import {app} from "electron";
 
-export const importImages = (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
+export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
     const newImagePaths = insertMetadata(files, mappers)
     const counter = imageCounter(newImagePaths.length, callback)
@@ -27,6 +27,8 @@ const imageCounter = (count: number, callback: () => void) => {
 
 const columns: string[] = [
     "name",
+    "author",
+    "extension",
     "original_metadata"
 ]
 
@@ -52,7 +54,8 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
 
         const maps = getInsertMapper(mappers, jsonData)
         const data: string[] = columns.map(value => {
-            if (value === "original_metadata") return (jsonData)? JSON.stringify(jsonData): "{}"
+            const data = ColumnAutofill(value, jsonData)
+            if (data != null) return data
             if (jsonData === undefined) return (value === "title")? filePath.name: "null"
             return jsonData[maps[value]] || "null"
         })
@@ -75,4 +78,11 @@ const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
         }
     }
     return {}
+}
+
+const ColumnAutofill = (value: string, jsonData: string) => {
+    switch (value) {
+        case "original_metadata": return (jsonData)? JSON.stringify(jsonData): "{}"
+        default: return ""
+    }
 }

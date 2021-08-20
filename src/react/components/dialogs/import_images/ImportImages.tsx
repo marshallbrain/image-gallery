@@ -18,11 +18,11 @@ import {
 } from "@material-ui/core";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {importImagesChannel} from "@electron/ipcCommands";
+import {importImagesChannel, reimportImagesChannel} from "@electron/ipcCommands";
 
 function ImportImages(props: PropTypes) {
     
-    const {open, close} = props
+    const {open, close, reimport} = props
     
     const [openDelete, setOpenDelete] = React.useState(false)
     const [mappers, setMappers] = React.useState<Mapper[]>([])
@@ -112,7 +112,7 @@ function ImportImages(props: PropTypes) {
         setFiles(files)
     }
     const importImages = () => {
-        window.api.send(importImagesChannel, files, mappers)
+        window.api.send((reimport)? reimportImagesChannel: importImagesChannel, files, mappers)
         close()
     }
     
@@ -122,8 +122,6 @@ function ImportImages(props: PropTypes) {
                 Import Images
             </DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                </DialogContentText>
                 <FormControl
                     variant="outlined"
                     fullWidth
@@ -156,6 +154,7 @@ function ImportImages(props: PropTypes) {
                         <Transforms transforms={transforms} setTransforms={setTransforms}/>
                     </Stack>
                 </div>
+                {!reimport &&
                 <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
                     <label htmlFor="contained-button-file">
                         <Input
@@ -169,9 +168,9 @@ function ImportImages(props: PropTypes) {
                         </Button>
                     </label>
                     <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
-                        Images selected: {files ? files.length: 0}
+                        Images selected: {files ? files.length : 0}
                     </Typography>
-                </Stack>
+                </Stack>}
                 <Divider sx={{marginTop: 2, marginBottom: 2}}/>
                 <Button variant="contained" color={"error"} onClick={handleOpenDelete}>
                     Delete Mapping
@@ -213,6 +212,7 @@ const Input = styled('input')({
 interface PropTypes {
     open: boolean
     close: () => void
+    reimport: boolean
 }
 
 export interface ImageFile {

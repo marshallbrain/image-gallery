@@ -1,14 +1,20 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
 import {app, BrowserWindow, ipcMain} from "electron";
-import {importImagesChannel, importImagesCompleteChannel} from "./ipcCommands";
+import {
+    importImagesChannel,
+    importImagesCompleteChannel,
+    reimportImagesChannel,
+    reimportImagesCompleteChannel
+} from "./ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
-import {importImages} from "./database/importImages";
+import importImages from "./database/importImages";
 import database from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
 import pathModule from "path";
+import reimportImages from "@electron/database/reimportImages";
 
 export default (createWindow: WindowSetupFunction) => {
     
@@ -37,6 +43,12 @@ const createChannelListeners = () => {
     ipcMain.on(importImagesChannel, (event, [files, mappers]) => {
         importImages(files, mappers, () => {
             event.reply(importImagesCompleteChannel)
+        })
+    })
+
+    ipcMain.on(reimportImagesChannel, (event, [files, mappers]) => {
+        reimportImages(files, mappers, () => {
+            event.reply(reimportImagesCompleteChannel)
         })
     })
     
