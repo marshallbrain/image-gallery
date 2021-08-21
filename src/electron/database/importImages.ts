@@ -11,7 +11,7 @@ export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => 
     const newImagePaths = insertMetadata(files, mappers)
     const counter = imageCounter(newImagePaths.length, callback)
     for (const file of newImagePaths) {
-        fs.copyFile(file.from, file.to, () => counter)
+        fs.copyFile(file.from, file.to, counter)
     }
 }
 
@@ -26,7 +26,7 @@ const imageCounter = (count: number, callback: () => void) => {
 }
 
 const columns: string[] = [
-    "name",
+    "title",
     "author",
     "extension",
     "original_metadata"
@@ -55,7 +55,7 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         const maps = getInsertMapper(mappers, jsonData)
         const data: string[] = columns.map(value => {
             const data = ColumnAutofill(value, jsonData, filePath)
-            if (data != null) return data
+            if (data != "") return data
             if (jsonData === undefined) return (value === "title")? filePath.name: "null"
             return jsonData[maps[value]] || "null"
         })

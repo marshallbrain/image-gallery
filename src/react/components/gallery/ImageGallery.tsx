@@ -10,11 +10,17 @@ function ImageGallery() {
 
     useEffect(() => {
         window.api.receive(channels.importImagesComplete, () => {
+            console.log("Image import complete")
+            getImages()
+        })
+        window.api.receive(channels.reimportImagesComplete, () => {
+            console.log("Re-image import complete")
             getImages()
         })
         getImages()
         return function cleanup() {
             window.api.removeAll(channels.importImagesComplete)
+            window.api.removeAll(channels.reimportImagesComplete)
         };
     }, [])
 

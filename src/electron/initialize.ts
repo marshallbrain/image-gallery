@@ -41,8 +41,8 @@ const createChannelListeners = () => {
         })
     })
 
-    ipcMain.on(channels.reimportImages, (event, [files, mappers]) => {
-        reimportImages(files, mappers, () => {
+    ipcMain.on(channels.reimportImages, (event, [_files, mappers]) => {
+        reimportImages(mappers, () => {
             event.reply(channels.reimportImagesComplete)
         })
     })
