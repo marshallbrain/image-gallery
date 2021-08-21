@@ -22,10 +22,12 @@ export default () => {
                         }
                     })
                     console.log(oldestFile)
-                } else {
-                    const ext = db.prepare("select extension from images where image_id = ?")
-                        .get(imageId).extension
-                    const imagePath = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/${imageId}.${ext}`)
+                }
+                const image = db.prepare("select extension from images where image_id = ?").get(imageId)
+                if (image) {
+                    const imagePath = pathModule.join(
+                        app.getAppPath(), `../dev-resources/images/raw/${imageId}.${image.extension}`
+                    )
                     sharp(imagePath)
                         .resize(256, 256, {fit: sharp.fit.inside})
                         .toFormat("jpeg")
