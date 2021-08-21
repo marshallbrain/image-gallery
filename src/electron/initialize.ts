@@ -51,14 +51,5 @@ const createChannelListeners = () => {
 
 const setupDir = () => {
     fs.mkdirSync(pathModule.join(app.getAppPath(), `../dev-resources/images/raw`), { recursive: true })
+    fs.mkdirSync(pathModule.join(app.getAppPath(), `../dev-resources/images/temp`), { recursive: true })
 }
-
-
-
-// sharp(pathModule.join(app.getAppPath(), "../dev-resources/Medivh_full.jpg"))
-//     .resize({height: 192})
-//     .jpeg({
-//         quality: 50,
-//         mozjpeg: true
-//     })
-//     .toFile(pathModule.join(app.getAppPath(), "../dev-resources/thumbnail.jpg")).then()

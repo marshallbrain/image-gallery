@@ -45,7 +45,6 @@ function ImportImages(props: PropTypes) {
         const filtersClean = filters.filter(value => value.value != "" && value.path != "")
         const transformsClean = transforms.filter(value => value.prop != "" && value.metadata != "")
         const map: Mapper = {name, filters: filtersClean, transforms: transformsClean}
-        console.log(map)
         if ((mapper == -1 || mappers.length == 0)) {
             mappers.push(map)
         } else if (mappers.length > 0) {
