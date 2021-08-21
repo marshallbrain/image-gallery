@@ -5,13 +5,14 @@ import {db} from "@electron/database/database";
 import path, {ParsedPath} from "path";
 import pathModule from "path";
 import {app} from "electron";
+import sharp from "sharp";
 
 export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
     const newImagePaths = insertMetadata(files, mappers)
     const counter = imageCounter(newImagePaths.length, callback)
     for (const file of newImagePaths) {
-        fs.copyFile(file.from, file.to, counter)
+        sharp(file.from).toFile(file.to, counter)
     }
 }
 
