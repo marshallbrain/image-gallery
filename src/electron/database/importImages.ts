@@ -2,7 +2,7 @@ import {ImageFile, Mapper} from "@components/dialogs/import_images/ImportImages"
 import fs from "fs";
 import dotProp from "dot-prop";
 import {db} from "@electron/database/database";
-import path from "path";
+import path, {ParsedPath} from "path";
 import pathModule from "path";
 import {app} from "electron";
 
@@ -54,7 +54,7 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
 
         const maps = getInsertMapper(mappers, jsonData)
         const data: string[] = columns.map(value => {
-            const data = ColumnAutofill(value, jsonData)
+            const data = ColumnAutofill(value, jsonData, filePath)
             if (data != null) return data
             if (jsonData === undefined) return (value === "title")? filePath.name: "null"
             return jsonData[maps[value]] || "null"
@@ -80,9 +80,10 @@ const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
     return {}
 }
 
-const ColumnAutofill = (value: string, jsonData: string) => {
+const ColumnAutofill = (value: string, jsonData: string, file: ParsedPath) => {
     switch (value) {
         case "original_metadata": return (jsonData)? JSON.stringify(jsonData): "{}"
+        case "extension": return file.ext.substr(1)
         default: return ""
     }
 }

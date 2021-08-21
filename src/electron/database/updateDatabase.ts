@@ -14,12 +14,13 @@ const createDB = db.transaction( () => {
         "image_id integer primary key," +
         "title text," +
         "author text," +
+        "extension text," +
         "original_metadata text" +
         ");").run()
 })
 
 const update = (version: number) => {
-    if (version == 3) {
+    if (version == currentDBVersion-1) {
         transferTable(
             "images",
             "(" +
@@ -30,21 +31,21 @@ const update = (version: number) => {
             "original_metadata text" +
             ")",
             "image_id, title, author, original_metadata",
-            "*")
-        version = 4
+            "*"
+        )
+        version = currentDBVersion
     }
     db.pragma(`user_version = ${currentDBVersion}`)
 }
 
-const transferTable = (name: string, strut: string, transformFrom: string, transformTo: string) => {
-    try {
+const transferTable = (name: string, strut: string, transformFrom: string, transformTo: string, script?: () => void) => {
+    db.transaction(() => {
+        if (script) script()
         db.prepare(`create table ${name}Temp ${strut};`).run()
         db.prepare(`insert into ${name}Temp (${transformFrom}) select ${transformTo} from ${name}`).run()
         db.prepare(`drop table if exists ${name}`).run()
         db.prepare(`alter table ${name}Temp rename to ${name};`).run()
-    } catch (e) {
-        console.log(e)
-    }
+    })()
 }
 
 // export default () => {
