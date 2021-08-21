@@ -22,7 +22,7 @@ function Root() {
     const [themeOptions, setThemeOptions] = React.useState<Theme>(
         {
             palette: {
-                mode: 'light',
+                mode: 'dark',
             }
         }
     )
