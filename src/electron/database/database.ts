@@ -3,7 +3,7 @@ import pathModule from "path";
 import {app, ipcMain} from "electron";
 import {sqlSelectChannel} from "@utils/ipcCommands";
 
-export const db: Database = new sqlite3(pathModule.join(app.getAppPath(), "../dev-resources/database.db"), { verbose: console.log })
+export const db: Database = new sqlite3(pathModule.join(app.getPath("userData"), "/database.db"), { verbose: console.log })
 
 export default () => {
     app.on("window-all-closed", () => {

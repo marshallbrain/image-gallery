@@ -7,11 +7,20 @@ import initialize from "./electron/initialize";
 import savedStore from "./utils/savedStore";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
 import registerFileProtocols from "@electron/registerFileProtocols";
+import pathModule from "path";
+import fs from "fs";
+import sqlite3, {Database} from "better-sqlite3";
 
 const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
-export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
+export type WindowSetupFunction = (
+    htmlFile: string,
+    menuBuilder: any,
+    x?: number,
+    y?: number,
+    openDevTools?: boolean
+) => Promise<Electron.BrowserWindow>
 const windowSetup = async (
     htmlFile: string,
     menu: any[] ,
@@ -63,15 +72,18 @@ const windowSetup = async (
         
         // Errors are thrown if the dev tools are opened
         // before the DOM is ready
-        createdWindow.webContents.once("dom-ready", async () => {
-            await installExtension(REACT_DEVELOPER_TOOLS)
-                .then((name) => console.log(`Added Extension: ${name}`))
-                .catch((err) => console.log("An error occurred: ", err))
-                .finally(() => {
-                    require("electron-debug")(); // https://github.com/sindresorhus/electron-debug
-                    openDevTools && createdWindow.webContents.openDevTools();
-                });
-        });
+        // createdWindow.webContents.once("dom-ready", async () => {
+        //     await installExtension(REACT_DEVELOPER_TOOLS)
+        //         .then((name) => console.log(`Added Extension: ${name}`))
+        //         .catch((err) => console.log("An error occurred: ", err))
+        //         .finally(() => {
+        //             require("electron-debug")(); // https://github.com/sindresorhus/electron-debug
+        //             openDevTools && createdWindow.webContents.openDevTools();
+        //         });
+        // });
+
+        openDevTools && createdWindow.webContents.openDevTools();
+
     }
     
     
@@ -92,7 +104,15 @@ protocol.registerSchemesAsPrivileged([{
 }]);
 
 app.whenReady().then(() => {
-    initialize(windowSetup)
+    const path = pathModule.join(pathModule.parse(app.getPath("exe")).dir, "/gallery/")
+    app.setPath("userData", path)
+
+    fs.mkdirSync(pathModule.join(app.getPath("userData"), `/images/raw`), { recursive: true })
+    fs.mkdirSync(pathModule.join(app.getPath("userData"), `/images/temp`), { recursive: true })
+
+    const db: Database = new sqlite3(pathModule.join(app.getPath("userData"), "/database.db"))
+
+    // initialize(windowSetup)
     registerFileProtocols()
 })
 

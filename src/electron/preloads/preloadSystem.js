@@ -1,4 +1,4 @@
-import {logFeedChannel} from "@utils/ipcCommands";
+import {logFeedChannel} from "../../utils/ipcCommands";
 
 export const systemPreload = (ipcRenderer) => {
     return {

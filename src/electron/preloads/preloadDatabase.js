@@ -1,4 +1,4 @@
-import {namespaceSql, sqlSelectChannel} from "@utils/ipcCommands";
+import {namespaceSql, sqlSelectChannel} from "../../utils/ipcCommands";
 
 export const databasePreload = (ipcRenderer) => {
     return {

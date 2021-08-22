@@ -26,6 +26,10 @@ module.exports = [
                 "...",
             ]
         },
+        externals: {
+            sharp: 'commonjs sharp',
+            "better-sqlite3" : 'commonjs better-sqlite3',
+        }
     }),
     merge(base, {
         entry: './src/electron/preloads/preload.js',
