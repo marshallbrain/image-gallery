@@ -20,11 +20,23 @@ export default (createWindow: WindowSetupFunction) => {
     setupDir()
     database()
     updateDatabase()
-    
+
     createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)
         createChannelListeners()
-    
+
+        let imageViewerWindow = false
+        ipcMain.on(channels.openImageViewer, (_event, [images, index]) => {
+            if (!imageViewerWindow) {
+                imageViewerWindow = true
+                createWindow("index_viewer.html", MainMenu).then((window: BrowserWindow) => {
+                    window.on("close", () => {
+                        imageViewerWindow = false
+                    })
+                })
+            }
+        })
+
         console.log = (...data) => {
             system.log(...data)
         }
@@ -47,9 +59,4 @@ const createChannelListeners = () => {
         })
     })
     
-}
-
-const setupDir = () => {
-    fs.mkdirSync(pathModule.join(app.getAppPath(), `../dev-resources/images/raw`), { recursive: true })
-    fs.mkdirSync(pathModule.join(app.getAppPath(), `../dev-resources/images/temp`), { recursive: true })
 }

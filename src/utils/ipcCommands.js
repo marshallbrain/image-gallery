@@ -24,6 +24,7 @@ export const channels = {
     openReimportDialog: "openReimportDialog",
     reimportImages: "reimportImages",
     reimportImagesComplete: "reimportImagesComplete"
+    openImageViewer: "openImageViewer",
 }
 
 export const ipcChannels = new Set(Object.values(channels))

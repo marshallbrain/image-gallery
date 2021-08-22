@@ -3,6 +3,7 @@ import {Paper, styled} from "@material-ui/core";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import Integer from "integer";
+import {channels} from "@utils/ipcCommands";
 
 function ImageGrid(props: PropTypes) {
 
@@ -13,11 +14,16 @@ function ImageGrid(props: PropTypes) {
         if (images.length > id) {
             const {image_id, title} = images[id]
             return (
-                <ImageCell style={cell.style}>
+                <ImageCell
+                    style={cell.style}
+                    onClick={() => {
+                        window.api.send(channels.openImageViewer, images, id)
+                    }}
+                >
                     <img
                         key={image_id.toString()}
                         src={`preview://${image_id}`}
-                        alt={"thumbnail"}
+                        alt={title}
                     />
                 </ImageCell>
             )

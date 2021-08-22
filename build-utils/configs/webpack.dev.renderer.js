@@ -15,10 +15,13 @@ module.exports = merge(base, {
     devtool: "source-map",
     mode: 'development',
     target: "web",
-    entry: ["./src/react/index.js"],
+    entry: {
+        index: ["./src/react/index.js"],
+        indexView: ["./src/react/image_viewer/index_viewer.js"]
+    },
     output: {
         publicPath,
-        filename: "dev.render.js"
+        filename: "dev.[name].js"
     },
     module: {
         rules: [
@@ -99,7 +102,13 @@ module.exports = merge(base, {
         new MiniCssExtractPlugin(),
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "../../src/react/index.html"),
-            filename: "index.html"
+            filename: "index.html",
+            chunks: ['index']
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, "../../src/react/image_viewer/index_viewer.html"),
+            filename: "index_viewer.html",
+            chunks: ['indexView']
         }),
         new CspHtmlWebpackPlugin({
             "base-uri": ["'self'"],
