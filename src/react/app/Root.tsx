@@ -49,12 +49,12 @@ function Root() {
     );
     
     return (
-            <ChangeThemeContext.Provider value={colorMode}>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <App/>
-                </ThemeProvider>
-            </ChangeThemeContext.Provider>
+        <ChangeThemeContext.Provider value={colorMode}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App/>
+            </ThemeProvider>
+        </ChangeThemeContext.Provider>
     );
 }
 
