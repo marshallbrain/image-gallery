@@ -45,6 +45,11 @@ export default () => {
             }
         })
     });
+    protocol.registerFileProtocol('image', (request, callback) => {
+        const image = request.url.replace('image://', "")
+        const path = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/${image}`)
+        callback(path)
+    })
 }
 
 // fs.stat("", (_err, stats) => {
