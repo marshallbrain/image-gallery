@@ -12,12 +12,12 @@ import pathModule from "path";
 import reimportImages from "@electron/database/reimportImages";
 
 export default (createWindow: WindowSetupFunction) => {
-    
+
     savedStore.initialize({
         fileCache: false
     })
 
-    setupDir()
+    // setupDir()
     database()
     updateDatabase()
 
@@ -45,11 +45,11 @@ export default (createWindow: WindowSetupFunction) => {
         }
 
     })
-    
+
 }
 
 const createChannelListeners = () => {
-    
+
     ipcMain.on(channels.importImages, (event, [files, mappers]) => {
         importImages(files, mappers, () => {
             event.reply(channels.importImagesComplete)
@@ -61,5 +61,5 @@ const createChannelListeners = () => {
             event.reply(channels.reimportImagesComplete)
         })
     })
-    
+
 }
