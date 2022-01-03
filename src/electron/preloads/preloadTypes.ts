@@ -15,6 +15,9 @@ interface types {
             log: (...data: any[]) => void
         },
     }
+    db: {
+        getImages: () => {}
+    }
     send: (channel: string, ...data: any[]) => void
     receive: (channel: string, func: (...args: any[]) => void) => void
     removeAll: (channel: string) => void

@@ -7,11 +7,22 @@ import path from "path";
 import pathModule from "path";
 import {app} from "electron";
 
-export const importImages = (files: ImageFile[], mappers: Mapper[]) => {
+export const importImages = (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
     const newImagePaths = insertMetadata(files, mappers)
+    const counter = imageCounter(newImagePaths.length, callback)
     for (const file of newImagePaths) {
-        fs.copyFile(file.from, file.to, () => {})
+        fs.copyFile(file.from, file.to, () => counter)
+    }
+}
+
+const imageCounter = (count: number, callback: () => void) => {
+    let currentCount = 0
+    return () => {
+        currentCount++
+        if (currentCount == count) {
+            callback()
+        }
     }
 }
 
