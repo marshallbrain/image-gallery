@@ -10,20 +10,20 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select,
+    Select, SelectChangeEvent,
     Stack,
     styled,
     TextField,
     Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
 import {channels} from "@utils/ipcCommands";
 
 function ImportImages(props: PropTypes) {
-    
+
     const {open, close, reimport} = props
-    
+
     const [openDelete, setOpenDelete] = React.useState(false)
     const [mappers, setMappers] = React.useState<Mapper[]>([])
     const [mapper, setMapper] = React.useState(-1)
@@ -31,7 +31,7 @@ function ImportImages(props: PropTypes) {
     const [filters, setFilters] = React.useState<Filter[]>(defaultMap.filters)
     const [transforms, setTransforms] = React.useState<Transform[]>(defaultMap.transforms)
     const [files, setFiles] = React.useState<ImageFile[]>()
-    
+
     React.useEffect(() => {
         const data = window.api.savedStore.get("json mappings")
         if (data.length > 0) {
@@ -44,22 +44,22 @@ function ImportImages(props: PropTypes) {
         if (name.length == 0) return
         const filtersClean = filters.filter(value => value.value != "" && value.path != "")
         const transformsClean = transforms.filter(value => value.prop != "" && value.metadata != "")
-        const map: Mapper = {name, filters: filtersClean, transforms: transformsClean}
+        const map: Mapper = {name: name.trim(), filters: filtersClean, transforms: transformsClean}
         if ((mapper == -1 || mappers.length == 0)) {
             mappers.push(map)
         } else if (mappers.length > 0) {
             mappers[mapper] = map
         }
-        
+
         const newMaps = mappers.sort((a, b) => a.name.localeCompare(b.name))
         setMapper(newMaps.findIndex((e) => e === map))
-        
+
         setMappers([...newMaps])
         if (mappers.length !== 0) {
             window.api.savedStore.set("json mappings", mappers)
         }
     }, [name, filters, transforms]);
-    
+
     const handleOpenDelete = () => {
         setOpenDelete(true)
     }
@@ -81,10 +81,10 @@ function ImportImages(props: PropTypes) {
                 transforms: [{"prop": "", "metadata": ""}],
             })
         }
-        
+
     }
-    const handleSetMapper = (event: React.ChangeEvent<{value: unknown}>) => {
-        const index = event.target.value as number
+    const handleSetMapper = (event: SelectChangeEvent) => {
+        const index = Number(event.target.value)
         setMapper(index);
         if (index === -1) {
             setData({
@@ -102,7 +102,7 @@ function ImportImages(props: PropTypes) {
         setTransforms(data.transforms)
     }
     const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value.trim());
+        setName(event.target.value);
     }
     const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawFiles = event.target.files as FileList
@@ -117,7 +117,7 @@ function ImportImages(props: PropTypes) {
         window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
         close()
     }
-    
+
     return (
         <Dialog open={open} onClose={close}>
             <DialogTitle>
@@ -132,7 +132,7 @@ function ImportImages(props: PropTypes) {
                     <InputLabel>Mappings</InputLabel>
                     <Select
                         label="Retrievers"
-                        value={mapper}
+                        value={String(mapper)}
                         onChange={handleSetMapper}
                     >
                         {mappers.map((entry, index) => (

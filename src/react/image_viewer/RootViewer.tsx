@@ -1,5 +1,5 @@
 import React from 'react';
-import {createTheme, CssBaseline, ThemeOptions} from "@material-ui/core";
+import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 import {ThemeProvider} from "@emotion/react";
 import AppViewer from "./AppViewer";
 

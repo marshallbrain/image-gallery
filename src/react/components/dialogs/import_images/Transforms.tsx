@@ -11,9 +11,9 @@ import {
     Stack,
     TextField,
     Typography
-} from "@material-ui/core";
-import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
-import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
+} from "@mui/material";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import React from "react";
 import {metadataColumns, Transform} from "./ImportImages";
 
