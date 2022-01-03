@@ -1,12 +1,11 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 4
+const currentDBVersion = 1
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
     if (userVersion == currentDBVersion) return
     if (userVersion == 0) createDB()
-    else update(userVersion)
 }
 
 const createDB = db.transaction( () => {
@@ -17,36 +16,37 @@ const createDB = db.transaction( () => {
         "extension text," +
         "original_metadata text" +
         ");").run()
+    db.pragma(`user_version = ${currentDBVersion}`)
 })
 
-const update = (version: number) => {
-    if (version == currentDBVersion-1) {
-        transferTable(
-            "images",
-            "(" +
-            "image_id integer primary key," +
-            "title text," +
-            "author text," +
-            "extension text," +
-            "original_metadata text" +
-            ")",
-            "image_id, title, author, original_metadata",
-            "*"
-        )
-        version = currentDBVersion
-    }
-    db.pragma(`user_version = ${currentDBVersion}`)
-}
-
-const transferTable = (name: string, strut: string, transformFrom: string, transformTo: string, script?: () => void) => {
-    db.transaction(() => {
-        if (script) script()
-        db.prepare(`create table ${name}Temp ${strut};`).run()
-        db.prepare(`insert into ${name}Temp (${transformFrom}) select ${transformTo} from ${name}`).run()
-        db.prepare(`drop table if exists ${name}`).run()
-        db.prepare(`alter table ${name}Temp rename to ${name};`).run()
-    })()
-}
+// const update = (version: number) => {
+//     if (version == currentDBVersion-1) {
+//         transferTable(
+//             "images",
+//             "(" +
+//             "image_id integer primary key," +
+//             "title text," +
+//             "author text," +
+//             "extension text," +
+//             "original_metadata text" +
+//             ")",
+//             "image_id, title, author, original_metadata",
+//             "*"
+//         )
+//         version = currentDBVersion
+//     }
+//     db.pragma(`user_version = ${currentDBVersion}`)
+// }
+//
+// const transferTable = (name: string, strut: string, transformFrom: string, transformTo: string, script?: () => void) => {
+//     db.transaction(() => {
+//         if (script) script()
+//         db.prepare(`create table ${name}Temp ${strut};`).run()
+//         db.prepare(`insert into ${name}Temp (${transformFrom}) select ${transformTo} from ${name}`).run()
+//         db.prepare(`drop table if exists ${name}`).run()
+//         db.prepare(`alter table ${name}Temp rename to ${name};`).run()
+//     })()
+// }
 
 // export default () => {
 //     const userVersion = db.pragma("user_version", {simple: true}) as number

@@ -1,8 +1,7 @@
 import React from 'react';
-import {Paper, styled} from "@material-ui/core";
+import {Paper, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
-import Integer from "integer";
 import {channels} from "@utils/ipcCommands";
 
 function ImageGrid(props: PropTypes) {
@@ -65,7 +64,7 @@ const ImageCell = styled("div")({
 })
 
 interface PropTypes {
-    images: { image_id: Integer.IntLike, title: string }[]
+    images: { image_id: Number, title: string }[]
 }
 
 export default ImageGrid;

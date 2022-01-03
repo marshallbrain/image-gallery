@@ -9,7 +9,7 @@ const { spawn } = require("child_process")
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const port = process.env.PORT || 3000;
-const publicPath = `http://localhost:${port}/dist/`;
+const publicPath = `/dist/`;
 
 module.exports = merge(base, {
     devtool: "source-map",
@@ -20,7 +20,7 @@ module.exports = merge(base, {
         indexView: ["./src/react/image_viewer/index_viewer.js"]
     },
     output: {
-        publicPath,
+        publicPath: `http://localhost:${port}${publicPath}`,
         filename: "dev.[name].js"
     },
     module: {
@@ -61,21 +61,19 @@ module.exports = merge(base, {
         ]
     },
     devServer: {
-        port,
-        publicPath,
+        host: "localhost",
+        port: port,
         compress: true,
-        noInfo: false,
-        stats: 'errors-only',
-        lazy: false,
         hot: true,
         headers: {'Access-Control-Allow-Origin': '*'},
-        contentBase: path.join(__dirname, 'dist'),
-        watchOptions: {
-            aggregateTimeout: 300,
-            ignored: /node_modules/,
-            poll: 100,
+        allowedHosts: 'auto',
+        static: {
+            directory: path.join(__dirname, 'dist'),
+            watch: {
+                ignored: /node_modules/,
+            }
         },
-        before() {
+        onBeforeSetupMiddleware() {
             console.log('Starting Main Process...');
             spawn('npm', ['run', 'dev:main'], {
                 shell: true,

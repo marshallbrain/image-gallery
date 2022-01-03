@@ -1,14 +1,13 @@
 import React, {useEffect} from 'react';
-import Integer from "Integer";
 import {sqlImageSearch} from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
-import {Grid} from "@material-ui/core";
+import {Grid} from "@mui/material";
 
 function ImageGallery() {
 
-    const [images, setImages] = React.useState<{ image_id: Integer.IntLike, title: string }[]>([])
+    const [images, setImages] = React.useState<{ image_id: Number, title: string }[]>([])
 
     useEffect(() => {
         window.api.receive(channels.importImagesComplete, () => {
