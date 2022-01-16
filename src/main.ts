@@ -1,13 +1,13 @@
 import 'regenerator-runtime/runtime';
+import initialize from "./electron/initialize";
 import {app, protocol, BrowserWindow, ipcMain, Menu} from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
-import initialize from "./electron/initialize";
 import savedStore from "./utils/savedStore";
 import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
 import registerFileProtocols from "@electron/registerFileProtocols";
+import {isDev} from "@utils/utilities";
 
-const isDev = process.env.NODE_ENV === "development";
 const selfHost = `http://localhost:${3000}`
 
 export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>

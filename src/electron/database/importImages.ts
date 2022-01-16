@@ -6,6 +6,7 @@ import path, {ParsedPath} from "path";
 import pathModule from "path";
 import {app} from "electron";
 import sharp from "sharp";
+import {appData, appDataDir} from "@utils/utilities";
 
 export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
@@ -15,6 +16,8 @@ export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => 
         sharp(file.from).toFile(file.to, counter)
     }
 }
+
+const rawImageLocation = appDataDir("images", "raw")
 
 const imageCounter = (count: number, callback: () => void) => {
     let currentCount = 0
@@ -43,7 +46,7 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         const getJson = () => {
             try {
                 return JSON.parse(fs.readFileSync(file.path + ".json", 'utf8'))
-            } catch (e) {
+            } catch (e: any) {
                 if (e.code === "ENOENT") {
                     return undefined
                 } else {
@@ -62,7 +65,7 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         })
 
         const imageId = insert.run(data).lastInsertRowid
-        const newFile = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/${imageId}${filePath.ext}`)
+        const newFile = pathModule.join(rawImageLocation, imageId.toString() + filePath.ext)
         newImagePaths.push({from: file.path, to: newFile})
     }
     return newImagePaths

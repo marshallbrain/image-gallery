@@ -2,7 +2,7 @@ import {app, IpcMain} from "electron"
 import dotProp from "dot-prop";
 import fs from "fs";
 import pathModule from "path";
-import {isDev} from "./utilities";
+import {appData, isDev} from "./utilities";
 import {getEntry, getEntryAsyncResponse, setEntry} from "@utils/ipcCommands";
 
 export interface UserOptions {
@@ -34,7 +34,7 @@ const defaultOptions: Options = {
 };
 
 let initialized = false
-let options: Options
+let options = defaultOptions
 let fileData = {}
 let file: string
 
@@ -42,13 +42,13 @@ const readFile = () => {
     let data = {}
     try {
         data = JSON.parse(fs.readFileSync(file, 'utf8'))
-    } catch (e) {
+    } catch (e: any) {
         if (e.code === "ENOENT") {
             data = options.defaultData
 
-            data = JSON.stringify(data)
+            let data_string = JSON.stringify(data)
 
-            fs.writeFileSync(file, data)
+            fs.writeFileSync(file, data_string)
             data = options.defaultData
         } else {
             console.log(e.message)
@@ -58,14 +58,27 @@ const readFile = () => {
 }
 const writeFile = () => {
     try {
-        let data = fileData
-
-        data = JSON.stringify(data, null, 4)
-        fs.writeFile(file, data, () => {
+        let data_string = JSON.stringify(fileData, null, 4)
+        fs.writeFile(file, data_string, () => {
         })
     } catch (e) {
         console.log(e)
     }
+}
+
+const get = (key: string): string => {
+    if (!options.fileCache) {
+        fileData = readFile()
+    }
+    return <string>dotProp.get(fileData, key, {})
+}
+
+const set = (key: string, value: string) => {
+    if (!options.fileCache) {
+        fileData = readFile()
+    }
+    fileData = dotProp.set(fileData, key, value)
+    writeFile()
 }
 
 export default {
@@ -76,44 +89,45 @@ export default {
         }
         initialized = true
         options = {...defaultOptions, ...userOptions}
+        if (!options.extension.startsWith(".")) {
+            options.extension = "." + options.extension
+        }
 
         const getPath = () => {
-            if (isDev) {
-                return pathModule.join(app.getAppPath(), `../dev-resources`)
-            }
             if (options.path) {
                 return options.path
             }
-            return app.getPath("appData")
+            return
         }
 
-        file = pathModule.join(getPath(), `${options.filename}${options.extension}`)
+        file = appData(options.filename + options.extension)
         console.log(file)
         fileData = readFile()
 
     },
+    values: {
+        get(key: string) {
+            get(key)
+        },
+        set(value: string, key: string) {
+            set(value, key)
+        }
+    },
     mainBinding(ipcMain: IpcMain) {
 
         ipcMain.on(getEntry, (event, args) => {
-            if (!options.fileCache) {
-                fileData = readFile()
-            }
-            event.returnValue = dotProp.get(fileData, args, {})
+            event.returnValue = get(args)
         })
 
         ipcMain.on(getEntryAsyncResponse, (event, args) => {
             if (!options.fileCache) {
                 fileData = readFile()
             }
-            event.reply(getEntryAsyncResponse + args, dotProp.get(fileData, args, {}))
+            event.reply(getEntryAsyncResponse + args, get(args))
         })
 
         ipcMain.on(setEntry, (event, key, value) => {
-            if (!options.fileCache) {
-                fileData = readFile()
-            }
-            fileData = dotProp.set(fileData, key, value)
-            writeFile()
+            set(key, value)
             event.returnValue = "done"
         })
 

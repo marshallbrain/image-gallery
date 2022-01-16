@@ -10,6 +10,7 @@ import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
 import pathModule from "path";
 import reimportImages from "@electron/database/reimportImages";
+import {isDev} from "@utils/utilities";
 
 export default (createWindow: WindowSetupFunction) => {
 
@@ -17,7 +18,6 @@ export default (createWindow: WindowSetupFunction) => {
         fileCache: false
     })
 
-    // setupDir()
     database()
     updateDatabase()
 

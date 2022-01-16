@@ -2,8 +2,9 @@ import sqlite3, {Database} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
 import {sqlSelectChannel} from "@utils/ipcCommands";
+import {appData} from "@utils/utilities";
 
-export const db: Database = new sqlite3(pathModule.join(app.getAppPath(), "../dev-resources/database.db"), { verbose: console.log })
+export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
 
 export default () => {
     app.on("window-all-closed", () => {
