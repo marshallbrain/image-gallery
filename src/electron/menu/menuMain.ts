@@ -6,7 +6,11 @@ export default [
         label: "File",
         submenu: [
             {
-                label: "Import",
+                label: "Import Images",
+                click: handleMenuItemClick
+            },
+            {
+                label: "Reimport Images",
                 click: handleMenuItemClick
             },
             {

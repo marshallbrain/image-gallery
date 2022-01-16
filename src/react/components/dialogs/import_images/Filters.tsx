@@ -7,16 +7,16 @@ import {
     Stack,
     TextField,
     Typography
-} from "@material-ui/core";
-import KeyboardArrowDownRoundedIcon from "@material-ui/icons/KeyboardArrowDownRounded";
-import CloseRoundedIcon from "@material-ui/icons/CloseRounded";
+} from "@mui/material";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import React from "react";
 import {Filter} from "./ImportImages";
 
 export function Filters(props: PropTypes) {
-    
+
     const {filters, setFilters} = props
-    
+
     const updateFilters = (index: number, type: "path" | "value", value: string) => {
         filters[index][type] = value
         setFilters([...filters])
@@ -29,7 +29,7 @@ export function Filters(props: PropTypes) {
         filters.splice(index, 1)
         setFilters([...filters])
     }
-    
+
     return (
         <Accordion>
             <AccordionSummary expandIcon={<KeyboardArrowDownRoundedIcon/>}>

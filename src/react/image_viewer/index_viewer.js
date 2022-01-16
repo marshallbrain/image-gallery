@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import Root from "@app/Root";
+import RootViewer from "./RootViewer";
 
 ReactDOM.render(
-    <Root/>,
+    <RootViewer />,
     document.getElementById("target")
 );

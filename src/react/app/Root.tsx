@@ -1,12 +1,12 @@
 import React from "react";
 import {ThemeProvider} from "@emotion/react";
-import {createTheme, CssBaseline, ThemeOptions} from "@material-ui/core";
 import App from "@components/App";
 import "./root.css"
 import preloadTypes from "@electron/preloads/preloadTypes";
+import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 
 declare global {
-    interface Window { api: preloadTypes; }
+    interface Window { api: preloadTypes }
 }
 
 export const ChangeThemeContext = React.createContext({
@@ -18,15 +18,15 @@ window.api.system.registerListener.log((...data: any[]) => {
 })
 
 function Root() {
-    
+
     const [themeOptions, setThemeOptions] = React.useState<Theme>(
         {
             palette: {
-                mode: 'light',
+                mode: 'dark',
             }
         }
     )
-    
+
     const colorMode = React.useMemo(
         () => ({
             toggleColorMode: () => {
@@ -40,21 +40,21 @@ function Root() {
         }),
         [],
     );
-    
+
     const theme = React.useMemo(
         () => {
             return createTheme(themeOptions as ThemeOptions)
         },
         [themeOptions],
     );
-    
+
     return (
-            <ChangeThemeContext.Provider value={colorMode}>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <App/>
-                </ThemeProvider>
-            </ChangeThemeContext.Provider>
+        <ChangeThemeContext.Provider value={colorMode}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <App/>
+            </ThemeProvider>
+        </ChangeThemeContext.Provider>
     );
 }
 

@@ -10,20 +10,20 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select,
+    Select, SelectChangeEvent,
     Stack,
     styled,
     TextField,
     Typography
-} from "@material-ui/core";
+} from "@mui/material";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {importImagesChannel} from "@electron/ipcCommands";
+import {channels} from "@utils/ipcCommands";
 
 function ImportImages(props: PropTypes) {
-    
-    const {open, close} = props
-    
+
+    const {open, close, reimport} = props
+
     const [openDelete, setOpenDelete] = React.useState(false)
     const [mappers, setMappers] = React.useState<Mapper[]>([])
     const [mapper, setMapper] = React.useState(-1)
@@ -31,7 +31,7 @@ function ImportImages(props: PropTypes) {
     const [filters, setFilters] = React.useState<Filter[]>(defaultMap.filters)
     const [transforms, setTransforms] = React.useState<Transform[]>(defaultMap.transforms)
     const [files, setFiles] = React.useState<ImageFile[]>()
-    
+
     React.useEffect(() => {
         const data = window.api.savedStore.get("json mappings")
         if (data.length > 0) {
@@ -42,22 +42,24 @@ function ImportImages(props: PropTypes) {
     }, [])
     React.useEffect(() => {
         if (name.length == 0) return
-        const map: Mapper = {name, filters, transforms}
+        const filtersClean = filters.filter(value => value.value != "" && value.path != "")
+        const transformsClean = transforms.filter(value => value.prop != "" && value.metadata != "")
+        const map: Mapper = {name: name.trim(), filters: filtersClean, transforms: transformsClean}
         if ((mapper == -1 || mappers.length == 0)) {
             mappers.push(map)
         } else if (mappers.length > 0) {
             mappers[mapper] = map
         }
-        
+
         const newMaps = mappers.sort((a, b) => a.name.localeCompare(b.name))
         setMapper(newMaps.findIndex((e) => e === map))
-        
+
         setMappers([...newMaps])
         if (mappers.length !== 0) {
             window.api.savedStore.set("json mappings", mappers)
         }
     }, [name, filters, transforms]);
-    
+
     const handleOpenDelete = () => {
         setOpenDelete(true)
     }
@@ -76,19 +78,19 @@ function ImportImages(props: PropTypes) {
             setData({
                 name: "",
                 filters: [{"path": "", "value": ""}],
-                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+                transforms: [{"prop": "", "metadata": ""}],
             })
         }
-        
+
     }
-    const handleSetMapper = (event: React.ChangeEvent<{value: unknown}>) => {
-        const index = event.target.value as number
+    const handleSetMapper = (event: SelectChangeEvent) => {
+        const index = Number(event.target.value)
         setMapper(index);
         if (index === -1) {
             setData({
                 name: "",
                 filters: [{"path": "", "value": ""}],
-                transforms: [{"prop": "", "metadata": Metadata.Empty}],
+                transforms: [{"prop": "", "metadata": ""}],
             })
         } else {
             setData(mappers[index])
@@ -100,7 +102,7 @@ function ImportImages(props: PropTypes) {
         setTransforms(data.transforms)
     }
     const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value.trim());
+        setName(event.target.value);
     }
     const handleFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
         const rawFiles = event.target.files as FileList
@@ -112,18 +114,16 @@ function ImportImages(props: PropTypes) {
         setFiles(files)
     }
     const importImages = () => {
-        window.api.send(importImagesChannel, files, mappers)
+        window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
         close()
     }
-    
+
     return (
         <Dialog open={open} onClose={close}>
             <DialogTitle>
                 Import Images
             </DialogTitle>
             <DialogContent>
-                <DialogContentText>
-                </DialogContentText>
                 <FormControl
                     variant="outlined"
                     fullWidth
@@ -132,7 +132,7 @@ function ImportImages(props: PropTypes) {
                     <InputLabel>Mappings</InputLabel>
                     <Select
                         label="Retrievers"
-                        value={mapper}
+                        value={String(mapper)}
                         onChange={handleSetMapper}
                     >
                         {mappers.map((entry, index) => (
@@ -156,6 +156,7 @@ function ImportImages(props: PropTypes) {
                         <Transforms transforms={transforms} setTransforms={setTransforms}/>
                     </Stack>
                 </div>
+                {!reimport &&
                 <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
                     <label htmlFor="contained-button-file">
                         <Input
@@ -169,9 +170,9 @@ function ImportImages(props: PropTypes) {
                         </Button>
                     </label>
                     <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
-                        Images selected: {files ? files.length: 0}
+                        Images selected: {files ? files.length : 0}
                     </Typography>
-                </Stack>
+                </Stack>}
                 <Divider sx={{marginTop: 2, marginBottom: 2}}/>
                 <Button variant="contained" color={"error"} onClick={handleOpenDelete}>
                     Delete Mapping
@@ -213,6 +214,7 @@ const Input = styled('input')({
 interface PropTypes {
     open: boolean
     close: () => void
+    reimport: boolean
 }
 
 export interface ImageFile {
@@ -231,21 +233,18 @@ export interface Filter {
 }
 export interface Transform {
     prop: string
-    metadata: Metadata
-}
-export enum Metadata {
-    Empty = "",
-    Title = "Title",
-    Tags = "Tags",
-    Author = "Author",
-    Site = "Site",
-    Source = "Source"
+    metadata: string
 }
 
 const defaultMap: Mapper = {
     name: "",
     filters: [{"path": "", "value": ""}],
-    transforms: [{"prop": "", "metadata": Metadata.Empty}],
+    transforms: [{"prop": "", "metadata": ""}],
 }
+
+export const metadataColumns: string[] = [
+    "Title",
+    "Author"
+]
 
 export default ImportImages;
