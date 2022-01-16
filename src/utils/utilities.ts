@@ -12,7 +12,7 @@ export function appDataDir(...path: string[]): string {
     const fullPath = appData(...path)
     try {
         if (!fs.existsSync(fullPath)) {
-            fs.mkdirSync(fullPath)
+            fs.mkdirSync(fullPath, {recursive: true})
         }
     } catch (err) {
         console.error(err)
