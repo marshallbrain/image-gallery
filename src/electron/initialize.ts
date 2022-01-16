@@ -29,7 +29,7 @@ export default (createWindow: WindowSetupFunction) => {
         ipcMain.on(channels.openImageViewer, (_event, [images, index]) => {
             if (!imageViewerWindow) {
                 imageViewerWindow = true
-                createWindow("index_viewer.html", MainMenu).then((window: BrowserWindow) => {
+                createWindow("index_viewer.html").then((window: BrowserWindow) => {
                     window.on("close", () => {
                         imageViewerWindow = false
                     })

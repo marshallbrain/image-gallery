@@ -10,13 +10,13 @@ import {isDev} from "@utils/utilities";
 
 const selfHost = `http://localhost:${3000}`
 
-export type WindowSetupFunction = (htmlFile: string, menuBuilder: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
+export type WindowSetupFunction = (htmlFile: string, menuBuilder?: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
 const windowSetup = async (
     htmlFile: string,
-    menu: any[] ,
+    menu: any[] = [],
     x = 1400,
     y = 800,
-    openDevTools = true
+    openDevTools = false
 ) => {
 
     if (!isDev) {
