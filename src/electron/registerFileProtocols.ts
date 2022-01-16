@@ -3,14 +3,15 @@ import pathModule from "path";
 import fs from "fs";
 import sharp from "sharp";
 import {db} from "@electron/database/database";
+import {appData, appDataDir} from "@utils/utilities";
 
 export default () => {
     protocol.registerFileProtocol('preview', (request, callback) => {
         const imageId = request.url.replace('preview://', "")
-        const previewPath = pathModule.join(app.getAppPath(), `../dev-resources/images/temp/${imageId}.jpeg`)
+        const previewPath = appData("images", "temp", imageId + ".jpeg")
         fs.access(previewPath, fs.constants.R_OK, (err) => {
             if (err) {
-                const tempFiles = fs.readdirSync(pathModule.join(app.getAppPath(), "../dev-resources/images/temp/"))
+                const tempFiles = fs.readdirSync(appDataDir("images", "temp"))
                 if (tempFiles.length >= 1000) {
                     let oldest = 0
                     let oldestFile = ""
@@ -25,9 +26,7 @@ export default () => {
                 }
                 const image = db.prepare("select extension from images where image_id = ?").get(imageId)
                 if (image) {
-                    const imagePath = pathModule.join(
-                        app.getAppPath(), `../dev-resources/images/raw/${imageId}.${image.extension}`
-                    )
+                    const imagePath = appData("images", "raw", `${imageId}.${image.extension}`)
                     sharp(imagePath)
                         .resize(256, 256, {fit: sharp.fit.inside})
                         .toFormat("jpeg")
@@ -35,7 +34,7 @@ export default () => {
                             quality: 80,
                             mozjpeg: true
                         })
-                        .toFile(pathModule.join(app.getAppPath(), `../dev-resources/images/temp/${imageId}.jpeg`))
+                        .toFile(appData("images", "temp", `${imageId}.jpeg`))
                         .then(() => {
                             callback(previewPath)
                         })
@@ -47,7 +46,7 @@ export default () => {
     });
     protocol.registerFileProtocol('image', (request, callback) => {
         const image = request.url.replace('image://', "")
-        const path = pathModule.join(app.getAppPath(), `../dev-resources/images/raw/${image}`)
+        const path = appData("images", "raw", image)
         callback(path)
     })
 }
