@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import {channels} from "@utils/ipcCommands";
+import {styled} from "@mui/material";
 
 function AppViewer() {
 
@@ -24,7 +25,7 @@ function AppViewer() {
 
     return (
         <div>
-            {(info) && <img
+            {(info) && <ImageDisplay
                 key={info.image_id}
                 src={`image://${info.image_id}.${info.extension}`}
                 alt={info.title}
@@ -32,6 +33,13 @@ function AppViewer() {
         </div>
     );
 }
+
+const ImageDisplay = styled("img")({
+    "max-height": "100vh",
+    "max-width": "100vw",
+    margin: "auto",
+    display: "block",
+})
 
 interface Image {
     image_id: number,

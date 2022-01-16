@@ -1,7 +1,7 @@
 import React from 'react';
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 import {ThemeProvider} from "@emotion/react";
-import AppViewer from "./AppViewer";
+import AppViewer from "./components/AppViewer";
 
 function RootViewer() {
 
