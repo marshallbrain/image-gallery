@@ -4,6 +4,7 @@ import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 
 function AppViewer() {
 
@@ -32,6 +33,22 @@ function AppViewer() {
                     alt={info.title}
                 />}
             </ImageContainer>
+            <SpeedDial
+                ariaLabel=""
+                sx={{ position: 'absolute', bottom: 16, right: 16 }}
+                icon={<SpeedDialIcon icon={<MoreHorizIcon />} openIcon={<BookmarkBorderIcon />} />}
+            >
+                <SpeedDialAction
+                    key={"Edit Tags"}
+                    icon={<EditAttributesIcon />}
+                    tooltipTitle={"Edit Tags"}
+                />
+                <SpeedDialAction
+                    key={"Setting"}
+                    icon={<SettingsIcon />}
+                    tooltipTitle={"Setting"}
+                />
+            </SpeedDial>
         </div>
     );
 }
