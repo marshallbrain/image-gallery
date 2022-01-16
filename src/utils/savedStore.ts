@@ -2,7 +2,7 @@ import {app, IpcMain} from "electron"
 import dotProp from "dot-prop";
 import fs from "fs";
 import pathModule from "path";
-import {isDev} from "./utilities";
+import {appData, isDev} from "./utilities";
 import {getEntry, getEntryAsyncResponse, setEntry} from "@utils/ipcCommands";
 
 export interface UserOptions {
@@ -76,18 +76,18 @@ export default {
         }
         initialized = true
         options = {...defaultOptions, ...userOptions}
+        if (!options.extension.startsWith(".")) {
+            options.extension = "." + options.extension
+        }
 
         const getPath = () => {
-            if (isDev) {
-                return pathModule.join(app.getAppPath(), `../dev-resources`)
-            }
             if (options.path) {
                 return options.path
             }
-            return app.getPath("appData")
+            return
         }
 
-        file = pathModule.join(getPath(), `${options.filename}${options.extension}`)
+        file = appData(options.filename + options.extension)
         console.log(file)
         fileData = readFile()
 
