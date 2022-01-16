@@ -1,6 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect} from 'react/index';
 import {channels} from "@utils/ipcCommands";
-import {styled} from "@mui/material";
+import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
+import SettingsIcon from '@mui/icons-material/Settings';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 function AppViewer() {
 
@@ -14,9 +17,6 @@ function AppViewer() {
             setIndex(index)
         })
         window.api.send(channels.onImageViewerOpen)
-        return function cleanup() {
-            window.api.removeAll(channels.openImportDialog)
-        };
     }, [])
 
     useEffect(() => {
@@ -25,11 +25,13 @@ function AppViewer() {
 
     return (
         <div>
-            {(info) && <ImageDisplay
-                key={info.image_id}
-                src={`image://${info.image_id}.${info.extension}`}
-                alt={info.title}
-            />}
+            <ImageContainer>
+                {(info) && <ImageDisplay
+                    key={info.image_id}
+                    src={`image://${info.image_id}.${info.extension}`}
+                    alt={info.title}
+                />}
+            </ImageContainer>
         </div>
     );
 }
@@ -37,8 +39,13 @@ function AppViewer() {
 const ImageDisplay = styled("img")({
     "max-height": "100vh",
     "max-width": "100vw",
-    margin: "auto",
-    display: "block",
+})
+
+const ImageContainer = styled("div")({
+    "min-height": "100vh",
+    display: "flex",
+    "justify-content": "center",
+    "align-items": "center",
 })
 
 interface Image {
