@@ -5,6 +5,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
+import {KeyboardEvent} from "react";
 
 function AppViewer() {
 
@@ -24,8 +25,19 @@ function AppViewer() {
         setInfo(images[index])
     }, [index])
 
+    const keyPressEvent = (e: KeyboardEvent) => {
+        e.preventDefault()
+        // console.log(e.key)
+        if (e.key === "ArrowRight" && index+1 < images.length) {
+            setIndex(index+1)
+        }
+        if (e.key === "ArrowLeft" && index > 0) {
+            setIndex(index-1)
+        }
+    }
+
     return (
-        <div>
+        <View onKeyDown={keyPressEvent} tabIndex={0}>
             <ImageContainer>
                 {(info) && <ImageDisplay
                     key={info.image_id}
@@ -49,7 +61,7 @@ function AppViewer() {
                     tooltipTitle={"Setting"}
                 />
             </SpeedDial>
-        </div>
+        </View>
     );
 }
 
@@ -63,6 +75,12 @@ const ImageContainer = styled("div")({
     display: "flex",
     "justify-content": "center",
     "align-items": "center",
+})
+
+const View = styled("div")({
+    "&:focus": {
+        outline: "none",
+    },
 })
 
 interface Image {
