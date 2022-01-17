@@ -4,11 +4,13 @@ import {app, protocol, BrowserWindow, ipcMain, Menu} from "electron"
 import Protocol, {scheme} from "./protocol";
 import path from 'path';
 import savedStore from "./utils/savedStore";
-import installExtension, {REACT_DEVELOPER_TOOLS} from "electron-devtools-installer"
 import registerFileProtocols from "@electron/registerFileProtocols";
 import {isDev} from "@utils/utilities";
+import electronDebug from "electron-debug";
 
 const selfHost = `http://localhost:${3000}`
+
+electronDebug({showDevTools: false});
 
 export type WindowSetupFunction = (htmlFile: string, menuBuilder?: any, x?: number, y?: number, openDevTools?: boolean) => Promise<Electron.BrowserWindow>
 const windowSetup = async (
@@ -62,13 +64,9 @@ const windowSetup = async (
         // Errors are thrown if the dev tools are opened
         // before the DOM is ready
         createdWindow.webContents.once("dom-ready", async () => {
-            await installExtension(REACT_DEVELOPER_TOOLS)
-                .then((name) => console.log(`Added Extension: ${name}`))
-                .catch((err) => console.log("An error occurred: ", err))
-                .finally(() => {
-                    require("electron-debug")(); // https://github.com/sindresorhus/electron-debug
-                    openDevTools && createdWindow.webContents.openDevTools();
-                });
+            if (openDevTools) {
+                electronDebug.openDevTools(createdWindow)
+            }
         });
     }
 
