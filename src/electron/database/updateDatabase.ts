@@ -11,9 +11,8 @@ export default () => {
 const createDB = db.transaction( () => {
     db.prepare("create table images (" +
         "image_id integer primary key," +
-        "title text," +
-        "author text," +
-        "extension text," +
+        "title text not null," +
+        "extension text not null," +
         "original_metadata text" +
         ");").run()
     db.pragma(`user_version = ${currentDBVersion}`)

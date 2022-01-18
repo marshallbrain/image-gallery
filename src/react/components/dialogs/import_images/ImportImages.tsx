@@ -242,9 +242,4 @@ const defaultMap: Mapper = {
     transforms: [{"prop": "", "metadata": ""}],
 }
 
-export const metadataColumns: string[] = [
-    "Title",
-    "Author"
-]
-
 export default ImportImages;

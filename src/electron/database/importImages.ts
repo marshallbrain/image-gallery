@@ -2,11 +2,11 @@ import {ImageFile, Mapper} from "@components/dialogs/import_images/ImportImages"
 import fs from "fs";
 import dotProp from "dot-prop";
 import {db} from "@electron/database/database";
-import path, {ParsedPath} from "path";
-import pathModule from "path";
-import {app} from "electron";
+import path from "path";
+import pathModule, {ParsedPath} from "path";
 import sharp from "sharp";
-import {appData, appDataDir} from "@utils/utilities";
+import {appDataDir} from "@utils/utilities";
+import {imageImportColumns} from "@utils/constants";
 
 export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
@@ -16,6 +16,12 @@ export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => 
         sharp(file.from).toFile(file.to, counter)
     }
 }
+
+const columnsFull: string[] = [
+    ...imageImportColumns,
+    "extension",
+    "original_metadata"
+]
 
 const rawImageLocation = appDataDir("images", "raw")
 
@@ -29,17 +35,10 @@ const imageCounter = (count: number, callback: () => void) => {
     }
 }
 
-const columns: string[] = [
-    "title",
-    "author",
-    "extension",
-    "original_metadata"
-]
-
 const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) => {
     const newImagePaths: {from: string, to: string}[] = []
     const insert = db.prepare(
-        `insert into images (${columns.join(", ")}) values (${columns.map(() => "?").join(", ")})`
+        `insert into images (${columnsFull.join(", ")}) values (${columnsFull.map(() => "?").join(", ")})`
     )
     for (const file of files) {
         const filePath = path.parse(file.name)
@@ -57,7 +56,7 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         const jsonData = getJson()
 
         const maps = getInsertMapper(mappers, jsonData)
-        const data: string[] = columns.map(value => {
+        const data: string[] = columnsFull.map(value => {
             const data = ColumnAutofill(value, jsonData, filePath)
             if (data != "") return data
             if (jsonData === undefined) return (value === "title")? filePath.name: "null"
