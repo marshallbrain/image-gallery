@@ -5,18 +5,48 @@ const currentDBVersion = 1
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
     if (userVersion == currentDBVersion) return
-    if (userVersion == 0) createDB()
+    // else if (userVersion < currentDBVersion) updateDB(userVersion)
+    else if (userVersion == 0) createDB()
+    else throw "Unknown database version"
 }
 
-const createDB = db.transaction( () => {
+const tableImageDef = "" +
+    "image_id integer primary key," +
+    "title text not null," +
+    "extension text not null," +
+    "original_metadata text"
+
+const createDB = db.transaction(() => {
     db.prepare("create table images (" +
-        "image_id integer primary key," +
-        "title text not null," +
-        "extension text not null," +
-        "original_metadata text" +
-        ");").run()
+        tableImageDef
+        + ");").run()
     db.pragma(`user_version = ${currentDBVersion}`)
 })
+
+const updateDB = db.transaction((version: number) => {
+    db.prepare("create table new_images (" +
+        tableImageDef
+        + ");").run()
+    switch(version) {
+        case 1: moveTable(
+            "",
+            ""
+        )
+    }
+    db.prepare("DROP TABLE images;")
+    db.prepare("ALTER TABLE new_images RENAME TO images;")
+})
+
+function moveTable(newColumns: string, oldColumns: string) {
+    db.prepare("" +
+        "INSERT INTO new_images(" +
+        newColumns
+        + ") SELECT " +
+        oldColumns
+        + " FROM table" +
+        ";"
+    )
+}
 
 // const update = (version: number) => {
 //     if (version == currentDBVersion-1) {
