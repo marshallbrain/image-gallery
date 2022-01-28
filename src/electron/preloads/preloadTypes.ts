@@ -16,7 +16,7 @@ interface types {
         },
     }
     db: {
-        getImages: (query: string, callback: (...data: any[]) => void) => void
+        getImages: (query: string, callback: (...data: any[]) => void, ...args: any[]) => void
     }
     send: (channel: string, ...data: any[]) => void
     receive: (channel: string, func: (...args: any[]) => void) => void
