@@ -26,7 +26,7 @@ export const channels = {
     reimportImagesComplete: "reimportImagesComplete",
     openImageViewer: "openImageViewer",
     onImageViewerOpen: "onImageViewerOpen",
-    updateImageViewerList: "updateImageViewerList"
+    updateImageViewerList: "updateImageViewerList",
 }
 
 export const ipcChannels = new Set(Object.values(channels))

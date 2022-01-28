@@ -33,7 +33,7 @@ export default (createWindow: WindowSetupFunction) => {
                     window.on("close", () => {
                         imageViewerWindow = false
                     })
-                    ipcMain.on(channels.onImageViewerOpen, (event) => {
+                    ipcMain.once(channels.onImageViewerOpen, (event) => {
                         event.reply(channels.updateImageViewerList, images, index)
                     })
                 })

@@ -7,32 +7,39 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import {KeyboardEvent, useState} from "react";
 import MetadataEdit from "./MetadataEdit";
+import {sqlGetImageData, sqlImageSearch} from "@utils/sqlQueries";
 
 const drawerWidth = 240;
 
 function AppViewer() {
 
     const [index, setIndex] = React.useState(-1)
-    const [images, setImages] = React.useState<Image[]>([])
-    const [info, setInfo] = React.useState<Image|null>(null)
+    const [imageList, setImageList] = React.useState<Image[]>([])
+    const [image, setImage] = React.useState<Image|null>(null)
+    const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
 
     useEffect(() => {
         window.api.receive(channels.updateImageViewerList, (images, index) => {
-            setImages(images)
+            setImageList(images)
             setIndex(index)
         })
         window.api.send(channels.onImageViewerOpen)
     }, [])
 
     useEffect(() => {
-        setInfo(images[index])
+        setImage(imageList[index])
+        if(imageList[index] != undefined) {
+            window.api.db.getImages(sqlGetImageData, ([data]: ImageData[]) => {
+                setImageData(data)
+            }, imageList[index].image_id)
+        }
     }, [index])
 
     const keyPressEvent = (e: KeyboardEvent) => {
         e.preventDefault()
         // console.log(e.key)
-        if (e.key === "ArrowRight" && index+1 < images.length) {
+        if (e.key === "ArrowRight" && index+1 < imageList.length) {
             setIndex(index+1)
         }
         if (e.key === "ArrowLeft" && index > 0) {
@@ -45,12 +52,11 @@ function AppViewer() {
     }
 
     return (
-        <View onKeyDown={keyPressEvent} tabIndex={0}>
-            <ImageContainer open={editOpen}>
-                {(info) && <ImageDisplay
-                    key={info.image_id}
-                    src={`image://${info.image_id}.${info.extension}`}
-                    alt={info.title}
+        <View>
+            <ImageContainer tabIndex={0} open={editOpen} onKeyDown={keyPressEvent}>
+                {(image) && <ImageDisplay
+                    key={image.image_id}
+                    src={`image://${image.image_id}.${image.extension}`}
                 />}
                 <Options
                     ariaLabel=""
@@ -71,7 +77,7 @@ function AppViewer() {
                     />
                 </Options>
             </ImageContainer>
-            <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth}/>
+            <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
         </View>
     );
 }
@@ -96,6 +102,9 @@ const ImageContainer = styled("div", {
             duration: theme.transitions.duration.leavingScreen,
         }),
         marginRight: 0,
+        "&:focus": {
+            outline: "none",
+        },
         ...(open && {
             transition: theme.transitions.create('margin', {
                 easing: theme.transitions.easing.easeOut,
@@ -128,14 +137,14 @@ const Options = styled(SpeedDial, {
 )
 
 const View = styled("div")({
-    "&:focus": {
-        outline: "none",
-    },
 })
 
 interface Image {
     image_id: number,
     extension: string
+}
+
+export interface ImageData {
     title: string
 }
 
