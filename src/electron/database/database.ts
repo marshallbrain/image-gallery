@@ -17,7 +17,9 @@ export default () => {
 
 const createChannelListeners = () => {
     ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
-        const response = db.prepare(query).all(args)
+        const response = db.transaction(() => {
+            return db.prepare(query).all(args)
+        })()
         event.reply(channel, response)
     })
 }
