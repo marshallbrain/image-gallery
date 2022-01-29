@@ -18,10 +18,26 @@ export default () => {
 const createChannelListeners = () => {
     ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
         const response = db.transaction(() => {
-            return db.prepare(query).all(args)
+            return preparedStatements[query].all(args)
         })()
         event.reply(channel, response)
     })
+}
+
+const imageSearch: any = db.prepare("" +
+    "select image_id, extension " +
+    "from images"
+)
+
+const getImageData: any = db.prepare("" +
+    "select title " +
+    "from images " +
+    "where image_id = ?"
+)
+
+const preparedStatements: any =  {
+    imageSearch,
+    getImageData
 }
 
 /*

@@ -7,7 +7,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import {KeyboardEvent, useState} from "react";
 import MetadataEdit from "./MetadataEdit";
-import {sqlGetImageData, sqlImageSearch} from "@utils/sqlQueries";
+import sqlQueries from "@utils/sqlQueries";
 
 const drawerWidth = 240;
 
@@ -30,7 +30,7 @@ function AppViewer() {
     useEffect(() => {
         setImage(imageList[index])
         if(imageList[index] != undefined) {
-            window.api.db.getImages(sqlGetImageData, ([data]: ImageData[]) => {
+            window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
                 setImageData(data)
             }, imageList[index].image_id)
         }

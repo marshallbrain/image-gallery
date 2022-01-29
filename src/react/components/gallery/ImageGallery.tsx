@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {sqlImageSearch} from "@utils/sqlQueries";
+import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
@@ -26,7 +26,7 @@ function ImageGallery() {
     }, [])
 
     const getImages = () => {
-        window.api.db.getImages(sqlImageSearch, (data) => {
+        window.api.db.getImages(sqlQueries.imageSearch, (data) => {
             setImages(data)
         })
     }

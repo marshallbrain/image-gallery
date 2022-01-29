@@ -1,8 +1,6 @@
-export const sqlImageSearch = "" +
-    "select image_id, extension " +
-    "from images"
+const enum queries {
+    imageSearch = "imageSearch",
+    getImageData = "getImageData"
+}
 
-export const sqlGetImageData = "" +
-    "select title " +
-    "from images " +
-    "where image_id = ?"
+export default queries
