@@ -5,11 +5,20 @@ import AppViewer from "./components/AppViewer";
 
 function RootViewer() {
 
-    const [themeOptions] = React.useState<Theme>(
+    const [themeOptions] = React.useState<ThemeOptions>(
         {
             palette: {
                 mode: 'dark',
-            }
+            },
+            components: {
+                MuiCssBaseline: {
+                    styleOverrides: {
+                        // "::-webkit-scrollbar-thumb": {
+                        //     borderRadius: 8,
+                        // },
+                    }
+                },
+            },
         }
     )
 
@@ -22,16 +31,10 @@ function RootViewer() {
 
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
             <AppViewer/>
         </ThemeProvider>
     );
-}
-
-interface Theme{
-    palette: {
-        mode: string,
-    }
 }
 
 export default RootViewer;
