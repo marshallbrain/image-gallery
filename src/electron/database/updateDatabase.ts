@@ -1,12 +1,12 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 1
+const currentDBVersion = 2
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
     if (userVersion == currentDBVersion) return
-    // else if (userVersion < currentDBVersion) updateDB(userVersion)
     else if (userVersion == 0) createDB()
+    else if (userVersion < currentDBVersion) updateDB(userVersion)
     else throw "Unknown database version"
 }
 
@@ -14,30 +14,61 @@ const tableImageDef = "" +
     "image_id integer primary key," +
     "title text not null," +
     "extension text not null," +
-    "original_metadata text"
+    "original_metadata text not null"
+
+const tableTagsDef = "" +
+    "tag_id integer primary key," +
+    "name text not null unique"
+
+const tableImageTagDef = "" +
+    "image_id integer not null," +
+    "tag_id integer not null," +
+    "primary key (image_id, tag_id)," +
+    "foreign key (image_id) " +
+        "references images (image_id) " +
+        "on update cascade " +
+        "on delete cascade," +
+    "foreign key (tag_id) " +
+        "references tags (tag_id) " +
+        "on update cascade " +
+        "on delete cascade"
+
+enum Table {
+    IMAGES = "images",
+    TAGS = "tags",
+    IMAGES_TAGS = "images_tags"
+}
 
 const createDB = db.transaction(() => {
-    db.prepare("create table images (" +
-        tableImageDef
-        + ");").run()
+    createTables()
+
     db.pragma(`user_version = ${currentDBVersion}`)
 })
 
+function createTables() {
+    const def = "create table if not exists images_tags (" +
+        tableImageTagDef
+        + ");"
+    console.log(def)
+    db.prepare(def).run()
+}
+
 const updateDB = db.transaction((version: number) => {
-    db.prepare("create table new_images (" +
-        tableImageDef
-        + ");").run()
+    createTables()
+
     switch(version) {
-        case 1: moveTable(
-            "",
-            ""
-        )
+        case 1: break
     }
-    db.prepare("DROP TABLE images;")
-    db.prepare("ALTER TABLE new_images RENAME TO images;")
+
+    db.pragma(`user_version = ${currentDBVersion}`)
+
 })
 
-function moveTable(newColumns: string, oldColumns: string) {
+function moveTable(table: Table, newColumns: string, oldColumns: string) {
+    db.prepare("create table new_" + table + " (" +
+        getTableDef(table)
+        + ");").run()
+
     db.prepare("" +
         "INSERT INTO new_images(" +
         newColumns
@@ -46,6 +77,17 @@ function moveTable(newColumns: string, oldColumns: string) {
         + " FROM table" +
         ";"
     )
+
+    db.prepare("drop table " + table + ";").run()
+    db.prepare("alter table new_" + table + " to " + table + ";").run()
+}
+
+function getTableDef(table: Table): string {
+    switch (table) {
+        case Table.IMAGES: return tableImageTagDef
+        case Table.TAGS: return tableTagsDef
+        case Table.IMAGES_TAGS: return tableImageTagDef
+    }
 }
 
 // const update = (version: number) => {
