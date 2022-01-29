@@ -11,33 +11,43 @@ export default () => {
         db.close()
     })
 
-    createChannelListeners()
+    const statements = prepareStatements()
+    createChannelListeners(statements)
 
 }
 
-const createChannelListeners = () => {
+const createChannelListeners = (statements: any) => {
+
     ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
         const response = db.transaction(() => {
-            return preparedStatements[query].all(args)
+            if (args) {
+                return statements[query].all(args)
+            } else {
+                return statements[query].all()
+            }
         })()
         event.reply(channel, response)
     })
 }
 
-const imageSearch: any = db.prepare("" +
-    "select image_id, extension " +
-    "from images"
-)
+const prepareStatements = () => {
 
-const getImageData: any = db.prepare("" +
-    "select title " +
-    "from images " +
-    "where image_id = ?"
-)
+    const imageSearch = db.prepare("" +
+        "select image_id, extension " +
+        "from images"
+    )
 
-const preparedStatements: any =  {
-    imageSearch,
-    getImageData
+    const getImageData = db.prepare("" +
+        "select title " +
+        "from images " +
+        "where image_id = ?"
+    )
+
+    return {
+        imageSearch,
+        getImageData
+    }
+
 }
 
 /*

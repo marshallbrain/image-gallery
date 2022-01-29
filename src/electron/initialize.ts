@@ -5,7 +5,7 @@ import {channels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
 import importImages from "./database/importImages";
-import database from "@electron/database/database";
+import setupDatabase from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
 import pathModule from "path";
@@ -18,8 +18,8 @@ export default (createWindow: WindowSetupFunction) => {
         fileCache: false
     })
 
-    database()
     updateDatabase()
+    setupDatabase()
 
     createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)
@@ -33,7 +33,8 @@ export default (createWindow: WindowSetupFunction) => {
                     window.on("close", () => {
                         imageViewerWindow = false
                     })
-                    ipcMain.once(channels.onImageViewerOpen, (event) => {
+                    //TODO Change to once
+                    ipcMain.on(channels.onImageViewerOpen, (event) => {
                         event.reply(channels.updateImageViewerList, images, index)
                     })
                 })
