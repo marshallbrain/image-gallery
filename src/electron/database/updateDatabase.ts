@@ -46,11 +46,16 @@ const createDB = db.transaction(() => {
 })
 
 function createTables() {
-    const def = "create table if not exists images_tags (" +
+    db.prepare("create table if not exists images (" +
+        tableImageDef
+        + ");").run()
+    db.prepare("create table if not exists tags (" +
+        tableTagsDef
+        + ");").run()
+
+    db.prepare("create table if not exists images_tags (" +
         tableImageTagDef
-        + ");"
-    console.log(def)
-    db.prepare(def).run()
+        + ");").run()
 }
 
 const updateDB = db.transaction((version: number) => {
