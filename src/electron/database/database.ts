@@ -43,9 +43,22 @@ const prepareStatements = () => {
         "where image_id = ?"
     )
 
+    const getTags = db.prepare("" +
+        "select name " +
+        "from tags " +
+        "where name = '@name' " +
+        "union " +
+        "select name " +
+        "from tags " +
+        "where name like '%@name%' " +
+        "order by " +
+        "name"
+    )
+
     return {
         imageSearch,
-        getImageData
+        getImageData,
+        getTags
     }
 
 }
