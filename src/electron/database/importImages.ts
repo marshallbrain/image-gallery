@@ -37,34 +37,47 @@ const imageCounter = (count: number, callback: () => void) => {
 
 const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) => {
     const newImagePaths: {from: string, to: string}[] = []
-    const insert = db.prepare(
-        `insert into images (${columnsFull.join(", ")}) values (${columnsFull.map(() => "?").join(", ")})`
+    const insert = db.prepare("" +
+        "insert into images (" +
+        columnsFull.join(", ") +
+        ") values (" +
+        columnsFull.map(() => "?").join(", ") +
+        ")"
     )
+
     for (const file of files) {
-        const filePath = path.parse(file.name)
+        const fileInfo = path.parse(file.path)
         const getJson = () => {
-            try {
-                return JSON.parse(fs.readFileSync(file.path + ".json", 'utf8'))
-            } catch (e: any) {
-                if (e.code === "ENOENT") {
-                    return undefined
-                } else {
-                    throw e
-                }
-            }
+            if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`)))
+                return JSON.parse(fs.readFileSync(
+                    pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`),
+                    'utf8'
+                ))
+            if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}.json`)))
+                return JSON.parse(fs.readFileSync(
+                    pathModule.join(fileInfo.dir, `${fileInfo.name}.json`),
+                    'utf8'
+                ))
+            return undefined
         }
         const jsonData = getJson()
-
         const maps = getInsertMapper(mappers, jsonData)
+        const json: object = (jsonData)? jsonData: {
+            "title": fileInfo.name
+        }
+
         const data: string[] = columnsFull.map(value => {
-            const data = ColumnAutofill(value, jsonData, filePath)
-            if (data != "") return data
-            if (jsonData === undefined) return (value === "title")? filePath.name: "null"
-            return jsonData[maps[value]] || "null"
+            if (dotProp.has(json, maps[value]))
+                return dotProp.get(json, maps[value], "")
+            switch (value) {
+                case "extension": return fileInfo.ext.replace(".", "")
+                case "original_metadata": return JSON.stringify(json)
+                default: return (dotProp.get(json, value, ""))
+            }
         })
 
         const imageId = insert.run(data).lastInsertRowid
-        const newFile = pathModule.join(rawImageLocation, imageId.toString() + filePath.ext)
+        const newFile = pathModule.join(rawImageLocation, imageId.toString() + fileInfo.ext)
         newImagePaths.push({from: file.path, to: newFile})
     }
     return newImagePaths
@@ -81,12 +94,4 @@ const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
         }
     }
     return {}
-}
-
-const ColumnAutofill = (value: string, jsonData: string, file: ParsedPath) => {
-    switch (value) {
-        case "original_metadata": return (jsonData)? JSON.stringify(jsonData): "{}"
-        case "extension": return file.ext.substr(1)
-        default: return ""
-    }
 }
