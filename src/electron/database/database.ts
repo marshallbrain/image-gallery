@@ -1,7 +1,7 @@
 import sqlite3, {Database} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
-import {sqlSelectChannel} from "@utils/ipcCommands";
+import {channels, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
 
 export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
@@ -11,23 +11,29 @@ export default () => {
         db.close()
     })
 
-    const statements = prepareStatements()
-    createChannelListeners(statements)
+    const [getStatements, runStatements] = prepareStatements()
+    createChannelListeners(getStatements, runStatements)
 
 }
 
-const createChannelListeners = (statements: any) => {
+const createChannelListeners = (getStatements: any, runStatements: any) => {
 
     ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
-        const response = db.transaction(() => {
-            if (args) {
-                return statements[query].all(args)
-            } else {
-                return statements[query].all()
-            }
-        })()
-        event.reply(channel, response)
+        try {
+            const response = db.transaction(() => {
+                if (query in getStatements) {
+                    return args? getStatements[query].all(args): getStatements[query].all()
+                } else {
+                    return args? runStatements[query].run(args): runStatements[query].run()
+                }
+            })()
+            event.reply(channel, response)
+
             triggers[query](event)
+
+        } catch (e) {
+            event.reply(channel, e)
+        }
     })
 }
 
@@ -58,11 +64,21 @@ const prepareStatements = () => {
         "name"
     )
 
-    return {
+    const createTag = db.prepare("" +
+        "insert into tags (name) " +
+        "values(?)"
+    )
+
+    return [{
         imageSearch,
         getImageData,
-        getTags
+        getTags,
+    }, {
+        createTag,
     }
+    ]
+
+}
 
 const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {
     createTag: (event) => event.reply(channels.updateTagLists)

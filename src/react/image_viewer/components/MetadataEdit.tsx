@@ -18,6 +18,9 @@ const MetadataEdit = (props: PropTypes) => {
 
     useEffect(() => {
         updateTags()
+        window.api.receive(channels.updateTagLists, () => {
+            updateTags()
+        })
     }, [])
 
     useEffect(() => {
@@ -30,7 +33,10 @@ const MetadataEdit = (props: PropTypes) => {
 
     const updateTags = () => {
         window.api.db.getImages(sqlQueries.getTags, (data: {name: string}[]) => {
-            setTagsOrdered(data.flatMap((({name}) => name)))
+            setTagsOrdered([
+                ...((tagSearch == "" || (data.length && tagSearch == data[0].name))? []: [""]),
+                ...data.flatMap((({name}) => name))
+            ])
         }, {name: tagSearch})
     }
 
@@ -39,16 +45,23 @@ const MetadataEdit = (props: PropTypes) => {
     }
 
     const selectTag = (tag: string) => () => {
-        console.log(tag)
+        if (tagSearch == "") return
+        window.api.db.getImages(sqlQueries.createTag, () => {}, tag)
     }
 
     // <Chip label={tagSearch} color={"success"} onClick={selectTag(tagSearch)}/>
     const renderTags = ({ index, style }: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" disablePadding>
-             <Chip
-                label={tagsOrdered[index]}
-                onClick={selectTag(tagsOrdered[index])}
-             />
+            {(tagsOrdered[index] === "")?
+                <Chip
+                    label={tagSearch}
+                    color={"success"}
+                    onClick={selectTag(tagSearch)}/>:
+                <Chip
+                    label={tagsOrdered[index]}
+                    onClick={selectTag(tagsOrdered[index])}
+                />
+            }
         </ListItem>
     )
 
