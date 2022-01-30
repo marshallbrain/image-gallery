@@ -23,8 +23,16 @@ contextBridge.exposeInMainWorld("api", {
     receive: (channel, func) => {
         if (ipcChannels.has(channel)) {
             ipcRenderer.on(channel, (event, ...args) => func(...args));
+            return func
         } else {
             console.log(logChannel, `Invalid receive channel: "${channel}"`);
+        }
+    },
+    remove: (channel, listener) => {
+        if (ipcChannels.has(channel)) {
+            ipcRenderer.removeListener(channel, listener)
+        } else {
+            console.log(logChannel, `Invalid remove channel: "${channel}"`);
         }
     },
     removeAll: (channel) => {

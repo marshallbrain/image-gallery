@@ -20,11 +20,14 @@ function AppViewer() {
     const [editOpen, setEditOpen] = useState(false)
 
     useEffect(() => {
-        window.api.receive(channels.updateImageViewerList, (images, index) => {
+        const updateImageListKey = window.api.receive(channels.updateImageViewerList, (images, index) => {
             setImageList(images)
             setIndex(index)
         })
         window.api.send(channels.onImageViewerOpen)
+        return function cleanup() {
+            window.api.remove(channels.updateImageViewerList, updateImageListKey)
+        };
     }, [])
 
     useEffect(() => {
