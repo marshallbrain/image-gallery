@@ -17,14 +17,22 @@ const MetadataEdit = (props: PropTypes) => {
     const [tagSearch, setTagSearch] = React.useState("")
 
     useEffect(() => {
-        window.api.db.getImages(sqlQueries.getTags, ([data]) => {
-            console.log(data)
-        }, {name: tagSearch})
+        updateTags()
     }, [])
 
     useEffect(() => {
         setTitle(imageData? imageData?.title : "Undefined")
     }, [imageData])
+
+    useEffect(() => {
+        updateTags()
+    }, [tagSearch])
+
+    const updateTags = () => {
+        window.api.db.getImages(sqlQueries.getTags, (data: {name: string}[]) => {
+            setTagsOrdered(data.flatMap((({name}) => name)))
+        }, {name: tagSearch})
+    }
 
     const onSearchTags = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTagSearch(event.target.value);
@@ -34,15 +42,13 @@ const MetadataEdit = (props: PropTypes) => {
         console.log(tag)
     }
 
+    // <Chip label={tagSearch} color={"success"} onClick={selectTag(tagSearch)}/>
     const renderTags = ({ index, style }: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" disablePadding>
-            {(index == 0 && tagSearch && tagsOrdered[index] !== tagSearch) ?
-                <Chip label={tagSearch} color={"success"} onClick={selectTag(tagSearch)}/>:
-                <Chip
-                    label={tagsOrdered[Math.max(index-1,0)]}
-                    onClick={selectTag(tagsOrdered[Math.max(index-1,0)])}
-                />
-            }
+             <Chip
+                label={tagsOrdered[index]}
+                onClick={selectTag(tagsOrdered[index])}
+             />
         </ListItem>
     )
 
@@ -97,7 +103,7 @@ const MetadataEdit = (props: PropTypes) => {
                                     height={height}
                                     width={width}
                                     itemSize={42}
-                                    itemCount={+(tagSearch !== "") + tagsOrdered.length}
+                                    itemCount={tagsOrdered.length}
                                     overscanCount={5}
                                 >
                                     {renderTags}

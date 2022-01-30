@@ -46,11 +46,13 @@ const prepareStatements = () => {
     const getTags = db.prepare("" +
         "select name " +
         "from tags " +
-        "where name = '@name' " +
+        "where name = @name " +
+
         "union " +
+
         "select name " +
         "from tags " +
-        "where name like '%@name%' " +
+        "where name like '%' || @name || '%' " +
         "order by " +
         "name"
     )
