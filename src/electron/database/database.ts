@@ -45,7 +45,7 @@ const prepareStatements = () => {
     )
 
     const getImageData = db.prepare("" +
-        "select title " +
+        "select title, image_width, image_height " +
         "from images " +
         "where image_id = ?"
     )

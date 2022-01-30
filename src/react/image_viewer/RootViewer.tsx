@@ -13,9 +13,9 @@ function RootViewer() {
             components: {
                 MuiCssBaseline: {
                     styleOverrides: {
-                        // "::-webkit-scrollbar-thumb": {
-                        //     borderRadius: 8,
-                        // },
+                        "::-webkit-scrollbar": {
+                            display: "none"
+                        },
                     }
                 },
             },

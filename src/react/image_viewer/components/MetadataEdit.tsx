@@ -105,11 +105,7 @@ const MetadataEdit = (props: PropTypes) => {
                             }
                         }}
                     />
-                    <div
-                        style={{
-                            minHeight: 300
-                        }}
-                    >
+                    <View>
                         <AutoSizer>
                             {({height, width}) => (
                                 <FixedSizeList
@@ -118,12 +114,14 @@ const MetadataEdit = (props: PropTypes) => {
                                     itemSize={42}
                                     itemCount={tagsOrdered.length}
                                     overscanCount={5}
+                                    style={{
+                                    }}
                                 >
                                     {renderTags}
                                 </FixedSizeList>
                             )}
                         </AutoSizer>
-                    </div>
+                    </View>
                 </Paper>
             </Stack>
         </Drawer>
@@ -135,5 +133,9 @@ interface PropTypes {
     drawerWidth: number,
     imageData: ImageData|null,
 }
+
+const View = styled("div")({
+    minHeight: 300,
+})
 
 export default MetadataEdit;

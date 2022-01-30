@@ -18,6 +18,7 @@ function AppViewer() {
     const [image, setImage] = React.useState<Image|null>(null)
     const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
+    const [imageFull, setImageFull] = useState(true)
 
     useEffect(() => {
         const updateImageListKey = window.api.receive(channels.updateImageViewerList, (images, index) => {
@@ -35,6 +36,7 @@ function AppViewer() {
         if(imageList[index] != undefined) {
             window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
                 setImageData(data)
+                console.log(data.image_width > data.image_height)
             }, imageList[index].image_id)
         }
     }, [index])
@@ -54,12 +56,20 @@ function AppViewer() {
         setEditOpen(!editOpen)
     }
 
+    const toggleImageFull = () => {
+        setImageFull(!imageFull)
+        console.log(imageFull)
+    }
+
     return (
         <View>
             <ImageContainer tabIndex={0} open={editOpen} onKeyDown={keyPressEvent}>
                 {(image) && <ImageDisplay
                     key={image.image_id}
                     src={`image://${image.image_id}.${image.extension}`}
+                    landscape={(imageData)? (imageData.image_width > imageData.image_height): true}
+                    fullscreen={imageFull}
+                    onClick={toggleImageFull}
                 />}
                 <Options
                     ariaLabel=""
@@ -85,10 +95,25 @@ function AppViewer() {
     );
 }
 
-const ImageDisplay = styled("img")({
-    "max-height": "100vh",
-    "max-width": "100%",
-})
+const ImageDisplay = styled("img", {
+    shouldForwardProp: (prop) =>
+        prop !== 'landscape' &&
+        prop !== 'fullscreen'
+})<{
+    landscape: boolean
+    fullscreen: boolean
+}>(
+    ({theme, landscape, fullscreen}) => (
+        (fullscreen)? {
+            height: (landscape)? "100vh": "100%",
+            width: (landscape)? "auto": "100%",
+            alignSelf: "flex-start"
+        }: {
+            "max-height": "100vh",
+            "max-width": "100%",
+        }
+    )
+)
 
 const ImageContainer = styled("div", {
     shouldForwardProp: (prop) => prop !== 'open'
@@ -98,6 +123,7 @@ const ImageContainer = styled("div", {
     ({theme, open}) => ({
         "min-height": "100vh",
         display: "flex",
+        flexDirection: "column",
         "justify-content": "center",
         "align-items": "center",
         transition: theme.transitions.create('margin', {
@@ -148,7 +174,9 @@ interface Image {
 }
 
 export interface ImageData {
-    title: string
+    title: string,
+    image_width: number,
+    image_height: number,
 }
 
 export default AppViewer;
