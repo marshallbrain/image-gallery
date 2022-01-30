@@ -7,6 +7,7 @@ import pathModule, {ParsedPath} from "path";
 import sharp from "sharp";
 import {appDataDir} from "@utils/utilities";
 import {imageImportColumns} from "@utils/constants";
+import sizeOf from "image-size"
 
 export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
     if (files.length == 0) return
@@ -77,8 +78,19 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         })
 
         const imageId = insert.run(data).lastInsertRowid
-        const newFile = pathModule.join(rawImageLocation, imageId.toString() + fileInfo.ext)
-        newImagePaths.push({from: file.path, to: newFile})
+        const rawFile = pathModule.join(rawImageLocation, imageId.toString() + fileInfo.ext)
+        newImagePaths.push({from: file.path, to: rawFile})
+
+        const previewFile = pathModule.join(previewImageLocation, imageId.toString() + ".jpeg")
+        sharp(file.path)
+            .resize(256, 256, {fit: sharp.fit.inside})
+            .toFormat("jpeg")
+            .jpeg({
+                quality: 80,
+                mozjpeg: true
+            })
+            .toFile(previewFile)
+            .then(r => {})
     }
     return newImagePaths
 })
