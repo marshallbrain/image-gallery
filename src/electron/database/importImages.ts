@@ -5,7 +5,7 @@ import {db} from "@electron/database/database";
 import path from "path";
 import pathModule, {ParsedPath} from "path";
 import sharp from "sharp";
-import {appDataDir} from "@utils/utilities";
+import {appData, appDataDir} from "@utils/utilities";
 import {imageImportColumns} from "@utils/constants";
 import sizeOf from "image-size"
 
@@ -20,11 +20,14 @@ export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => 
 
 const columnsFull: string[] = [
     ...imageImportColumns,
+    "image_width",
+    "image_height",
     "extension",
     "original_metadata"
 ]
 
 const rawImageLocation = appDataDir("images", "raw")
+const previewImageLocation = appDataDir("images", "prev")
 
 const imageCounter = (count: number, callback: () => void) => {
     let currentCount = 0
@@ -67,10 +70,14 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
             "title": fileInfo.name
         }
 
-        const data: string[] = columnsFull.map(value => {
+        const {width, height} = sizeOf(file.path)
+
+        const data: (string|number|undefined)[] = columnsFull.map(value => {
             if (dotProp.has(json, maps[value]))
                 return dotProp.get(json, maps[value], "")
             switch (value) {
+                case "image_width": return width
+                case "image_height": return height
                 case "extension": return fileInfo.ext.replace(".", "")
                 case "original_metadata": return JSON.stringify(json)
                 default: return (dotProp.get(json, value, ""))

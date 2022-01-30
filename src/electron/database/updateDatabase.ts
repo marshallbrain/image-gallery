@@ -13,6 +13,8 @@ export default () => {
 const tableImageDef = "" +
     "image_id integer primary key," +
     "title text not null," +
+    "image_width integer not null," +
+    "image_height integer not null," +
     "extension text not null," +
     "original_metadata text not null"
 
@@ -41,7 +43,6 @@ enum Table {
 
 const createDB = db.transaction(() => {
     createTables()
-
     db.pragma(`user_version = ${currentDBVersion}`)
 })
 
