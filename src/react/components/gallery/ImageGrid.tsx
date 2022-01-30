@@ -19,7 +19,7 @@ function ImageGrid(props: PropTypes) {
                         window.api.send(channels.openImageViewer, images, id)
                     }}
                 >
-                    <img
+                    <Image
                         key={image_id.toString()}
                         src={`preview://${image_id}`}
                         alt={title}
@@ -34,15 +34,16 @@ function ImageGrid(props: PropTypes) {
         <Paper sx={{height: "-webkit-fill-available", marginX: 1, marginBottom: 1}} elevation={0}>
             <AutoSizer>
                 {({height, width}) => {
-                    const colWidth = 261
-                    const columnCount = Math.floor(width / (colWidth))
+                    const columnCount = 5
                     const rowCount = Math.ceil(images.length / columnCount)
+                    const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
+                    const colWidth = Math.floor((width-widthOffset) / columnCount)
                     return (<WindowGrid
                         columnCount={columnCount}
-                        columnWidth={Math.floor(width / columnCount)}
+                        columnWidth={colWidth}
                         height={height}
                         rowCount={rowCount}
-                        rowHeight={261}
+                        rowHeight={colWidth}
                         width={width}
                     >
                         {Cell(columnCount)}
@@ -54,13 +55,18 @@ function ImageGrid(props: PropTypes) {
 
 }
 
+const Image = styled("img")({
+    maxWidth: "100%",
+    maxHeight: "100%",
+})
+
 const ImageCell = styled("div")({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     backgroundClip: "content-box",
     backgroundColor: "#1E1E1E",
-    padding: 2
+    padding: 4
 })
 
 interface PropTypes {
