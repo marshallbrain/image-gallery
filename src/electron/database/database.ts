@@ -27,6 +27,7 @@ const createChannelListeners = (statements: any) => {
             }
         })()
         event.reply(channel, response)
+            triggers[query](event)
     })
 }
 
@@ -63,6 +64,8 @@ const prepareStatements = () => {
         getTags
     }
 
+const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {
+    createTag: (event) => event.reply(channels.updateTagLists)
 }
 
 /*
