@@ -4,8 +4,11 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import {channels} from "@utils/ipcCommands";
 import sqlQueries from "@utils/sqlQueries";
+import {RunResult} from "better-sqlite3";
 
-const TagSelector = () => {
+const TagSelector = (props: PropTypes) => {
+
+    const {onTagSelected, selectedTags} = props
 
     const [tagSearch, setTagSearch] = React.useState("")
     const [tagsOrdered, setTagsOrdered] = React.useState<string[]>([])
@@ -33,7 +36,9 @@ const TagSelector = () => {
 
     const selectTag = (tag: string) => () => {
         if (tagSearch == "") return
-        window.api.db.getImages(sqlQueries.createTag, () => {}, tag)
+        window.api.db.getImages(sqlQueries.createTag, () => {
+            onTagSelected(tag)
+        }, tag)
     }
 
     const onSearchTags = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,5 +105,10 @@ const TagSelector = () => {
 const TagList = styled("div")({
     minHeight: 300,
 })
+
+interface PropTypes {
+    onTagSelected: (tag: string) => void
+    selectedTags: Set<string>
+}
 
 export default TagSelector;

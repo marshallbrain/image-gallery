@@ -6,6 +6,7 @@ import sqlQueries from "@utils/sqlQueries";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import TagSelector from "./TagSelector";
+import ImageTags from "./ImageTags";
 
 const MetadataEdit = (props: PropTypes) => {
 
@@ -17,6 +18,10 @@ const MetadataEdit = (props: PropTypes) => {
     useEffect(() => {
         setTitle(imageData? imageData?.title : "Undefined")
     }, [imageData])
+
+    const onTagSelected = (tag: string) => {
+        setImageTags(imageTags.add(tag))
+    }
 
     return (
         <Drawer
@@ -40,7 +45,10 @@ const MetadataEdit = (props: PropTypes) => {
                     padding: 2
                 }}
             >
-                <TagSelector/>
+                <TagSelector
+                    onTagSelected={onTagSelected}
+                    selectedTags={imageTags}
+                />
             </Stack>
         </Drawer>
     )
