@@ -36,7 +36,7 @@ const TagSelector = (props: PropTypes) => {
 
     const selectTag = (tag: string) => () => {
         if (tag == "") return
-        window.api.db.getImages(sqlQueries.createTag, (e) => {
+        window.api.db.getImages(sqlQueries.createTag, () => {
             onTagSelected(tag)
         }, tag)
     }

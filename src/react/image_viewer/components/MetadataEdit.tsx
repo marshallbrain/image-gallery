@@ -12,20 +12,28 @@ const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
 
-    const [title, setTitle] = React.useState(imageData? imageData?.title : "Undefined");
     const [imageTags, setImageTags] = React.useState<Set<string>>(new Set())
 
     useEffect(() => {
-        setTitle(imageData? imageData?.title : "Undefined")
+        if (imageData) {
+            window.api.db.getImages(sqlQueries.getImageTags, (tag: {name: string}[]) => {
+                setImageTags(new Set(tag.flatMap(({name}) => name)))
+            }, imageData.image_id)
+        }
     }, [imageData])
 
     const onTagSelected = (tag: string) => {
-        setImageTags(new Set(imageTags.add(tag)))
+        window.api.db.getImages(sqlQueries.addImageTag, () => {
+            setImageTags(new Set(imageTags.add(tag)))
+        }, {image_id: imageData?.image_id, tag})
     }
 
     const removeImageTag = (tag: string) => () => {
-        console.log(imageTags.delete(tag))
-        setImageTags(new Set(imageTags))
+        window.api.db.getImages(sqlQueries.removeImageTag, (e) => {
+            console.log(e)
+            imageTags.delete(tag)
+            setImageTags(new Set(imageTags))
+        }, {image_id: imageData?.image_id, tag})
     }
 
     return (

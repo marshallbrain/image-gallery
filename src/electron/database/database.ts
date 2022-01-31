@@ -76,13 +76,40 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
         "values(?)"
     )
 
-    return [{
-        imageSearch,
-        getImageData,
-        getTags,
-    }, {
-        createTag,
-    }
+    const getImageTags = db.prepare("" +
+        "select t.name " +
+        "from images_tags i " +
+        "left join tags t on i.tag_id = t.tag_id " +
+        "where i.image_id = ?"
+    )
+
+    const addImageTag = db.prepare("" +
+        "insert into images_tags " +
+        "select @image_id, tag_id " +
+        "from tags " +
+        "where name = @tag"
+    )
+
+    const removeImageTag = db.prepare("" +
+        "delete from images_tags " +
+        "where image_id = @image_id and tag_id = (" +
+            "select tag_id " +
+            "from tags t " +
+            "where t.name = @tag" +
+        ")"
+    )
+
+    return [
+        {
+            imageSearch,
+            getImageData,
+            getTags,
+            getImageTags,
+        }, {
+            createTag,
+            addImageTag,
+            removeImageTag,
+        }
     ]
 
 }
