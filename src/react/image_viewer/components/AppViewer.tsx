@@ -18,7 +18,7 @@ function AppViewer() {
     const [image, setImage] = React.useState<Image|null>(null)
     const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
-    const [imageFull, setImageFull] = useState(true)
+    const [imageFull, setImageFull] = useState(false)
 
     useEffect(() => {
         const updateImageListKey = window.api.receive(channels.updateImageViewerList, (images, index) => {
