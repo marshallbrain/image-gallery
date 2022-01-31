@@ -52,7 +52,7 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
     )
 
     const getImageData = db.prepare("" +
-        "select title, image_width, image_height " +
+        "select image_id, title, image_width, image_height " +
         "from images " +
         "where image_id = ?"
     )

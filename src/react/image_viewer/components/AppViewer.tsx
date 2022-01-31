@@ -36,7 +36,6 @@ function AppViewer() {
         if(imageList[index] != undefined) {
             window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
                 setImageData(data)
-                console.log(data.image_width > data.image_height)
             }, imageList[index].image_id)
         }
     }, [index])
@@ -174,6 +173,7 @@ interface Image {
 }
 
 export interface ImageData {
+    image_id: number,
     title: string,
     image_width: number,
     image_height: number,
