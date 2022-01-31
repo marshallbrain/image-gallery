@@ -20,7 +20,12 @@ const MetadataEdit = (props: PropTypes) => {
     }, [imageData])
 
     const onTagSelected = (tag: string) => {
-        setImageTags(imageTags.add(tag))
+        setImageTags(new Set(imageTags.add(tag)))
+    }
+
+    const removeImageTag = (tag: string) => () => {
+        console.log(imageTags.delete(tag))
+        setImageTags(new Set(imageTags))
     }
 
     return (
@@ -45,6 +50,12 @@ const MetadataEdit = (props: PropTypes) => {
                     padding: 2
                 }}
             >
+                {imageTags.size > 0 &&
+                    <ImageTags
+                        tags={[...imageTags]}
+                        removeTag={removeImageTag}
+                    />
+                }
                 <TagSelector
                     onTagSelected={onTagSelected}
                     selectedTags={imageTags}
