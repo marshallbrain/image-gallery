@@ -1,15 +1,24 @@
 import React from 'react';
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 import {ThemeProvider} from "@emotion/react";
-import AppViewer from "./AppViewer";
+import AppViewer from "./components/AppViewer";
 
 function RootViewer() {
 
-    const [themeOptions] = React.useState<Theme>(
+    const [themeOptions] = React.useState<ThemeOptions>(
         {
             palette: {
                 mode: 'dark',
-            }
+            },
+            components: {
+                MuiCssBaseline: {
+                    styleOverrides: {
+                        "::-webkit-scrollbar": {
+                            display: "none"
+                        },
+                    }
+                },
+            },
         }
     )
 
@@ -22,16 +31,10 @@ function RootViewer() {
 
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
             <AppViewer/>
         </ThemeProvider>
     );
-}
-
-interface Theme{
-    palette: {
-        mode: string,
-    }
 }
 
 export default RootViewer;

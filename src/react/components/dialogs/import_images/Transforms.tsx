@@ -15,7 +15,8 @@ import {
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import React from "react";
-import {metadataColumns, Transform} from "./ImportImages";
+import {Transform} from "./ImportImages";
+import {imageImportColumns} from "@utils/constants";
 
 export function Transforms(props: PropTypes) {
 
@@ -71,7 +72,7 @@ export function Transforms(props: PropTypes) {
                                             updateTransforms(index, "metadata", event.target.value)
                                         }}
                                     >
-                                        {Object.values(metadataColumns)
+                                        {Object.values(imageImportColumns)
                                             .map(value => {
                                                 return (
                                                     <MenuItem value={value} key={value}>
