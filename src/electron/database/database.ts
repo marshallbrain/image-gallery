@@ -1,8 +1,12 @@
-import sqlite3, {Database} from "better-sqlite3";
+import sqlite3, {Database, Statement} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
 import {channels, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
+
+interface PreparedStatements {
+    [index: string]: Statement
+}
 
 export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
 
@@ -16,7 +20,10 @@ export default () => {
 
 }
 
-const createChannelListeners = (getStatements: any, runStatements: any) => {
+const createChannelListeners = (
+    getStatements: PreparedStatements,
+    runStatements: PreparedStatements
+) => {
 
     ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
         try {
@@ -37,7 +44,7 @@ const createChannelListeners = (getStatements: any, runStatements: any) => {
     })
 }
 
-const prepareStatements = () => {
+const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => {
 
     const imageSearch = db.prepare("" +
         "select image_id, extension " +
