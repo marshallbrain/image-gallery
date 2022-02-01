@@ -3,23 +3,27 @@ import {Paper, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import {channels} from "@utils/ipcCommands";
+import {Image} from "@components/App";
 
 function ImageGrid(props: PropTypes) {
 
-    const {images} = props
+    const {images, onImageSelected} = props
 
     const Cell = (column: number) => (cell: any) => {
+
         const id = cell.rowIndex*column+cell.columnIndex
+
         if (images.length > id) {
             const {image_id, title} = images[id]
+
             return (
                 <ImageCell
                     style={cell.style}
                     onClick={() => {
-                        window.api.send(channels.openImageViewer, images, id)
+                        onImageSelected(id, images)
                     }}
                 >
-                    <Image
+                    <Img
                         key={image_id.toString()}
                         src={`preview://${image_id}`}
                         alt={title}
@@ -55,7 +59,7 @@ function ImageGrid(props: PropTypes) {
 
 }
 
-const Image = styled("img")({
+const Img = styled("img")({
     maxWidth: "100%",
     maxHeight: "100%",
 })
@@ -70,7 +74,8 @@ const ImageCell = styled("div")({
 })
 
 interface PropTypes {
-    images: { image_id: Number, title: string }[]
+    images: Image[]
+    onImageSelected: (index: number, imageList: Image[]) => void
 }
 
 export default ImageGrid;
