@@ -5,14 +5,33 @@ import {channels} from "@utils/ipcCommands";
 import sqlQueries from "@utils/sqlQueries";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import TagSelector from "./TagSelector";
-import ImageTags from "./ImageTags";
+import TagSearch from "./TagSearch";
+import TagList from "./TagList";
 
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
 
     const [imageTags, setImageTags] = React.useState<Set<string>>(new Set())
+    const [tagsOrdered, setTagsOrdered] = React.useState<string[]>([])
+
+    let lastTagSearch = ""
+
+    useEffect(() => {
+        updateTags("")
+        window.api.receive(channels.updateTagLists, () => {
+            updateTags(lastTagSearch)
+        })
+    }, [])
+
+    const updateTags = (search: string) => {
+        lastTagSearch = search
+        window.api.db.getImages(sqlQueries.getTags, (data: {name: string}[]) => {
+            setTagsOrdered([
+                ...data.flatMap((({name}) => name))
+            ])
+        }, {name: search})
+    }
 
     useEffect(() => {
         if (imageData) {
@@ -23,9 +42,11 @@ const MetadataEdit = (props: PropTypes) => {
     }, [imageData])
 
     const onTagSelected = (tag: string) => {
-        window.api.db.getImages(sqlQueries.addImageTag, () => {
-            setImageTags(new Set(imageTags.add(tag)))
-        }, {image_id: imageData?.image_id, tag})
+        window.api.db.getImages(sqlQueries.createTag, () => {
+            window.api.db.getImages(sqlQueries.addImageTag, () => {
+                setImageTags(new Set(imageTags.add(tag)))
+            }, {image_id: imageData?.image_id, tag})
+        }, tag)
     }
 
     const removeImageTag = (tag: string) => () => {
@@ -59,14 +80,16 @@ const MetadataEdit = (props: PropTypes) => {
                 }}
             >
                 {imageTags.size > 0 &&
-                    <ImageTags
+                    <TagList
                         tags={[...imageTags]}
                         removeTag={removeImageTag}
                     />
                 }
-                <TagSelector
+                <TagSearch
                     onTagSelected={onTagSelected}
                     selectedTags={imageTags}
+                    onTagSearch={updateTags}
+                    tags={tagsOrdered}
                 />
             </Stack>
         </Drawer>

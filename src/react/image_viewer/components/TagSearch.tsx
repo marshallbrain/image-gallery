@@ -6,55 +6,46 @@ import {channels} from "@utils/ipcCommands";
 import sqlQueries from "@utils/sqlQueries";
 import {RunResult} from "better-sqlite3";
 
-const TagSelector = (props: PropTypes) => {
+const TagSearch = (props: PropTypes) => {
 
-    const {onTagSelected, selectedTags} = props
+    const {
+        tags,
+        selectedTags,
+        onTagSelected,
+        onTagSearch,
+    } = props
 
-    const [tagSearch, setTagSearch] = React.useState("")
-    const [tagsOrdered, setTagsOrdered] = React.useState<string[]>([])
-    const [tags, setTags] = React.useState<{ [index: string]: {} }>({})
-
-    useEffect(() => {
-        updateTags()
-        window.api.receive(channels.updateTagLists, () => {
-            updateTags()
-        })
-    }, [])
+    const [search, setSearch] = React.useState("")
+    const [filterTags, setFilterTags] = React.useState<string[]>([])
 
     useEffect(() => {
-        updateTags()
-    }, [tagSearch])
+        setFilterTags(
+            ((search == "" || (tags.length && search === tags[0]))? []: [""]).concat(
+                tags.filter(value => !selectedTags.has(value))
+            )
+        )
+    }, [tags, selectedTags])
 
-    const updateTags = () => {
-        window.api.db.getImages(sqlQueries.getTags, (data: {name: string}[]) => {
-            setTagsOrdered([
-                ...((tagSearch == "" || (data.length && tagSearch == data[0].name))? []: [""]),
-                ...data.flatMap((({name}) => name))
-            ])
-        }, {name: tagSearch})
+    const onSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value)
+        onTagSearch(event.target.value);
     }
 
     const selectTag = (tag: string) => () => {
         if (tag == "") return
-        window.api.db.getImages(sqlQueries.createTag, () => {
-            onTagSelected(tag)
-        }, tag)
-    }
-
-    const onSearchTags = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTagSearch(event.target.value);
+        onTagSelected(tag)
     }
 
     const renderTags = ({ index, style }: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" disablePadding>
-            {(tagsOrdered[index] === "")?
+            {(filterTags[index] === "")?
                 <Chip
-                    label={tagSearch}
+                    label={search}
                     color={"success"}
-                    onClick={selectTag(tagSearch)}/>:
+                    onClick={selectTag(search)}/>:
                 <Chip
-                    label={tagsOrdered[index]}
-                    onClick={selectTag(tagsOrdered[index])}
+                    label={filterTags[index]}
+                    onClick={selectTag(filterTags[index])}
                 />
             }
         </ListItem>
@@ -71,12 +62,12 @@ const TagSelector = (props: PropTypes) => {
                 <TextField
                     label="Search Tags"
                     variant="standard"
-                    value={tagSearch}
-                    onChange={onSearchTags}
+                    value={search}
+                    onChange={onSearch}
                     onKeyDown={(e: KeyboardEvent) => {
                         if (e.key === "Enter") {
                             e.preventDefault()
-                            selectTag(tagSearch)()
+                            selectTag(search)()
                         }
                     }}
                 />
@@ -87,7 +78,7 @@ const TagSelector = (props: PropTypes) => {
                                 height={height}
                                 width={width}
                                 itemSize={42}
-                                itemCount={tagsOrdered.length}
+                                itemCount={filterTags.length}
                                 overscanCount={5}
                                 style={{
                                 }}
@@ -103,12 +94,14 @@ const TagSelector = (props: PropTypes) => {
 };
 
 const TagList = styled("div")({
-    minHeight: 300,
+    minHeight: 208,
 })
 
 interface PropTypes {
-    onTagSelected: (tag: string) => void
+    tags: string[]
     selectedTags: Set<string>
+    onTagSelected: (tag: string) => void
+    onTagSearch: (tag: string) => void
 }
 
-export default TagSelector;
+export default TagSearch;
