@@ -58,15 +58,8 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
     )
 
     const getTags = db.prepare("" +
-        "select name " +
+        "select tag_id, name " +
         "from tags " +
-        "where name = @name " +
-
-        "union " +
-
-        "select name " +
-        "from tags " +
-        "where name like '%' || @name || '%' " +
         "order by " +
         "name"
     )
@@ -85,18 +78,12 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
 
     const addImageTag = db.prepare("" +
         "insert into images_tags " +
-        "select @image_id, tag_id " +
-        "from tags " +
-        "where name = @tag"
+        "select ?, ?"
     )
 
     const removeImageTag = db.prepare("" +
         "delete from images_tags " +
-        "where image_id = @image_id and tag_id = (" +
-            "select tag_id " +
-            "from tags t " +
-            "where t.name = @tag" +
-        ")"
+        "where image_id = ? and tag_id = ?"
     )
 
     return [
@@ -115,7 +102,7 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
 }
 
 const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {
-    createTag: (event) => event.reply(channels.updateTagLists)
+    createTag: (event) => event.reply(channels.updateTagLists),
 }
 
 /*
