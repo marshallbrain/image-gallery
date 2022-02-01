@@ -6,6 +6,7 @@ const enum queries {
     getImageTags = "getImageTags",
     addImageTag = "addImageTag",
     removeImageTag = "removeImageTag",
+    clearImageTag = "clearImageTag",
 }
 
 export default queries

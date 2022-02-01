@@ -86,6 +86,11 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
         "where image_id = ? and tag_id = ?"
     )
 
+    const clearImageTag = db.prepare("" +
+        "delete from images_tags " +
+        "where image_id = ?"
+    )
+
     return [
         {
             imageSearch,
@@ -96,6 +101,7 @@ const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => 
             createTag,
             addImageTag,
             removeImageTag,
+            clearImageTag,
         }
     ]
 

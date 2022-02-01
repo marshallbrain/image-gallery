@@ -67,23 +67,17 @@ const MetadataEdit = (props: PropTypes) => {
                 }, [imageData?.image_id, tag?.tag_id])
                 break
             case "remove":
+                window.api.db.getImages(sqlQueries.removeImageTag, () => {
+                    updateImageTags()
+                }, [imageData?.image_id, tag?.tag_id])
                 break
             case "clear":
+                window.api.db.getImages(sqlQueries.clearImageTag, () => {
+                    updateImageTags()
+                }, [imageData?.image_id])
                 break
         }
     }
-
-    // const onTagSelected = (tag: Tag) => {
-    //     window.api.db.getImages(sqlQueries.createTag, () => {
-    //         window.api.db.getImages(sqlQueries.addImageTag, () => {
-    //         }, {image_id: imageData?.image_id, tag})
-    //     }, tag)
-    // }
-    //
-    // const removeImageTag = (tag: string) => () => {
-    //     window.api.db.getImages(sqlQueries.removeImageTag, () => {
-    //     }, {image_id: imageData?.image_id, tag})
-    // }
 
     return (
         <Drawer
@@ -104,7 +98,8 @@ const MetadataEdit = (props: PropTypes) => {
                 alignItems="stretch"
                 spacing={2}
                 sx={{
-                    padding: 2
+                    p: 2,
+                    pt: 4,
                 }}
             >
                 <TagSelector
