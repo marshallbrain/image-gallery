@@ -5,7 +5,7 @@ import {db} from "@electron/database/database";
 import path from "path";
 import pathModule, {ParsedPath} from "path";
 import sharp from "sharp";
-import {appData, appDataDir} from "@utils/utilities";
+import {appData} from "@utils/utilities";
 import {imageImportColumns} from "@utils/constants";
 import sizeOf from "image-size"
 
@@ -26,8 +26,8 @@ const columnsFull: string[] = [
     "original_metadata"
 ]
 
-const rawImageLocation = appDataDir("images", "raw")
-const previewImageLocation = appDataDir("images", "prev")
+const rawImageLocation = appData("images", "raw")
+const previewImageLocation = appData("images", "prev")
 
 const imageCounter = (count: number, callback: () => void) => {
     let currentCount = 0
