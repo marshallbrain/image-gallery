@@ -23,6 +23,12 @@ function AppViewer(props: PropTypes) {
     const [imageFull, setImageFull] = useState(false)
 
     useEffect(() => {
+        window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
+            setImageData(data)
+        }, imageList[index].image_id)
+    }, [])
+
+    useEffect(() => {
         setImage(imageList[index])
         if(imageList[index] != undefined) {
             window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
@@ -86,7 +92,9 @@ function AppViewer(props: PropTypes) {
                     />
                 </Options>
             </ImageContainer>
-            <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
+            {imageData &&
+                <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
+            }
         </View>
     );
 }
@@ -105,8 +113,8 @@ const ImageDisplay = styled("img", {
             width: (landscape)? "auto": "100%",
             alignSelf: "flex-start"
         }: {
-            "max-height": "100vh",
-            "max-width": "100%",
+            maxHeight: "100vh",
+            maxWidth: "100%",
         }
     )
 )
@@ -117,11 +125,11 @@ const ImageContainer = styled("div", {
     open: boolean
 }>(
     ({theme, open}) => ({
-        "min-height": "100vh",
+        minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
-        "justify-content": "center",
-        "align-items": "center",
+        justifyContent: "center",
+        alignItems: "center",
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
