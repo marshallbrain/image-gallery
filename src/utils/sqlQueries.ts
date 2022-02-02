@@ -1,12 +1,18 @@
-const enum queries {
-    imageSearch = "imageSearch",
-    getImageData = "getImageData",
-    getTags = "getTags",
-    createTag = "createTag",
-    getImageTags = "getImageTags",
-    addImageTag = "addImageTag",
-    removeImageTag = "removeImageTag",
-    clearImageTag = "clearImageTag",
+const queries = {
+    getImageData: "getImageData",
+    imageSearch: "imageSearch",
+    getTags: "getTags",
+    getImageTags: "getImageTags",
+    createTag: "createTag",
+    addImageTag: "addImageTag",
+    removeImageTag: "removeImageTag",
+    clearImageTag: "clearImageTag",
+    getCollections: "getCollections",
+    getImageCollections: "getImageCollections",
+    createCollection: "createCollection",
+    addImageCollection: "addImageCollection",
+    removeImageCollection: "removeImageCollection",
+    clearImageCollection: "clearImageCollection",
 }
 
 export default queries
