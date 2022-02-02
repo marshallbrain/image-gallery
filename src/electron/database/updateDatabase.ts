@@ -1,6 +1,6 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 2
+const currentDBVersion = 4
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -19,9 +19,9 @@ function createTables() {
 
     for (const table in tableDef) {
         // @ts-ignore
-        db.prepare("create table if not exists " + tableDef[table] + " (" +
+        db.prepare("create table if not exists " + tableDef[table].name + " (" +
             // @ts-ignore
-            tableDef[table]
+            tableDef[table].def
             + ");"
         ).run()
     }
@@ -92,21 +92,21 @@ const tableDef = {
     collections: {
         name: "collections",
         def: "" +
-            "collect_id integer primary key," +
+            "collection_id integer primary key," +
             "name text not null unique"
     },
     imageCollection: {
         name: "image_collection",
         def: "" +
             "image_id integer not null," +
-            "collect_id integer not null," +
-            "primary key (image_id, collect_id)," +
+            "collection_id integer not null," +
+            "primary key (image_id, collection_id)," +
             "foreign key (image_id) " +
             "references images (image_id) " +
             "on update cascade " +
             "on delete cascade," +
-            "foreign key (collect_id) " +
-            "references collections (collect_id) " +
+            "foreign key (collection_id) " +
+            "references collections (collection_id) " +
             "on update cascade " +
             "on delete cascade"
     }
