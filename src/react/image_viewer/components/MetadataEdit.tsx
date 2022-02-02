@@ -32,10 +32,12 @@ const MetadataEdit = (props: PropTypes) => {
 
     useEffect(() => {
         updateTags()
+        updateCollections()
     }, [])
 
     useEffect(() => {
         updateImageTags()
+        updateImageCollections()
     }, [imageData])
 
     const updateTags = () => {
@@ -66,7 +68,6 @@ const MetadataEdit = (props: PropTypes) => {
     const onModifyTags = (
         reason: "select" | "remove" | "clear"
     ) => (tag?: { tag_id?: string, value?: string }) => {
-        console.log(tag)
         switch (reason) {
             case "select":
                 if (tag?.value) {
@@ -99,20 +100,21 @@ const MetadataEdit = (props: PropTypes) => {
     const onModifyCollections = (
         reason: "create" | "select" | "remove" | "clear"
     ) => (collection?: { collection_id?: string, value?: string }) => {
-        console.log(collection)
         switch (reason) {
-            case "create":
-                window.api.db.getImages(sqlQueries.createCollection, ({lastInsertRowid}: RunResult) => {
+            case "select":
+                if (collection?.value) {
+                    window.api.db.getImages(sqlQueries.createCollection, ({lastInsertRowid}: RunResult) => {
+                        window.api.db.getImages(
+                            sqlQueries.addImageCollection, () => {
+                                updateImageCollections()
+                            }, [imageData?.image_id, lastInsertRowid])
+                        updateCollections()
+                    }, collection?.value)
+                } else {
                     window.api.db.getImages(sqlQueries.addImageCollection, () => {
                         updateImageCollections()
-                    }, [imageData?.image_id, lastInsertRowid])
-                    updateCollections()
-                }, collection?.value)
-                break
-            case "select":
-                window.api.db.getImages(sqlQueries.addImageCollection, () => {
-                    updateImageCollections()
-                }, [imageData?.image_id, collection?.collection_id])
+                    }, [imageData?.image_id, collection?.collection_id])
+                }
                 break
             case "remove":
                 window.api.db.getImages(sqlQueries.removeImageCollection, () => {
@@ -156,6 +158,13 @@ const MetadataEdit = (props: PropTypes) => {
                     onSelectTag={onModifyTags("select")}
                     onRemoveTag={onModifyTags("remove")}
                     onClear={onModifyTags("clear")}
+                />
+                <TagSelector
+                    tags={collections}
+                    selectedTags={imageCollections}
+                    onSelectTag={onModifyCollections("select")}
+                    onRemoveTag={onModifyCollections("remove")}
+                    onClear={onModifyCollections("clear")}
                 />
             </Stack>
         </Drawer>

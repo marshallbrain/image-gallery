@@ -11,7 +11,7 @@ import MetadataEdit from "./MetadataEdit";
 import sqlQueries from "@utils/sqlQueries";
 import {Image} from "@components/App";
 
-const drawerWidth = 240;
+const drawerWidth = 450;
 
 function AppViewer(props: PropTypes) {
 
