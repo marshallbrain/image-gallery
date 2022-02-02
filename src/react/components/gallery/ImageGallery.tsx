@@ -4,10 +4,13 @@ import {channels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
 import {Grid} from "@mui/material";
+import {Image} from "@components/App";
 
-function ImageGallery() {
+function ImageGallery(props: PropTypes) {
 
-    const [images, setImages] = React.useState<{ image_id: Number, title: string }[]>([])
+    const {onImageSelected} = props
+
+    const [images, setImages] = React.useState<Image[]>([])
 
     useEffect(() => {
         window.api.receive(channels.importImagesComplete, () => {
@@ -37,12 +40,16 @@ function ImageGallery() {
                 <ImageSearch />
             </Grid>
             <Grid item xs>
-                <ImageGrid images={images} />
+                <ImageGrid images={images} onImageSelected={onImageSelected}/>
             </Grid>
         </Grid>
 
     )
 
+}
+
+interface PropTypes {
+    onImageSelected: (index: number, imageList: Image[]) => void
 }
 
 export default ImageGallery;

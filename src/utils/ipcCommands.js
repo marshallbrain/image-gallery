@@ -27,7 +27,7 @@ export const channels = {
     openImageViewer: "openImageViewer",
     onImageViewerOpen: "onImageViewerOpen",
     updateImageViewerList: "updateImageViewerList",
-    updateTagLists: "updateImageTags"
+    updateTagLists: "updateTags"
     
 }
 

@@ -51,7 +51,7 @@ function Root() {
     return (
         <ChangeThemeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
-                <CssBaseline />
+                <CssBaseline enableColorScheme />
                 <App/>
             </ThemeProvider>
         </ChangeThemeContext.Provider>

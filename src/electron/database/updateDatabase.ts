@@ -1,6 +1,6 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 2
+const currentDBVersion = 4
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -10,53 +10,22 @@ export default () => {
     else throw "Unknown database version"
 }
 
-const tableImageDef = "" +
-    "image_id integer primary key," +
-    "title text not null," +
-    "image_width integer not null," +
-    "image_height integer not null," +
-    "extension text not null," +
-    "original_metadata text not null"
-
-const tableTagsDef = "" +
-    "tag_id integer primary key," +
-    "name text not null unique"
-
-const tableImageTagDef = "" +
-    "image_id integer not null," +
-    "tag_id integer not null," +
-    "primary key (image_id, tag_id)," +
-    "foreign key (image_id) " +
-        "references images (image_id) " +
-        "on update cascade " +
-        "on delete cascade," +
-    "foreign key (tag_id) " +
-        "references tags (tag_id) " +
-        "on update cascade " +
-        "on delete cascade"
-
-enum Table {
-    IMAGES = "images",
-    TAGS = "tags",
-    IMAGES_TAGS = "images_tags"
-}
-
 const createDB = db.transaction(() => {
     createTables()
     db.pragma(`user_version = ${currentDBVersion}`)
 })
 
 function createTables() {
-    db.prepare("create table if not exists images (" +
-        tableImageDef
-        + ");").run()
-    db.prepare("create table if not exists tags (" +
-        tableTagsDef
-        + ");").run()
 
-    db.prepare("create table if not exists images_tags (" +
-        tableImageTagDef
-        + ");").run()
+    for (const table in tableDef) {
+        // @ts-ignore
+        db.prepare("create table if not exists " + tableDef[table].name + " (" +
+            // @ts-ignore
+            tableDef[table].def
+            + ");"
+        ).run()
+    }
+
 }
 
 const updateDB = db.transaction((version: number) => {
@@ -70,9 +39,9 @@ const updateDB = db.transaction((version: number) => {
 
 })
 
-function moveTable(table: Table, newColumns: string, oldColumns: string) {
-    db.prepare("create table new_" + table + " (" +
-        getTableDef(table)
+function moveTable(table: {name: string, def: string}, newColumns: string, oldColumns: string) {
+    db.prepare("create table new_" + table.name + " (" +
+        table.def
         + ");").run()
 
     db.prepare("" +
@@ -84,15 +53,62 @@ function moveTable(table: Table, newColumns: string, oldColumns: string) {
         ";"
     )
 
-    db.prepare("drop table " + table + ";").run()
-    db.prepare("alter table new_" + table + " to " + table + ";").run()
+    db.prepare("drop table " + table.name + ";").run()
+    db.prepare("alter table new_" + table.name + " to " + table.name + ";").run()
 }
 
-function getTableDef(table: Table): string {
-    switch (table) {
-        case Table.IMAGES: return tableImageTagDef
-        case Table.TAGS: return tableTagsDef
-        case Table.IMAGES_TAGS: return tableImageTagDef
+const tableDef = {
+    images: {
+        name: "images",
+        def: "" +
+            "image_id integer primary key," +
+            "title text not null," +
+            "image_width integer not null," +
+            "image_height integer not null," +
+            "extension text not null," +
+            "original_metadata text not null"
+    },
+    tags: {
+        name: "tags",
+        def: "" +
+            "tag_id integer primary key," +
+            "name text not null unique"
+    },
+    imagesTags: {
+        name: "images_tags",
+        def: "" +
+            "image_id integer not null," +
+            "tag_id integer not null," +
+            "primary key (image_id, tag_id)," +
+            "foreign key (image_id) " +
+            "references images (image_id) " +
+            "on update cascade " +
+            "on delete cascade," +
+            "foreign key (tag_id) " +
+            "references tags (tag_id) " +
+            "on update cascade " +
+            "on delete cascade"
+    },
+    collections: {
+        name: "collections",
+        def: "" +
+            "collection_id integer primary key," +
+            "name text not null unique"
+    },
+    imageCollection: {
+        name: "image_collection",
+        def: "" +
+            "image_id integer not null," +
+            "collection_id integer not null," +
+            "primary key (image_id, collection_id)," +
+            "foreign key (image_id) " +
+            "references images (image_id) " +
+            "on update cascade " +
+            "on delete cascade," +
+            "foreign key (collection_id) " +
+            "references collections (collection_id) " +
+            "on update cascade " +
+            "on delete cascade"
     }
 }
 

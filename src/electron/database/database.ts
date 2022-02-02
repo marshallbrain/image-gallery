@@ -3,10 +3,9 @@ import pathModule from "path";
 import {app, ipcMain} from "electron";
 import {channels, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
-
-interface PreparedStatements {
-    [index: string]: Statement
-}
+import preparedStatements, {
+    PreparedStatements,
+} from "@electron/database/preparedStatements/preparedStatements";
 
 export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
 
@@ -15,7 +14,7 @@ export default () => {
         db.close()
     })
 
-    const [getStatements, runStatements] = prepareStatements()
+    const {getStatements, runStatements} = preparedStatements()
     createChannelListeners(getStatements, runStatements)
 
 }
@@ -44,78 +43,8 @@ const createChannelListeners = (
     })
 }
 
-const prepareStatements: () => [PreparedStatements, PreparedStatements] = () => {
-
-    const imageSearch = db.prepare("" +
-        "select image_id, extension " +
-        "from images"
-    )
-
-    const getImageData = db.prepare("" +
-        "select image_id, title, image_width, image_height " +
-        "from images " +
-        "where image_id = ?"
-    )
-
-    const getTags = db.prepare("" +
-        "select name " +
-        "from tags " +
-        "where name = @name " +
-
-        "union " +
-
-        "select name " +
-        "from tags " +
-        "where name like '%' || @name || '%' " +
-        "order by " +
-        "name"
-    )
-
-    const createTag = db.prepare("" +
-        "insert into tags (name) " +
-        "values(?)"
-    )
-
-    const getImageTags = db.prepare("" +
-        "select t.name " +
-        "from images_tags i " +
-        "left join tags t on i.tag_id = t.tag_id " +
-        "where i.image_id = ?"
-    )
-
-    const addImageTag = db.prepare("" +
-        "insert into images_tags " +
-        "select @image_id, tag_id " +
-        "from tags " +
-        "where name = @tag"
-    )
-
-    const removeImageTag = db.prepare("" +
-        "delete from images_tags " +
-        "where image_id = @image_id and tag_id = (" +
-            "select tag_id " +
-            "from tags t " +
-            "where t.name = @tag" +
-        ")"
-    )
-
-    return [
-        {
-            imageSearch,
-            getImageData,
-            getTags,
-            getImageTags,
-        }, {
-            createTag,
-            addImageTag,
-            removeImageTag,
-        }
-    ]
-
-}
-
 const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {
-    createTag: (event) => event.reply(channels.updateTagLists)
+    createTag: (event) => event.reply(channels.updateTagLists),
 }
 
 /*

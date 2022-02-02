@@ -2,7 +2,7 @@ import React from 'react';
 import {Chip, Paper} from "@mui/material";
 import {ImageData} from "./AppViewer";
 
-const ImageTags = (props: PropTypes) => {
+const TagList = (props: PropTypes) => {
 
     const {tags, removeTag} = props
 
@@ -39,4 +39,4 @@ interface PropTypes {
     removeTag: (tag: string) => () => void
 }
 
-export default ImageTags;
+export default TagList;
