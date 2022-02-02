@@ -1,7 +1,6 @@
 import {db} from "@electron/database/database";
 import {PreparedStatementsFull} from "@electron/database/preparedStatements/preparedStatements";
 
-
 const getTags = db.prepare("" +
     "select tag_id, name " +
     "from tags " +

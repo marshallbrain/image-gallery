@@ -91,11 +91,24 @@ const tableDef = {
     },
     collections: {
         name: "collections",
-        def: ""
+        def: "" +
+            "collect_id integer primary key," +
+            "name text not null unique"
     },
     imageCollection: {
         name: "image_collection",
-        def: ""
+        def: "" +
+            "image_id integer not null," +
+            "collect_id integer not null," +
+            "primary key (image_id, collect_id)," +
+            "foreign key (image_id) " +
+            "references images (image_id) " +
+            "on update cascade " +
+            "on delete cascade," +
+            "foreign key (collect_id) " +
+            "references collections (collect_id) " +
+            "on update cascade " +
+            "on delete cascade"
     }
 }
 
