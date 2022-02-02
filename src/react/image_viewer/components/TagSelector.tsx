@@ -13,7 +13,6 @@ const TagSelector = (props: PropTypes) => {
     const {
         tags,
         selectedTags,
-        onCreateTag,
         onSelectTag,
         onRemoveTag,
         onClear
@@ -26,9 +25,6 @@ const TagSelector = (props: PropTypes) => {
         details: AutocompleteChangeDetails<Tag> | undefined
     ) => {
         switch (reason) {
-            case "createOption":
-                onCreateTag(details?.option as Tag)
-                break
             case "selectOption":
                 onSelectTag(details?.option as Tag)
                 break
@@ -96,14 +92,12 @@ const filter = createFilterOptions<Tag>({ignoreCase: true, stringify: option => 
 interface PropTypes {
     tags: Tag[]
     selectedTags: Tag[]
-    onCreateTag: (tag: Tag) => void
     onSelectTag: (tag: Tag) => void
     onRemoveTag: (tag: Tag) => void
     onClear: () => void
 }
 
 export interface Tag {
-    tag_id: number,
     name: string
     value?: string
 }
