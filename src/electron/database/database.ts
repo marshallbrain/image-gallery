@@ -14,7 +14,7 @@ export default () => {
         db.close()
     })
 
-    const {getStatements, runStatements} = preparedStatements
+    const {getStatements, runStatements} = preparedStatements()
     createChannelListeners(getStatements, runStatements)
 
 }

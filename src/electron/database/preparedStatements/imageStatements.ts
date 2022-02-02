@@ -1,23 +1,24 @@
 import {PreparedStatementsFull} from "@electron/database/preparedStatements/preparedStatements";
 import {db} from "@electron/database/database";
 
-const imageSearch = db.prepare("" +
-    "select image_id, extension " +
-    "from images"
-)
+const prepared: () => PreparedStatementsFull = () => {
 
-const getImageData = db.prepare("" +
-    "select image_id, title, image_width, image_height " +
-    "from images " +
-    "where image_id = ?"
-)
+    const imageSearch = db.prepare("" +
+        "select image_id, extension " +
+        "from images"
+    )
 
-const prepared: PreparedStatementsFull = {
-    getStatements: {
-        getImageData,
-        imageSearch,
-    },
-    runStatements: {
+    const getImageData = db.prepare("" +
+        "select image_id, title, image_width, image_height " +
+        "from images " +
+        "where image_id = ?"
+    )
+    return {
+        getStatements: {
+            getImageData,
+            imageSearch,
+        },
+        runStatements: {}
     }
 }
 

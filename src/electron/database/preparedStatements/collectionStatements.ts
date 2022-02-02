@@ -1,50 +1,53 @@
 import {db} from "@electron/database/database";
 import {PreparedStatementsFull} from "@electron/database/preparedStatements/preparedStatements";
 
-const getCollections = db.prepare("" +
-    "select collection_id, name " +
-    "from collections " +
-    "order by " +
-    "name"
-)
+const prepared: () => PreparedStatementsFull = () => {
 
-const getImageCollections = db.prepare("" +
-    "select t.name " +
-    "from image_collection i " +
-    "left join collections c on i.collection_id = c.collection_id " +
-    "where i.image_id = ?"
-)
+    const getCollections = db.prepare("" +
+        "select collection_id, name " +
+        "from collections " +
+        "order by " +
+        "name"
+    )
 
-const createCollection = db.prepare("" +
-    "insert into collections (name) " +
-    "values(?)"
-)
+    const getImageCollections = db.prepare("" +
+        "select c.name " +
+        "from image_collection i " +
+        "left join collections c on i.collection_id = c.collection_id " +
+        "where i.image_id = ?"
+    )
 
-const addImageCollection = db.prepare("" +
-    "insert into images_collections " +
-    "select ?, ?"
-)
+    const createCollection = db.prepare("" +
+        "insert into collections (name) " +
+        "values(?)"
+    )
 
-const removeImageCollection = db.prepare("" +
-    "delete from image_collection " +
-    "where image_id = ? and collection_id = ?"
-)
+    const addImageCollection = db.prepare("" +
+        "insert into image_collection " +
+        "select ?, ?"
+    )
 
-const clearImageCollection = db.prepare("" +
-    "delete from image_collection " +
-    "where image_id = ?"
-)
+    const removeImageCollection = db.prepare("" +
+        "delete from image_collection " +
+        "where image_id = ? and collection_id = ?"
+    )
 
-const prepared: PreparedStatementsFull = {
-    getStatements: {
-        getCollections,
-        getImageCollections,
-    },
-    runStatements: {
-        createCollection,
-        addImageCollection,
-        removeImageCollection,
-        clearImageCollection,
+    const clearImageCollection = db.prepare("" +
+        "delete from image_collection " +
+        "where image_id = ?"
+    )
+
+    return {
+        getStatements: {
+            getCollections,
+            getImageCollections,
+        },
+        runStatements: {
+            createCollection,
+            addImageCollection,
+            removeImageCollection,
+            clearImageCollection,
+        }
     }
 }
 
