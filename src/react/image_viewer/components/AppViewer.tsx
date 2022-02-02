@@ -111,7 +111,8 @@ const ImageDisplay = styled("img", {
         (fullscreen)? {
             height: (landscape)? "100vh": "100%",
             width: (landscape)? "auto": "100%",
-            alignSelf: "flex-start"
+            alignSelf: "flex-start",
+            padding: "inherit"
         }: {
             maxHeight: "100vh",
             maxWidth: "100%",
@@ -130,20 +131,20 @@ const ImageContainer = styled("div", {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        transition: theme.transitions.create('margin', {
+        transition: theme.transitions.create('padding', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginRight: 0,
+        paddingRight: 0,
         "&:focus": {
             outline: "none",
         },
         ...(open && {
-            transition: theme.transitions.create('margin', {
+            transition: theme.transitions.create('padding', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            marginRight: drawerWidth,
+            paddingRight: drawerWidth,
         }),
     })
 )
