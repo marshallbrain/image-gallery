@@ -5,31 +5,22 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
+import CloseIcon from '@mui/icons-material/Close';
 import {KeyboardEvent, useState} from "react";
 import MetadataEdit from "./MetadataEdit";
 import sqlQueries from "@utils/sqlQueries";
+import {Image} from "@components/App";
 
 const drawerWidth = 240;
 
-function AppViewer() {
+function AppViewer(props: PropTypes) {
 
-    const [index, setIndex] = React.useState(-1)
-    const [imageList, setImageList] = React.useState<Image[]>([])
+    const {index, imageList, onIndexChange, onClose} = props
+
     const [image, setImage] = React.useState<Image|null>(null)
     const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
     const [imageFull, setImageFull] = useState(false)
-
-    useEffect(() => {
-        const updateImageListKey = window.api.receive(channels.updateImageViewerList, (images, index) => {
-            setImageList(images)
-            setIndex(index)
-        })
-        window.api.send(channels.onImageViewerOpen)
-        return function cleanup() {
-            window.api.remove(channels.updateImageViewerList, updateImageListKey)
-        };
-    }, [])
 
     useEffect(() => {
         setImage(imageList[index])
@@ -42,12 +33,12 @@ function AppViewer() {
 
     const keyPressEvent = (e: KeyboardEvent) => {
         e.preventDefault()
-        // console.log(e.key)
+
         if (e.key === "ArrowRight" && index+1 < imageList.length) {
-            setIndex(index+1)
+            onIndexChange(index+1)
         }
         if (e.key === "ArrowLeft" && index > 0) {
-            setIndex(index-1)
+            onIndexChange(index-1)
         }
     }
 
@@ -86,6 +77,12 @@ function AppViewer() {
                         key={"Setting"}
                         icon={<SettingsIcon />}
                         tooltipTitle={"Setting"}
+                    />
+                    <SpeedDialAction
+                        key={"Close"}
+                        icon={<CloseIcon />}
+                        tooltipTitle={"Close"}
+                        onClick={onClose}
                     />
                 </Options>
             </ImageContainer>
@@ -167,9 +164,11 @@ const Options = styled(SpeedDial, {
 const View = styled("div")({
 })
 
-interface Image {
-    image_id: number,
-    extension: string
+interface PropTypes {
+    index: number
+    imageList: Image[]
+    onIndexChange: (index: number) => void
+    onClose: () => void
 }
 
 export interface ImageData {
