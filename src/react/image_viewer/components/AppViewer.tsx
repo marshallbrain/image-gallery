@@ -111,8 +111,9 @@ const ImageDisplay = styled("img", {
         (fullscreen)? {
             height: (landscape)? "100vh": "100%",
             width: (landscape)? "auto": "100%",
+            padding: (landscape)? "inherit": "0",
             alignSelf: "flex-start",
-            padding: "inherit"
+            margin: "auto"
         }: {
             maxHeight: "100vh",
             maxWidth: "100%",
