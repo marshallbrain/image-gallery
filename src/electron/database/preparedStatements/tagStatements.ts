@@ -10,7 +10,7 @@ const prepared: () => PreparedStatementsFull = () => {
     )
 
     const getImageTags = db.prepare("" +
-        "select t.name " +
+        "select t.tag_id, t.name " +
         "from images_tags i " +
         "left join tags t on i.tag_id = t.tag_id " +
         "where i.image_id = ?"
