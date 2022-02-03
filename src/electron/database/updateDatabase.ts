@@ -65,8 +65,10 @@ const tableDef = {
             "title text not null," +
             "image_width integer not null," +
             "image_height integer not null," +
+            "date_added integer not null," +
             "extension text not null," +
-            "original_metadata text not null"
+            "original_metadata text not null," +
+            "original_exif text not null "
     },
     tags: {
         name: "tags",

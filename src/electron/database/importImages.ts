@@ -1,47 +1,41 @@
 import {ImageFile, Mapper} from "@components/dialogs/import_images/ImportImages";
-import fs from "fs";
-import dotProp from "dot-prop";
-import {db} from "@electron/database/database";
-import path from "path";
-import pathModule, {ParsedPath} from "path";
 import sharp from "sharp";
-import {appData} from "@utils/utilities";
 import {imageImportColumns} from "@utils/constants";
-import sizeOf from "image-size"
+import fs from "fs";
+import pathModule, {ParsedPath} from "path";
+import path from "path";
+import dotProp from "dot-prop";
+import * as exifReader from "exifreader"
+import {db} from "@electron/database/database";
+import {appData} from "@utils/utilities";
+import {IpcMainEvent} from "electron";
+import {channels} from "@utils/ipcCommands";
 
-export default (files: ImageFile[], mappers: Mapper[], callback: () => void) => {
-    if (files.length == 0) return
-    const newImagePaths = insertMetadata(files, mappers)
-    const counter = imageCounter(newImagePaths.length, callback)
-    for (const file of newImagePaths) {
-        sharp(file.from).toFile(file.to, counter)
-    }
-}
-
+const rawFolder = appData("images", "raw")
+const prevFolder = appData("images", "prev")
 const columnsFull: string[] = [
     ...imageImportColumns,
     "image_width",
     "image_height",
+    "date_added",
     "extension",
-    "original_metadata"
+    "original_metadata",
+    "original_exif"
 ]
 
-const rawImageLocation = appData("images", "raw")
-const previewImageLocation = appData("images", "prev")
-
-const imageCounter = (count: number, callback: () => void) => {
-    let currentCount = 0
-    return () => {
-        currentCount++
-        if (currentCount >= count) {
-            callback()
-        }
-    }
+export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
+    if (files.length == 0) return
+    const imagesData = retrieveMetadata(files, mappers)
+    importImageData(imagesData, event)
 }
 
-const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) => {
-    const newImagePaths: {from: string, to: string}[] = []
-    const insert = db.prepare("" +
+const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
+    const totalImages = imageData.length
+    const importRemaining = new Set(imageData.map(({file}) => file.base))
+    const imagesRemaining = new Set(importRemaining)
+    const errored: string[] = []
+
+    const importStatement = db.prepare("" +
         "insert into images (" +
         columnsFull.join(", ") +
         ") values (" +
@@ -49,68 +43,151 @@ const insertMetadata = db.transaction((files: ImageFile[], mappers: Mapper[]) =>
         ")"
     )
 
-    for (const file of files) {
-        const fileInfo = path.parse(file.path)
-        const getJson = () => {
-            if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`)))
-                return JSON.parse(fs.readFileSync(
-                    pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`),
-                    'utf8'
-                ))
-            if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}.json`)))
-                return JSON.parse(fs.readFileSync(
-                    pathModule.join(fileInfo.dir, `${fileInfo.name}.json`),
-                    'utf8'
-                ))
-            return undefined
-        }
-        const jsonData = getJson()
-        const maps = getInsertMapper(mappers, jsonData)
-        const json: object = (jsonData)? jsonData: {
-            "title": fileInfo.name
-        }
-
-        const {width, height} = sizeOf(file.path)
-
-        const data: (string|number|undefined)[] = columnsFull.map(value => {
-            if (dotProp.has(json, maps[value]))
-                return dotProp.get(json, maps[value], "")
-            switch (value) {
-                case "image_width": return width
-                case "image_height": return height
-                case "extension": return fileInfo.ext.replace(".", "")
-                case "original_metadata": return JSON.stringify(json)
-                default: return (dotProp.get(json, value, ""))
-            }
+    for (const image of imageData) {
+        new Promise((resolve, reject) => {
+            const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
+            sharpImage
+                .withMetadata()
+                .toBuffer()
+                .then((buffer) => {
+                    const exif = exifReader.load(buffer)
+                    const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
+                    try {
+                        return db.transaction(() => {
+                            return importStatement.run(entry).lastInsertRowid
+                        })()
+                    } catch (e) {
+                        reject(image.file.base)
+                        return -1
+                    }
+                })
+                .then((imageID) => {
+                    sharpImage
+                        .toFile(pathModule.join(rawFolder, imageID+image.file.ext))
+                        .then(() => {
+                            return sharpImage
+                                .resize(256, 256, {fit: sharp.fit.inside})
+                                .toFormat("jpeg")
+                                .jpeg({
+                                    quality: 80,
+                                    mozjpeg: true
+                                })
+                                .toFile(pathModule.join(prevFolder, `${imageID}.jpeg`))
+                        })
+                        .then(() => {
+                            imagesRemaining.delete(image.file.base)
+                            if (importRemaining.size == 0) {
+                                event.reply(
+                                    channels.imageImported,
+                                    (totalImages - imagesRemaining.size) / totalImages,
+                                    "Creating thumbnails")
+                            }
+                        })
+                        .catch(() => {
+                            reject(image.file.base)
+                        })
+                        .finally(() => {
+                            if (importRemaining.size == 0 && imagesRemaining.size == 0) {
+                                event.reply(channels.imageImportComplete, errored)
+                            }
+                        })
+                }).then(() => {
+                    resolve(image.file.base)
+                })
+                .catch(() => {
+                    reject(image.file.base)
+                })
         })
-
-        const imageId = insert.run(data).lastInsertRowid
-        const rawFile = pathModule.join(rawImageLocation, imageId.toString() + fileInfo.ext)
-        newImagePaths.push({from: file.path, to: rawFile})
-
-        const previewFile = pathModule.join(previewImageLocation, imageId.toString() + ".jpeg")
-        sharp(file.path)
-            .resize(256, 256, {fit: sharp.fit.inside})
-            .toFormat("jpeg")
-            .jpeg({
-                quality: 80,
-                mozjpeg: true
+            .then((filename) => {
+                importRemaining.delete(filename as string)
+                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
-            .toFile(previewFile)
-            .then(r => {})
+            .catch((filename) => {
+                importRemaining.delete(filename as string)
+                errored.push(filename)
+                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
+            })
+            .finally(() => {
+                if (importRemaining.size == 0 && imagesRemaining.size == 0) {
+                    event.reply(channels.imageImportComplete, errored)
+                }
+            })
     }
-    return newImagePaths
+}
+
+const formatMetadata  = (
+    imageFile: ParsedPath,
+    jsonData: object,
+    jsonMapper: {[p: string]: string},
+    exifData: exifReader.Tags & exifReader.XmpTags & exifReader.IccTags
+) => columnsFull.map(value => {
+    switch (value) {
+        case "title": return (dotProp.get(jsonData, jsonMapper[value], imageFile.name))
+        case "image_width": return (
+            (exifData["Image Width"])?
+                exifData["Image Width"].value:
+                exifData["PixelXDimension"]?.value) as unknown as number
+        case "image_height": return (
+            (exifData["Image Height"])?
+                exifData["Image Height"].value:
+                exifData["PixelYDimension"]?.value) as unknown as number
+        case "date_added": return new Date().getTime()
+        case "extension": return imageFile.ext.replace(".", "")
+        case "original_metadata": return (jsonData)? JSON.stringify(jsonData): ""
+        case "original_exif": return (exifData)? JSON.stringify(exifData): ""
+        default: return (dotProp.get(jsonData, jsonMapper[value], ""))
+    }
 })
+
+const retrieveMetadata = (files: ImageFile[], mappers: Mapper[]) => {
+    const imageData: ImageData[] = []
+    for (const file of files) {
+        const jsonData = getJsonData(file)
+        const mappedJson = getInsertMapper(mappers, jsonData)
+        imageData.push({file: pathModule.parse(file.path), jsonData, jsonMapper: mappedJson})
+    }
+
+    return imageData
+}
+
+const getJsonData = (file: ImageFile) => {
+    const fileInfo = path.parse(file.path)
+
+    if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`)))
+        return JSON.parse(fs.readFileSync(
+            pathModule.join(fileInfo.dir, `${fileInfo.name}${fileInfo.ext}.json`),
+            'utf8'
+        ))
+    if (fs.existsSync(pathModule.join(fileInfo.dir, `${fileInfo.name}.json`)))
+        return JSON.parse(fs.readFileSync(
+            pathModule.join(fileInfo.dir, `${fileInfo.name}.json`),
+            'utf8'
+        ))
+    return undefined
+}
 
 const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
     if (jsonData != undefined) for (const mapper of mappers) {
-        let matches = true
-        for (const filter of mapper.filters) {
-            matches = matches && dotProp.get(jsonData, filter.path) === filter.value
-        }
+
+        let matches = mapper.filters.every((filter) =>
+            dotProp.get(jsonData, filter.path) === filter.value
+        )
         if (matches) {
-            return Object.fromEntries(mapper.transforms.map(value => [value.metadata.toLowerCase(), value.prop]))
+            return mapper.transforms.reduce((prev, curr) => {
+                return {
+                    ...prev,
+                    [curr.metadata.toLowerCase()]: curr.prop
+                }
+            }, {})
         }
     }
     return {}
+}
+
+interface ImageData {
+    file: ParsedPath,
+    jsonData: object,
+    jsonMapper: {
+        [p: string]: string
+    }
 }

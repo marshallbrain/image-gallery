@@ -6,12 +6,20 @@ body {
     margin: 0;
 }
 
-:not(input):not(textarea),
-:not(input):not(textarea)::after,
-:not(input):not(textarea)::before {
+:not(input):not(textarea):not(.userSelectable),
+:not(input):not(textarea):not(.userSelectable)::after,
+:not(input):not(textarea):not(.userSelectable)::before {
     -webkit-user-select: none;
     user-select: none;
     cursor: default;
+}
+
+.userSelectable,
+.userSelectable::after,
+.userSelectable::before {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+    cursor: text !important;
 }
 
 a:not([draggable=true]), img:not([draggable=true]) {
