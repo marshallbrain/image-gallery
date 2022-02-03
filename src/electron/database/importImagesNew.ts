@@ -2,16 +2,19 @@ import {ImageFile, Mapper} from "@components/dialogs/import_images/ImportImages"
 import sharp from "sharp";
 import {imageImportColumns} from "@utils/constants";
 import fs from "fs";
-import pathModule from "path";
+import pathModule, {ParsedPath} from "path";
 import path from "path";
 import dotProp from "dot-prop";
+import * as exifReader from "exifreader"
 
 const columnsFull: string[] = [
     ...imageImportColumns,
     "image_width",
     "image_height",
+    "date_added",
     "extension",
-    "original_metadata"
+    "original_metadata",
+    "original_exif"
 ]
 
 export default (files: ImageFile[], mappers: Mapper[]) => {
@@ -24,26 +27,45 @@ const importImageData = (imageData: ImageData[]) => {
     const remaining = new Set(imageData.map(({file}) => file.name))
     for (const image of imageData) {
         new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(image.file.name)
-            }, Math.random() * 900 + 100)
-        }).then((name) => {
-            console.log(name)
-            remaining.delete(name as string)
-        }).finally(() => {
-            if (remaining.size == 0) {
-                console.log("COMPLETE")
-            }
+            const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
+            sharpImage
+                .withMetadata()
+                .toBuffer()
+                .then((buffer) => {
+                    const exif = exifReader.load(buffer)
+                    const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
+                    console.log(entry)
+                })
         })
+        //save metadata and exif to db
+        //save image and create prev
     }
 }
+
+const formatMetadata  = (
+    imageFile: ParsedPath,
+    jsonData: object,
+    jsonMapper: {[p: string]: string},
+    exifData: exifReader.Tags & exifReader.XmpTags & exifReader.IccTags
+) => columnsFull.map(value => {
+    switch (value) {
+        case "title": return (dotProp.get(jsonData, jsonMapper[value], imageFile.name))
+        case "image_width": return exifData["Image Width"]
+        case "image_height": return exifData["Image Height"]
+        case "date_added": return new Date().getTime()
+        case "extension": return imageFile.ext.replace(".", "")
+        case "original_metadata": return JSON.stringify(jsonData)
+        case "original_exif": return JSON.stringify(exifData)
+        default: return (dotProp.get(jsonData, jsonMapper[value], ""))
+    }
+})
 
 const retrieveMetadata = (files: ImageFile[], mappers: Mapper[]) => {
     const imageData: ImageData[] = []
     for (const file of files) {
         const jsonData = getJsonData(file)
         const mappedJson = getInsertMapper(mappers, jsonData)
-        imageData.push({file, jsonData, mappedJson})
+        imageData.push({file: pathModule.parse(file.path), jsonData, jsonMapper: mappedJson})
     }
 
     return imageData
@@ -84,9 +106,9 @@ const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
 }
 
 interface ImageData {
-    file: ImageFile,
+    file: ParsedPath,
     jsonData: object,
-    mappedJson: {
+    jsonMapper: {
         [p: string]: string
     }
 }
