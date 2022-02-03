@@ -21,15 +21,17 @@ const columnsFull: string[] = [
     "original_exif"
 ]
 
-export default (files: ImageFile[], mappers: Mapper[]) => {
+export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
     if (files.length == 0) return
     const imagesData = retrieveMetadata(files, mappers)
-    importImageData(imagesData)
+    importImageData(imagesData, event)
 }
 
-const importImageData = (imageData: ImageData[]) => {
+const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     const totalImages = imageData.length
     const remaining = new Set(imageData.map(({file}) => file.name))
+    const errored: string[] = []
+
     const importStatement = db.prepare("" +
         "insert into images (" +
         columnsFull.join(", ") +
@@ -78,15 +80,19 @@ const importImageData = (imageData: ImageData[]) => {
         })
             .then((filename) => {
                 remaining.delete(filename as string)
-                console.log(totalImages - remaining.size, filename)
+                console.log(totalImages)
+                console.log(remaining.size)
+                console.log((totalImages - remaining.size))
+                console.log((totalImages - remaining.size) / totalImages)
+                event.reply(channels.imageImported, (totalImages - remaining.size) / totalImages, filename)
             })
             .catch((filename) => {
                 remaining.delete(filename as string)
-                console.log("ERROR:", filename)
+                errored.push(filename)
             })
             .finally(() => {
                 if (remaining.size == 0) {
-                    console.log("complete")
+                    event.reply(channels.imageImportComplete, errored)
                 }
             })
     }

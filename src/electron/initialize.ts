@@ -52,7 +52,7 @@ export default (createWindow: WindowSetupFunction) => {
 const createChannelListeners = () => {
 
     ipcMain.on(channels.importImages, (event, [files, mappers]) => {
-        importImages(files, mappers)
+        importImages(files, mappers, event)
     })
 
     ipcMain.on(channels.reimportImages, (event, [_files, mappers]) => {

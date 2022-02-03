@@ -20,15 +20,18 @@ export const sqlSelectChannel = `${namespaceSql}select`
 export const channels = {
     openImportDialog: "openImportDialog",
     importImages: "importImages",
-    importImagesComplete: "importImagesComplete",
+    
     openReimportDialog: "openReimportDialog",
     reimportImages: "reimportImages",
+    
+    imageImported: "imageImported",
+    imageImportComplete: "imageImportComplete",
+    
     reimportImagesComplete: "reimportImagesComplete",
     openImageViewer: "openImageViewer",
     onImageViewerOpen: "onImageViewerOpen",
     updateImageViewerList: "updateImageViewerList",
     updateTagLists: "updateTags"
-    
 }
 
 export const ipcChannels = new Set(Object.values(channels))
