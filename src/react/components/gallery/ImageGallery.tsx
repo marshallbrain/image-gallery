@@ -13,19 +13,13 @@ function ImageGallery(props: PropTypes) {
     const [images, setImages] = React.useState<Image[]>([])
 
     useEffect(() => {
-        window.api.receive(channels.importImagesComplete, () => {
-            console.log("Image import complete")
-            getImages()
-        })
-        window.api.receive(channels.reimportImagesComplete, () => {
-            console.log("Re-image import complete")
-            getImages()
-        })
         getImages()
+        const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, () => {
+            getImages()
+        })
         return function cleanup() {
-            window.api.removeAll(channels.importImagesComplete)
-            window.api.removeAll(channels.reimportImagesComplete)
-        };
+            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
+        }
     }, [])
 
     const getImages = () => {
