@@ -17,15 +17,36 @@ const columnsFull: string[] = [
 export default (files: ImageFile[], mappers: Mapper[]) => {
     if (files.length == 0) return
     const imagesData = retrieveMetadata(files, mappers)
+    importImageData(imagesData)
+}
+
+const importImageData = (imageData: ImageData[]) => {
+    const remaining = new Set(imageData.map(({file}) => file.name))
+    for (const image of imageData) {
+        new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(image.file.name)
+            }, Math.random() * 900 + 100)
+        }).then((name) => {
+            console.log(name)
+            remaining.delete(name as string)
+        }).finally(() => {
+            if (remaining.size == 0) {
+                console.log("COMPLETE")
+            }
+        })
+    }
 }
 
 const retrieveMetadata = (files: ImageFile[], mappers: Mapper[]) => {
+    const imageData: ImageData[] = []
     for (const file of files) {
         const jsonData = getJsonData(file)
-        const maps = getInsertMapper(mappers, jsonData)
+        const mappedJson = getInsertMapper(mappers, jsonData)
+        imageData.push({file, jsonData, mappedJson})
     }
 
-    return undefined
+    return imageData
 }
 
 const getJsonData = (file: ImageFile) => {
@@ -41,6 +62,7 @@ const getJsonData = (file: ImageFile) => {
             pathModule.join(fileInfo.dir, `${fileInfo.name}.json`),
             'utf8'
         ))
+    return undefined
 }
 
 const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
@@ -59,4 +81,12 @@ const getInsertMapper = (mappers: Mapper[], jsonData: any) => {
         }
     }
     return {}
+}
+
+interface ImageData {
+    file: ImageFile,
+    jsonData: object,
+    mappedJson: {
+        [p: string]: string
+    }
 }
