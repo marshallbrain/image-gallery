@@ -31,7 +31,7 @@ export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
 
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     const totalImages = imageData.length
-    const remaining = new Set(imageData.map(({file}) => file.name))
+    const remaining = new Set(imageData.map(({file}) => file.base))
     const errored: string[] = []
 
     const importStatement = db.prepare("" +
@@ -82,6 +82,7 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
         })
             .then((filename) => {
                 remaining.delete(filename as string)
+                console.log(remaining)
                 event.reply(channels.imageImported, (totalImages - remaining.size) / totalImages, filename)
             })
             .catch((filename) => {
@@ -104,8 +105,14 @@ const formatMetadata  = (
 ) => columnsFull.map(value => {
     switch (value) {
         case "title": return (dotProp.get(jsonData, jsonMapper[value], imageFile.name))
-        case "image_width": return exifData["Image Width"].value as unknown as number
-        case "image_height": return exifData["Image Height"].value as unknown as number
+        case "image_width": return (
+            (exifData["Image Width"])?
+                exifData["Image Width"].value:
+                exifData["PixelXDimension"]?.value) as unknown as number
+        case "image_height": return (
+            (exifData["Image Height"])?
+                exifData["Image Height"].value:
+                exifData["PixelYDimension"]?.value) as unknown as number
         case "date_added": return new Date().getTime()
         case "extension": return imageFile.ext.replace(".", "")
         case "original_metadata": return (jsonData)? JSON.stringify(jsonData): ""
