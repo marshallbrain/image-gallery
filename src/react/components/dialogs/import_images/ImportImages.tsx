@@ -30,7 +30,7 @@ function ImportImages(props: PropTypes) {
     const [name, setName] = React.useState(defaultMap.name)
     const [filters, setFilters] = React.useState<Filter[]>(defaultMap.filters)
     const [transforms, setTransforms] = React.useState<Transform[]>(defaultMap.transforms)
-    const [files, setFiles] = React.useState<ImageFile[]>()
+    const [files, setFiles] = React.useState<ImageFile[]>([])
 
     React.useEffect(() => {
         const data = window.api.savedStore.get("json mappings")
@@ -115,6 +115,7 @@ function ImportImages(props: PropTypes) {
     }
     const importImages = () => {
         window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
+        console.log("close")
         close()
     }
 
