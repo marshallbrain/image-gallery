@@ -8,6 +8,8 @@ import dotProp from "dot-prop";
 import * as exifReader from "exifreader"
 import {db} from "@electron/database/database";
 import {appData} from "@utils/utilities";
+import {IpcMainEvent} from "electron";
+import {channels} from "@utils/ipcCommands";
 
 const rawFolder = appData("images", "raw")
 const prevFolder = appData("images", "prev")
@@ -54,7 +56,7 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                             return importStatement.run(entry).lastInsertRowid
                         })()
                     } catch (e) {
-                        reject(image.file.name)
+                        reject(image.file.base)
                         return -1
                     }
                 })
@@ -72,18 +74,14 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                                 .toFile(pathModule.join(prevFolder, `${imageID}.jpeg`))
                         })
                 }).then(() => {
-                    resolve(image.file.name)
+                    resolve(image.file.base)
                 })
                 .catch(() => {
-                    reject(image.file.name)
+                    reject(image.file.base)
                 })
         })
             .then((filename) => {
                 remaining.delete(filename as string)
-                console.log(totalImages)
-                console.log(remaining.size)
-                console.log((totalImages - remaining.size))
-                console.log((totalImages - remaining.size) / totalImages)
                 event.reply(channels.imageImported, (totalImages - remaining.size) / totalImages, filename)
             })
             .catch((filename) => {
