@@ -4,7 +4,7 @@ import {app, BrowserWindow, ipcMain} from "electron";
 import {channels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
-import importImages from "./database/importImagesNew";
+import importImages from "./database/importImages";
 import setupDatabase from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
