@@ -4,7 +4,7 @@ import {app, BrowserWindow, ipcMain} from "electron";
 import {channels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
-import importImages from "./database/importImages";
+import importImages from "./database/importImagesNew";
 import setupDatabase from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
@@ -52,9 +52,7 @@ export default (createWindow: WindowSetupFunction) => {
 const createChannelListeners = () => {
 
     ipcMain.on(channels.importImages, (event, [files, mappers]) => {
-        importImages(files, mappers, () => {
-            event.reply(channels.importImagesComplete)
-        })
+        importImages(files, mappers)
     })
 
     ipcMain.on(channels.reimportImages, (event, [_files, mappers]) => {
