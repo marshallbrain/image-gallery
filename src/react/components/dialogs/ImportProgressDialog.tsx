@@ -1,7 +1,20 @@
 import React, {useEffect} from 'react';
-import {Dialog, DialogContent, DialogTitle, Divider, LinearProgress, Stack, Typography} from "@mui/material";
+import {
+    Button,
+    Chip,
+    Dialog, DialogActions,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    LinearProgress,
+    ListItem,
+    Stack,
+    Typography
+} from "@mui/material";
 import {DialogPropType} from "@components/PersistentDialogs";
 import {channels} from "@utils/ipcCommands";
+import {FixedSizeList, ListChildComponentProps} from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 const ImportProgressDialog = (props: PropTypes) => {
 
@@ -21,15 +34,40 @@ const ImportProgressDialog = (props: PropTypes) => {
         })
     }, [])
 
+    const renderError = ({ index, style }: ListChildComponentProps) => (
+        <ListItem style={style} key={index} component="div" className={"userSelectable"}>
+            {errored[index]}
+        </ListItem>
+    )
+
     return (
         <React.Fragment>
             <Dialog
-                open={errored.length > 0}
+                open={errored.length > 0 && open}
+                maxWidth={"sm"}
+                fullWidth
             >
-                <DialogTitle>Import Progress</DialogTitle>
-                <DialogContent>
-
+                <DialogTitle>Files that Failed to be Imported</DialogTitle>
+                <DialogContent sx={{minHeight: 300}}>
+                    <AutoSizer>
+                        {({height, width}) => (
+                            <FixedSizeList
+                                height={height}
+                                width={width}
+                                itemSize={42}
+                                itemCount={errored.length}
+                                overscanCount={5}
+                                style={{
+                                }}
+                            >
+                                {renderError}
+                            </FixedSizeList>
+                        )}
+                    </AutoSizer>
                 </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>Close</Button>
+                </DialogActions>
             </Dialog>
             <Dialog
                 open={open}
