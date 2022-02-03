@@ -31,7 +31,8 @@ export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
 
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     const totalImages = imageData.length
-    const remaining = new Set(imageData.map(({file}) => file.base))
+    const importRemaining = new Set(imageData.map(({file}) => file.base))
+    const imagesRemaining = new Set(importRemaining)
     const errored: string[] = []
 
     const importStatement = db.prepare("" +
@@ -73,6 +74,23 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                                 })
                                 .toFile(pathModule.join(prevFolder, `${imageID}.jpeg`))
                         })
+                        .then(() => {
+                            imagesRemaining.delete(image.file.base)
+                            if (importRemaining.size == 0) {
+                                event.reply(
+                                    channels.imageImported,
+                                    (totalImages - imagesRemaining.size) / totalImages,
+                                    "Creating thumbnails")
+                            }
+                        })
+                        .catch(() => {
+                            reject(image.file.base)
+                        })
+                        .finally(() => {
+                            if (importRemaining.size == 0 && imagesRemaining.size == 0) {
+                                event.reply(channels.imageImportComplete, errored)
+                            }
+                        })
                 }).then(() => {
                     resolve(image.file.base)
                 })
@@ -81,16 +99,16 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                 })
         })
             .then((filename) => {
-                remaining.delete(filename as string)
-                console.log(remaining)
-                event.reply(channels.imageImported, (totalImages - remaining.size) / totalImages, filename)
+                importRemaining.delete(filename as string)
+                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
             .catch((filename) => {
-                remaining.delete(filename as string)
+                importRemaining.delete(filename as string)
                 errored.push(filename)
+                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
             .finally(() => {
-                if (remaining.size == 0) {
+                if (importRemaining.size == 0 && imagesRemaining.size == 0) {
                     event.reply(channels.imageImportComplete, errored)
                 }
             })
