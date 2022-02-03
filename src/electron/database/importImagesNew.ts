@@ -6,7 +6,11 @@ import pathModule, {ParsedPath} from "path";
 import path from "path";
 import dotProp from "dot-prop";
 import * as exifReader from "exifreader"
+import {db} from "@electron/database/database";
+import {appData} from "@utils/utilities";
 
+const rawFolder = appData("images", "raw")
+const prevFolder = appData("images", "prev")
 const columnsFull: string[] = [
     ...imageImportColumns,
     "image_width",
@@ -24,7 +28,16 @@ export default (files: ImageFile[], mappers: Mapper[]) => {
 }
 
 const importImageData = (imageData: ImageData[]) => {
+    const totalImages = imageData.length
     const remaining = new Set(imageData.map(({file}) => file.name))
+    const importStatement = db.prepare("" +
+        "insert into images (" +
+        columnsFull.join(", ") +
+        ") values (" +
+        columnsFull.map(() => "?").join(", ") +
+        ")"
+    )
+
     for (const image of imageData) {
         new Promise((resolve, reject) => {
             const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
@@ -34,11 +47,48 @@ const importImageData = (imageData: ImageData[]) => {
                 .then((buffer) => {
                     const exif = exifReader.load(buffer)
                     const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
-                    console.log(entry)
+                    try {
+                        return db.transaction(() => {
+                            return importStatement.run(entry).lastInsertRowid
+                        })()
+                    } catch (e) {
+                        reject(image.file.name)
+                        return -1
+                    }
+                })
+                .then((imageID) => {
+                    sharpImage
+                        .toFile(pathModule.join(rawFolder, imageID+image.file.ext))
+                        .then(() => {
+                            return sharpImage
+                                .resize(256, 256, {fit: sharp.fit.inside})
+                                .toFormat("jpeg")
+                                .jpeg({
+                                    quality: 80,
+                                    mozjpeg: true
+                                })
+                                .toFile(pathModule.join(prevFolder, `${imageID}.jpeg`))
+                        })
+                }).then(() => {
+                    resolve(image.file.name)
+                })
+                .catch(() => {
+                    reject(image.file.name)
                 })
         })
-        //save metadata and exif to db
-        //save image and create prev
+            .then((filename) => {
+                remaining.delete(filename as string)
+                console.log(totalImages - remaining.size, filename)
+            })
+            .catch((filename) => {
+                remaining.delete(filename as string)
+                console.log("ERROR:", filename)
+            })
+            .finally(() => {
+                if (remaining.size == 0) {
+                    console.log("complete")
+                }
+            })
     }
 }
 
@@ -50,12 +100,12 @@ const formatMetadata  = (
 ) => columnsFull.map(value => {
     switch (value) {
         case "title": return (dotProp.get(jsonData, jsonMapper[value], imageFile.name))
-        case "image_width": return exifData["Image Width"]
-        case "image_height": return exifData["Image Height"]
+        case "image_width": return exifData["Image Width"].value as unknown as number
+        case "image_height": return exifData["Image Height"].value as unknown as number
         case "date_added": return new Date().getTime()
         case "extension": return imageFile.ext.replace(".", "")
-        case "original_metadata": return JSON.stringify(jsonData)
-        case "original_exif": return JSON.stringify(exifData)
+        case "original_metadata": return (jsonData)? JSON.stringify(jsonData): ""
+        case "original_exif": return (exifData)? JSON.stringify(exifData): ""
         default: return (dotProp.get(jsonData, jsonMapper[value], ""))
     }
 })
