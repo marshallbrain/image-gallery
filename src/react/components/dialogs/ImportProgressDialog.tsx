@@ -31,7 +31,12 @@ const ImportProgressDialog = (props: PropTypes) => {
         })
         const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, (errored) => {
             setErrored(errored)
+            onClose()
         })
+        return function cleanup() {
+            window.api.remove(channels.imageImported, imageImportedKey)
+            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
+        }
     }, [])
 
     const renderError = ({ index, style }: ListChildComponentProps) => (
