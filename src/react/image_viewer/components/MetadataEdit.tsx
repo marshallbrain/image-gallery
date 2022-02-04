@@ -155,6 +155,7 @@ const MetadataEdit = (props: PropTypes) => {
                 <TagSelector
                     tags={tags}
                     selectedTags={imageTags}
+                    onCreateTag={onModifyTags("select")}
                     onSelectTag={onModifyTags("select")}
                     onRemoveTag={onModifyTags("remove")}
                     onClear={onModifyTags("clear")}
@@ -162,6 +163,7 @@ const MetadataEdit = (props: PropTypes) => {
                 <TagSelector
                     tags={collections}
                     selectedTags={imageCollections}
+                    onCreateTag={onModifyCollections("select")}
                     onSelectTag={onModifyCollections("select")}
                     onRemoveTag={onModifyCollections("remove")}
                     onClear={onModifyCollections("clear")}
