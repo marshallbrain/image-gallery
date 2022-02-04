@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
@@ -10,6 +10,7 @@ function ImageGallery(props: PropTypes) {
 
     const {onImageSelected} = props
 
+    const [search, setSearch] = useState<Search>({})
     const [images, setImages] = React.useState<Image[]>([])
 
     useEffect(() => {
@@ -22,16 +23,24 @@ function ImageGallery(props: PropTypes) {
         }
     }, [])
 
+    useEffect(() => {
+        getImages()
+    }, [search])
+
     const getImages = () => {
-        window.api.db.getImages(sqlQueries.imageSearch, (data) => {
+        window.api.db.search((data) => {
             setImages(data)
-        })
+        }, search)
+    }
+
+    const updateSearch = (value: object) => {
+        setSearch(value)
     }
 
     return (
         <Grid container direction="column" sx={{height: "100vh"}} >
             <Grid item xs={1}>
-                <ImageSearch />
+                <ImageSearch updateSearch={updateSearch} />
             </Grid>
             <Grid item xs>
                 <ImageGrid images={images} onImageSelected={onImageSelected}/>
@@ -44,6 +53,10 @@ function ImageGallery(props: PropTypes) {
 
 interface PropTypes {
     onImageSelected: (index: number, imageList: Image[]) => void
+}
+
+export interface Search {
+    title?: string
 }
 
 export default ImageGallery;

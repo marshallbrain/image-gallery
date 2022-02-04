@@ -29,6 +29,17 @@ export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
     importImageData(imagesData, event)
 }
 
+const addImageTag = db.prepare("" +
+    "insert into images_tags " +
+    "select ?, ?"
+)
+
+const additionalStatement = (imageID: number | bigint) => {
+    for (let i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
+        addImageTag.run(imageID, Math.floor(Math.random() * 26) + 1)
+    }
+}
+
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     const totalImages = imageData.length
     const importRemaining = new Set(imageData.map(({file}) => file.base))
@@ -54,7 +65,9 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                     const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
                     try {
                         return db.transaction(() => {
-                            return importStatement.run(entry).lastInsertRowid
+                            const imageID = importStatement.run(entry).lastInsertRowid
+                            additionalStatement(imageID)
+                            return imageID
                         })()
                     } catch (e) {
                         reject(image.file.base)
