@@ -7,7 +7,5 @@ assignees: ''
 
 ---
 
-# Feature description
-
 # Tasks
 - [ ]
