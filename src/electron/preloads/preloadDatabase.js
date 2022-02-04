@@ -10,12 +10,12 @@ export const databasePreload = (ipcRenderer) => {
             })
             ipcRenderer.send(sqlSelectChannel, {channel, query, args})
         },
-        search: (callback, searchQuery) => {
+        search: (callback, args) => {
             const channel = uuid()
             ipcRenderer.once(channel, (event, ...data) => {
                 callback(...data)
             })
-            ipcRenderer.send(sqlSearchChannel, {channel, searchQuery})
+            ipcRenderer.send(sqlSearchChannel, {channel, args})
         }
     }
 }

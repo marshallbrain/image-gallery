@@ -57,6 +57,7 @@ interface PropTypes {
 
 export interface Search {
     title?: string
+    incTags?: number[]
 }
 
 export default ImageGallery;

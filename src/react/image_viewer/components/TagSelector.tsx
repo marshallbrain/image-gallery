@@ -4,53 +4,53 @@ import {
     AutocompleteChangeDetails,
     AutocompleteChangeReason,
     Chip,
-    createFilterOptions,
-    TextField
+    createFilterOptions, SxProps,
+    TextField, Theme
 } from "@mui/material";
 
 const TagSelector = (props: PropTypes) => {
 
     const {
+        freeSolo,
         tags,
         selectedTags,
+        onChange,
         onCreateTag,
         onSelectTag,
         onRemoveTag,
-        onClear
+        onClear,
+        sx
     } = props
 
-    const onChange = (
+    const onChangeValue = (
         event: React.SyntheticEvent,
         newValue: (string | Tag)[],
         reason: AutocompleteChangeReason,
         details: AutocompleteChangeDetails<Tag> | undefined
     ) => {
-        console.log({name: "", value: details?.option as unknown as string})
-        switch (reason) {
-            case "createOption":
-                onCreateTag({name: "", value: details?.option as unknown as string})
-                break
-            case "selectOption":
-                onSelectTag(details?.option as Tag)
-                break
-            case "removeOption":
-                onRemoveTag(details?.option as Tag)
-                break
-            case "clear":
-                onClear()
-                break
+        if (reason === "createOption" && onCreateTag)
+            onCreateTag({name: "", value: details?.option as unknown as string})
+        else if (reason === "selectOption" && onSelectTag)
+            onSelectTag(details?.option as Tag)
+        else if (reason === "removeOption" && onRemoveTag)
+            onRemoveTag(details?.option as Tag)
+        else if (reason === "clear" && onClear)
+            onClear()
+        else {
+            onChange(newValue as Tag[])
         }
+
     }
 
     return (
         <Autocomplete
+            {...{freeSolo, sx}}
             value={selectedTags}
             options={tags}
-            onChange={onChange}
+            onChange={onChangeValue}
             clearOnBlur
             disableCloseOnSelect
             filterSelectedOptions
-            freeSolo
             handleHomeEndKeys
             multiple
             selectOnFocus
@@ -60,13 +60,15 @@ const TagSelector = (props: PropTypes) => {
                 const filtered = filter(options, params);
                 const { inputValue } = params;
 
-                const isExisting = options.some((option) => inputValue === option.name);
-                if (inputValue !== '' && !isExisting) {
-                    return [{
-                        tag_id: 0,
-                        name: `Create "${inputValue}"`,
-                        value: inputValue
-                    }, ...filtered]
+                if (freeSolo) {
+                    const isExisting = options.some((option) => inputValue === option.name);
+                    if (inputValue !== '' && !isExisting) {
+                        return [{
+                            tag_id: 0,
+                            name: `Create "${inputValue}"`,
+                            value: inputValue
+                        }, ...filtered]
+                    }
                 }
 
                 return filtered;
@@ -95,12 +97,18 @@ const TagSelector = (props: PropTypes) => {
 const filter = createFilterOptions<Tag>({ignoreCase: true, stringify: option => option.name});
 
 interface PropTypes {
+    freeSolo?: boolean
+
     tags: Tag[]
     selectedTags: Tag[]
-    onCreateTag: (tag: Tag) => void
-    onSelectTag: (tag: Tag) => void
-    onRemoveTag: (tag: Tag) => void
-    onClear: () => void
+
+    onChange: (tag: Tag[]) => void
+    onCreateTag?: (tag: Tag) => void
+    onSelectTag?: (tag: Tag) => void
+    onRemoveTag?: (tag: Tag) => void
+    onClear?: () => void
+
+    sx?: SxProps<Theme>
 }
 
 export interface Tag {
