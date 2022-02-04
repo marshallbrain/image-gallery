@@ -1,9 +1,10 @@
 import {namespaceSql, sqlSelectChannel} from "@utils/ipcCommands";
+import {v4 as uuid} from "uuid"
 
 export const databasePreload = (ipcRenderer) => {
     return {
         getImages: (query, callback, args) => {
-            const channel = namespaceSql + (Math.random() * 1000000).toFixed(0)
+            const channel = uuid()
             ipcRenderer.once(channel, (event, ...data) => {
                 callback(...data)
             })
