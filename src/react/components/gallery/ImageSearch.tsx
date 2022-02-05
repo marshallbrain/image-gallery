@@ -21,15 +21,6 @@ function ImageSearch(props: PropTypes) {
         })
     }, [])
 
-    useEffect(() => {
-        const incTags: {tag_id: number}[] = includeTags as unknown as {tag_id: number}[]
-
-        updateSearch({
-            ...title && {title},
-            ...includeTags.length > 0 && {incTags: incTags.map((value) => value.tag_id)}
-        })
-    }, [title, includeTags])
-
     const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value)
     }
