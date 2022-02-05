@@ -5,6 +5,8 @@ import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
 import {Grid} from "@mui/material";
 import {Image} from "@components/App";
+import {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
+import {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 
 function ImageGallery(props: PropTypes) {
 
@@ -55,9 +57,7 @@ interface PropTypes {
     onImageSelected: (index: number, imageList: Image[]) => void
 }
 
-export interface Search {
-    title?: string
-    incTags?: number[]
+export interface Search extends GenericSearchType, TagSearchType {
 }
 
 export default ImageGallery;

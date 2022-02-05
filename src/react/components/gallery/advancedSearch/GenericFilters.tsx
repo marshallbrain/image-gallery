@@ -1,12 +1,26 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {TextField} from "@mui/material";
+import {Search} from "@components/gallery/ImageGallery";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
-        title,
-        changeTitle
+        titleInit,
+        setSearch
     } = props
+
+    const [title, setTitle] = useState(titleInit)
+
+    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.target.value)
+    }
+
+    useEffect(() => {
+
+        setSearch({
+            ...title && {title},
+        })
+    }, [title])
 
     return (
         <React.Fragment>
@@ -22,8 +36,12 @@ const AdvancedSearch = (props: PropTypes) => {
 }
 
 interface PropTypes {
-    title: string
-    changeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void
+    titleInit: string
+    setSearch: (value: GenericSearchType) => void
+}
+
+export interface GenericSearchType {
+    title?: string
 }
 
 export default AdvancedSearch

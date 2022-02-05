@@ -8,26 +8,31 @@ import {
     ToggleButton,
     ToggleButtonGroup, Typography
 } from '@mui/material';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
-import GenericFilters from "@components/gallery/advancedSearch/GenericFilters";
-import TagFilters from "@components/gallery/advancedSearch/TagFilters";
+import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
+import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
+import {Search} from "@components/gallery/ImageGallery";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
         open,
+        toggleAS,
+        updateSearch,
         title,
-        changeTitle,
+        setTitle,
         tags,
         incTags,
         setIncTags
     } = props
 
     const [group, setGroup] = useState("Generic")
+    const [genericSearch, setGenericSearch] = useState<GenericSearchType>({})
+    const [tagSearch, setTagSearch] = useState<TagSearchType>({})
 
     const changeGroup = (
         event: React.MouseEvent<HTMLElement>,
@@ -36,6 +41,16 @@ const AdvancedSearch = (props: PropTypes) => {
         if (newGroup !== null) {
             setGroup(newGroup)
         }
+    }
+
+    const onSearch = () => {
+
+        console.log({
+            ...genericSearch,
+            ...tagSearch
+        })
+
+        toggleAS()
     }
 
     return (
@@ -77,14 +92,14 @@ const AdvancedSearch = (props: PropTypes) => {
                 </Typography>
                 <Divider/>
                 <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
-                    {group === "Generic" && <GenericFilters title={title} changeTitle={changeTitle}/>}
-                    {group === "Tag" && <TagFilters tags={tags} incTags={incTags} setIncTags={setIncTags}/>}
+                    {group === "Generic" && <GenericFilters titleInit={title} setSearch={setGenericSearch}/>}
+                    {group === "Tag" && <TagFilters tags={tags} incTagsInit={incTags} setSearch={setTagSearch}/>}
                 </Box>
                 <Divider/>
             </DialogContent>
             <DialogActions>
                 <Button>Close</Button>
-                <Button>Search</Button>
+                <Button onClick={onSearch} >Search</Button>
             </DialogActions>
         </Dialog>
     )
@@ -92,8 +107,10 @@ const AdvancedSearch = (props: PropTypes) => {
 
 interface PropTypes {
     open: boolean
+    toggleAS: () => void
+    updateSearch: (value: Search) => void
     title: string
-    changeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void
+    setTitle: (value: string) => void
     tags: Tag[]
     incTags: Tag[]
     setIncTags: (value: Tag[]) => void

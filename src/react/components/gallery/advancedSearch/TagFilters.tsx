@@ -1,13 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
+import {Search} from "@components/gallery/ImageGallery";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
         tags,
-        incTags,
-        setIncTags
+        incTagsInit,
+        setSearch,
     } = props
+
+    const [incTags, setIncTags] = useState(incTagsInit)
+
+    useEffect(() => {
+
+        const incTagIDs: {tag_id: number}[] = incTags as unknown as {tag_id: number}[]
+
+        setSearch({
+            ...incTagIDs.length && {incTags: incTagIDs.map((value) => value.tag_id)}
+        })
+    }, [incTags])
 
     return (
         <React.Fragment>
@@ -23,8 +35,12 @@ const AdvancedSearch = (props: PropTypes) => {
 
 interface PropTypes {
     tags: Tag[]
-    incTags: Tag[]
-    setIncTags: (value: Tag[]) => void
+    incTagsInit: Tag[]
+    setSearch: (value: TagSearchType) => void
+}
+
+export interface TagSearchType {
+    incTags?: number[]
 }
 
 export default AdvancedSearch

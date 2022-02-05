@@ -57,8 +57,10 @@ function ImageSearch(props: PropTypes) {
             </IconButton>
             <AdvancedSearch
                 open={asOpen}
+                toggleAS={toggleAS}
+                updateSearch={updateSearch}
                 title={title}
-                changeTitle={changeTitle}
+                setTitle={setTitle}
                 tags={tags}
                 incTags={incTags}
                 setIncTags={setIncTags}
