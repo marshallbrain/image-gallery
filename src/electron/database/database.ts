@@ -6,6 +6,7 @@ import {appData} from "@utils/utilities";
 import preparedStatements, {
     PreparedStatements,
 } from "@electron/database/preparedStatements/preparedStatements";
+import searchQuery from "@electron/database/searchQuery";
 
 export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
 
@@ -41,6 +42,7 @@ const createChannelListeners = (
             event.reply(channel, e)
         }
     })
+    searchQuery()
 }
 
 const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {

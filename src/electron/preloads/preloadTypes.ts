@@ -1,3 +1,5 @@
+import {Search} from "@components/gallery/ImageGallery";
+
 interface types {
     savedStore: {
         get: (key: string) => any
@@ -20,6 +22,10 @@ interface types {
             query: string,
             callback: (...data: any[]) => void,
             args?: any|any[]|{[value: string]: any}
+        ) => void
+        search: (
+            callback: (...data: any[]) => void,
+            args: Search
         ) => void
     }
     send: (channel: string, ...data: any[]) => void

@@ -4,69 +4,74 @@ import {
     AutocompleteChangeDetails,
     AutocompleteChangeReason,
     Chip,
-    createFilterOptions,
-    TextField
+    createFilterOptions, SxProps,
+    TextField, Theme
 } from "@mui/material";
+import {orDefault} from "@components/utilities";
+import _ from "lodash";
 
-const TagSelector = (props: PropTypes) => {
+const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
 
     const {
-        tags,
-        selectedTags,
         onCreateTag,
         onSelectTag,
         onRemoveTag,
-        onClear
+        onClear,
+        freeSolo,
+        sx,
+        disabled,
     } = props
 
-    const onChange = (
+    const onChangeValue = (
         event: React.SyntheticEvent,
-        newValue: (string | Tag)[],
+        newValue: (string | T)[],
         reason: AutocompleteChangeReason,
-        details: AutocompleteChangeDetails<Tag> | undefined
+        details: AutocompleteChangeDetails<T> | undefined
     ) => {
-        console.log({name: "", value: details?.option as unknown as string})
-        switch (reason) {
-            case "createOption":
-                onCreateTag({name: "", value: details?.option as unknown as string})
-                break
-            case "selectOption":
-                onSelectTag(details?.option as Tag)
-                break
-            case "removeOption":
-                onRemoveTag(details?.option as Tag)
-                break
-            case "clear":
-                onClear()
-                break
+        if (reason === "createOption" && onCreateTag)
+            onCreateTag({name: "", value: details?.option as unknown as string})
+        else if (reason === "selectOption" && onSelectTag)
+            onSelectTag(details?.option as T)
+        else if (reason === "removeOption" && onRemoveTag)
+            onRemoveTag(details?.option as T)
+        else if (reason === "clear" && onClear)
+            onClear()
+        else {
+            props.onChange((newValue.length > 0)? newValue as T[]: undefined)
         }
+
     }
 
     return (
         <Autocomplete
-            value={selectedTags}
-            options={tags}
-            onChange={onChange}
+            {...{freeSolo, sx, disabled}}
+            value={orDefault(props.selectedChips, [])}
+            options={props.chips}
+            onChange={onChangeValue}
+            limitTags={props.limitTags}
             clearOnBlur
             disableCloseOnSelect
             filterSelectedOptions
-            freeSolo
             handleHomeEndKeys
             multiple
             selectOnFocus
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
-                const filtered = filter(options, params);
+
+                const without = props.excludeChips? _.without(options, ...props.excludeChips): options
+                const filtered = filter(without || options, params);
                 const { inputValue } = params;
 
-                const isExisting = options.some((option) => inputValue === option.name);
-                if (inputValue !== '' && !isExisting) {
-                    return [{
-                        tag_id: 0,
-                        name: `Create "${inputValue}"`,
-                        value: inputValue
-                    }, ...filtered]
+                if (freeSolo) {
+                    const isExisting = options.some((option) => inputValue === option.name);
+                    if (inputValue !== '' && !isExisting) {
+                        return [{
+                            tag_id: 0,
+                            name: `Create "${inputValue}"`,
+                            value: inputValue
+                        }, ...filtered]
+                    }
                 }
 
                 return filtered;
@@ -81,7 +86,7 @@ const TagSelector = (props: PropTypes) => {
                 </li>
             )}
             renderInput={(params) => (
-                <TextField {...params} label="Image Tags" />
+                <TextField {...params} label={props.label} />
             )}
             renderTags={(value, getTagProps) => {
                 return value.map((option, index) => (
@@ -92,18 +97,28 @@ const TagSelector = (props: PropTypes) => {
     );
 };
 
-const filter = createFilterOptions<Tag>({ignoreCase: true, stringify: option => option.name});
+const filter = createFilterOptions<any & ChipBase>({ignoreCase: true, stringify: option => option.name});
 
-interface PropTypes {
-    tags: Tag[]
-    selectedTags: Tag[]
-    onCreateTag: (tag: Tag) => void
-    onSelectTag: (tag: Tag) => void
-    onRemoveTag: (tag: Tag) => void
-    onClear: () => void
+interface PropTypes<T extends ChipBase> {
+    freeSolo?: boolean
+    disabled?: boolean
+
+    label: string
+    limitTags?: number
+    chips: T[]
+    selectedChips?: T[]
+    excludeChips?: T[]
+
+    onChange: (chip: T[] | undefined) => void
+    onCreateTag?: (chip: ChipBase) => void
+    onSelectTag?: (chip: T) => void
+    onRemoveTag?: (chip: T) => void
+    onClear?: () => void
+
+    sx?: SxProps<Theme>
 }
 
-export interface Tag {
+export interface ChipBase {
     name: string
     value?: string
 }
