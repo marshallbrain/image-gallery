@@ -17,6 +17,7 @@ import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSea
 import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 import {Search} from "@components/gallery/ImageGallery";
 import {SearchPropsState, SearchPropsType} from "@components/App";
+import {orDefault} from "@components/utilities";
 
 const AdvancedSearch = (props: PropTypes) => {
 
@@ -31,6 +32,24 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const [group, setGroup] = useState("Generic")
     const [searchPropTemp, setSearchPropTemp] = useState(searchProp)
+
+    useEffect(() => {
+        compileSearch()
+    }, [])
+
+    useEffect(() => {
+        compileSearch()
+    }, [searchProp])
+
+    const compileSearch = () => {
+        const incTags: any = (orDefault(searchProp.main.incTags, []).length > 0)?
+                searchProp.main.incTags: undefined
+
+        updateSearch({
+            title: searchProp.main.title,
+            ...incTags && {incTags: incTags.map((value: {tag_id: number}) => (value).tag_id)}
+        })
+    }
 
     const updateSearchPropT = (value: Partial<SearchPropsType>) => {
         setSearchPropTemp({
