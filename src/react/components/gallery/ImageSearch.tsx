@@ -2,10 +2,10 @@ import React, {useContext, useEffect, useState} from 'react';
 import {IconButton, Stack, TextField} from "@mui/material";
 import {Search} from "@components/gallery/ImageGallery";
 import Settings from '@mui/icons-material/Settings';
-import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
+import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
-import {SearchPropsState} from "@components/App";
+import {SearchPropsState, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
 
 function ImageSearch(props: PropTypes) {
@@ -64,8 +64,8 @@ function ImageSearch(props: PropTypes) {
             <TagSelector
                 label={"Include Tags"}
                 limitTags={1}
-                tags={tags}
-                selectedTags={orDefault(searchProp.main.incTags, [])}
+                chips={tags}
+                selectedChips={orDefault(searchProp.main.incTags, [])}
                 onChange={setIncTags}
                 sx={{
                     width: 256,

@@ -18,17 +18,17 @@ import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import TagSearch from "./TagSearch";
 import TagList from "./TagList";
-import TagSelector, {Tag} from "./TagSelector";
+import TagSelector, {ChipBase} from "./TagSelector";
 import {RunResult} from "better-sqlite3";
 
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
 
-    const [imageTags, setImageTags] = React.useState<Tag[]>([])
-    const [tags, setTags] = React.useState<Tag[]>([])
-    const [imageCollections, setImageCollections] = React.useState<Tag[]>([])
-    const [collections, setCollections] = React.useState<Tag[]>([])
+    const [imageTags, setImageTags] = React.useState<ChipBase[]>([])
+    const [tags, setTags] = React.useState<ChipBase[]>([])
+    const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
+    const [collections, setCollections] = React.useState<ChipBase[]>([])
 
     useEffect(() => {
         updateTags()
@@ -41,27 +41,27 @@ const MetadataEdit = (props: PropTypes) => {
     }, [imageData])
 
     const updateTags = () => {
-        window.api.db.getImages(sqlQueries.getTags, (data: Tag[]) => {
+        window.api.db.getImages(sqlQueries.getTags, (data: ChipBase[]) => {
             setTags(data)
         })
     }
 
     const updateImageTags = () => {
-        window.api.db.getImages(sqlQueries.getImageTags, (tags: Tag[]) => {
+        window.api.db.getImages(sqlQueries.getImageTags, (tags: ChipBase[]) => {
             setImageTags(tags)
             console.log(tags)
         }, imageData?.image_id)
     }
 
     const updateCollections = () => {
-        window.api.db.getImages(sqlQueries.getCollections, (data: Tag[]) => {
+        window.api.db.getImages(sqlQueries.getCollections, (data: ChipBase[]) => {
             setCollections(data)
         })
     }
 
     const updateImageCollections = () => {
-        window.api.db.getImages(sqlQueries.getImageCollections, (tags: Tag[]) => {
-            setImageCollections(tags)
+        window.api.db.getImages(sqlQueries.getImageCollections, (collections: ChipBase[]) => {
+            setImageCollections(collections)
         }, imageData?.image_id)
     }
 
@@ -154,8 +154,8 @@ const MetadataEdit = (props: PropTypes) => {
             >
                 <TagSelector
                     label={"Tags"}
-                    tags={tags}
-                    selectedTags={imageTags}
+                    chips={tags}
+                    selectedChips={imageTags}
                     onChange={() => {}}
                     onCreateTag={onModifyTags("select")}
                     onSelectTag={onModifyTags("select")}
@@ -164,8 +164,8 @@ const MetadataEdit = (props: PropTypes) => {
                 />
                 <TagSelector
                     label={"Collections"}
-                    tags={collections}
-                    selectedTags={imageCollections}
+                    chips={collections}
+                    selectedChips={imageCollections}
                     onChange={() => {}}
                     onCreateTag={onModifyCollections("select")}
                     onSelectTag={onModifyCollections("select")}

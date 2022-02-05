@@ -12,11 +12,11 @@ import React, {useContext, useEffect, useState} from 'react';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
+import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
 import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 import {Search} from "@components/gallery/ImageGallery";
-import {SearchPropsState, SearchPropsType} from "@components/App";
+import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
 
 const AdvancedSearch = (props: PropTypes) => {
@@ -42,11 +42,9 @@ const AdvancedSearch = (props: PropTypes) => {
     }, [searchProp])
 
     const compileSearch = () => {
-        const incTags: any = searchProp.main.incTags
-
         updateSearch({
             title: searchProp.main.title,
-            ...incTags && {incTags: incTags.map((value: {tag_id: number}) => (value).tag_id)}
+            incTags: searchProp.main.incTags && searchProp.main.incTags.map((value) => (value).tag_id)
         })
     }
 

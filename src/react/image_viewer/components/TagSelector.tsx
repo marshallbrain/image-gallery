@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import {orDefault} from "@components/utilities";
 
-const TagSelector = (props: PropTypes) => {
+const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
 
     const {
         onCreateTag,
@@ -22,20 +22,20 @@ const TagSelector = (props: PropTypes) => {
 
     const onChangeValue = (
         event: React.SyntheticEvent,
-        newValue: (string | Tag)[],
+        newValue: (string | T)[],
         reason: AutocompleteChangeReason,
-        details: AutocompleteChangeDetails<Tag> | undefined
+        details: AutocompleteChangeDetails<T> | undefined
     ) => {
         if (reason === "createOption" && onCreateTag)
             onCreateTag({name: "", value: details?.option as unknown as string})
         else if (reason === "selectOption" && onSelectTag)
-            onSelectTag(details?.option as Tag)
+            onSelectTag(details?.option as T)
         else if (reason === "removeOption" && onRemoveTag)
-            onRemoveTag(details?.option as Tag)
+            onRemoveTag(details?.option as T)
         else if (reason === "clear" && onClear)
             onClear()
         else {
-            props.onChange((newValue.length > 0)? newValue as Tag[]: undefined)
+            props.onChange((newValue.length > 0)? newValue as T[]: undefined)
         }
 
     }
@@ -43,8 +43,8 @@ const TagSelector = (props: PropTypes) => {
     return (
         <Autocomplete
             {...{freeSolo, sx}}
-            value={orDefault(props.selectedTags, [])}
-            options={props.tags}
+            value={orDefault(props.selectedChips, [])}
+            options={props.chips}
             onChange={onChangeValue}
             limitTags={props.limitTags}
             clearOnBlur
@@ -93,26 +93,26 @@ const TagSelector = (props: PropTypes) => {
     );
 };
 
-const filter = createFilterOptions<Tag>({ignoreCase: true, stringify: option => option.name});
+const filter = createFilterOptions<any & ChipBase>({ignoreCase: true, stringify: option => option.name});
 
-interface PropTypes {
+interface PropTypes<T extends ChipBase> {
     freeSolo?: boolean
 
     label: string
     limitTags?: number
-    tags: Tag[]
-    selectedTags: Tag[] | undefined
+    chips: T[]
+    selectedChips: T[] | undefined
 
-    onChange: (tag: Tag[] | undefined) => void
-    onCreateTag?: (tag: Tag) => void
-    onSelectTag?: (tag: Tag) => void
-    onRemoveTag?: (tag: Tag) => void
+    onChange: (chip: T[] | undefined) => void
+    onCreateTag?: (chip: ChipBase) => void
+    onSelectTag?: (chip: T) => void
+    onRemoveTag?: (chip: T) => void
     onClear?: () => void
 
     sx?: SxProps<Theme>
 }
 
-export interface Tag {
+export interface ChipBase {
     name: string
     value?: string
 }

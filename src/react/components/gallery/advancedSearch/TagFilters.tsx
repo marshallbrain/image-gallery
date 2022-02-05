@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
+import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
 import {Search} from "@components/gallery/ImageGallery";
-import {SearchPropsState, SearchPropsType} from "@components/App";
+import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
 import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
 
@@ -27,8 +27,8 @@ const AdvancedSearch = (props: PropTypes) => {
         <React.Fragment>
             <TagSelector
                 label={"Include Tags"}
-                tags={tags}
-                selectedTags={incTags}
+                chips={tags}
+                selectedChips={incTags}
                 onChange={setIncTags}
             />
         </React.Fragment>

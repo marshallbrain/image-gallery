@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PersistentDialogs from "./PersistentDialogs";
 import ImageGallery from "@components/gallery/ImageGallery";
 import AppViewer from "../image_viewer/components/AppViewer";
-import {Tag} from "../image_viewer/components/TagSelector";
+import {ChipBase} from "../image_viewer/components/TagSelector";
 
 function App() {
 
@@ -59,6 +59,10 @@ export const SearchPropsState = React.createContext<{
         setSearchProp: (v) => {}
     }
 )
+
+export interface Tag extends ChipBase {
+    tag_id: number
+}
 
 export interface Image {
     image_id: number
