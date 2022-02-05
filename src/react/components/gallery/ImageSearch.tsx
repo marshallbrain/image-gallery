@@ -12,7 +12,7 @@ function ImageSearch(props: PropTypes) {
 
     const [title, setTitle] = useState("")
     const [tags, setTags] = useState<Tag[]>([])
-    const [includeTags, setIncludeTags] = useState<Tag[]>([])
+    const [incTags, setIncTags] = useState<Tag[]>([])
     const [asOpen, setASOpen] = useState(false)
 
     useEffect(() => {
@@ -55,8 +55,8 @@ function ImageSearch(props: PropTypes) {
             <TagSelector
                 label={"Include Tags"}
                 tags={tags}
-                selectedTags={includeTags}
-                onChange={setIncludeTags}
+                selectedTags={incTags}
+                onChange={setIncTags}
                 sx={{
                     width: 256,
                 }}
