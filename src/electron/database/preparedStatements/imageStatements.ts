@@ -13,12 +13,21 @@ const prepared: () => PreparedStatementsFull = () => {
         "from images " +
         "where image_id = ?"
     )
+
+    const setImageTitle = db.prepare("" +
+        "update images " +
+        "set title = @title " +
+        "where image_id = @imageID"
+    )
+
     return {
         getStatements: {
             getImageData,
             imageSearch,
         },
-        runStatements: {}
+        runStatements: {
+            setImageTitle
+        }
     }
 }
 
