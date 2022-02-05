@@ -45,24 +45,14 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const compileSearch = () => {
         updateSearch({
-            title: searchProp.main.title,
-            incTags: searchProp.main.incTags && searchProp.main.incTags.map((value) => (value).tag_id),
-            excTags: searchProp.tag.excTags && searchProp.tag.excTags.map((value) => (value).tag_id)
+            title: searchProp.generic?.title,
+            incTags: searchProp.tag?.incTags && searchProp.tag.incTags.map((value) => (value).tag_id),
+            excTags: searchProp.tag?.excTags && searchProp.tag.excTags.map((value) => (value).tag_id)
         })
     }
 
     const updateSearchPropT = (value: SearchPropsType) => {
-        setSearchPropTemp(_.defaultsDeep({
-            main: {
-                title: value.main?.title,
-                incTags: value.main?.incTags,
-            },
-            generic: {
-            },
-            tag: {
-                excTags: value.tag?.excTags
-            },
-        }, searchPropTemp))
+        setSearchPropTemp(_.defaults(value, searchPropTemp))
     }
 
     const changeGroup = (
@@ -152,7 +142,7 @@ export interface SearchPropsOpp {
 
 export const SearchPropTemp = React.createContext<SearchPropsOpp>(
     {
-        searchProp: {main: {}, generic: {}, tag:{}},
+        searchProp: {generic: {}, tag:{}},
         setSearchProp: (v) => {}
     }
 )

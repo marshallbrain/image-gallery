@@ -26,8 +26,8 @@ function ImageSearch(props: PropTypes) {
     const setIncTags = (incTags: Tag[]|undefined) => {
         setSearchProp({
             ...searchProp,
-            main: {
-                ...searchProp.main,
+            tag: {
+                ...searchProp.tag,
                 incTags
             }
         })
@@ -36,8 +36,8 @@ function ImageSearch(props: PropTypes) {
     const setTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchProp({
             ...searchProp,
-            main: {
-                ...searchProp.main,
+            generic: {
+                ...searchProp.generic,
                 title: event.target.value
             }
         })
@@ -56,7 +56,7 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={orDefault(searchProp.main?.title, "")}
+                value={orDefault(searchProp.generic?.title, "")}
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}
@@ -65,7 +65,7 @@ function ImageSearch(props: PropTypes) {
                 label={"Include Tags"}
                 limitTags={1}
                 chips={tags}
-                selectedChips={searchProp.main?.incTags}
+                selectedChips={searchProp.tag?.incTags}
                 excludeChips={searchProp.tag?.excTags}
                 onChange={setIncTags}
                 sx={{

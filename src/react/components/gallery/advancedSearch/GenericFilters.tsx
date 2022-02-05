@@ -10,11 +10,11 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [title, setTitle] = useState(orDefault(searchProp.main?.title, ""))
+    const [title, setTitle] = useState(orDefault(searchProp.generic?.title, ""))
 
     useEffect(() => {
         setSearchProp({
-            main: {
+            generic: {
                 title
             }
         })
