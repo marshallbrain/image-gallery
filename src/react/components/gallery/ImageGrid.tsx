@@ -1,9 +1,10 @@
-import React from 'react';
-import {Paper, styled} from "@mui/material";
+import React, {useState} from 'react';
+import {Box, Checkbox, Paper, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import {channels} from "@utils/ipcCommands";
 import {Image} from "@components/App";
+import CheckBoxFilled from "@components/icons/CheckBoxFilled";
 
 function ImageGrid(props: PropTypes) {
 
@@ -23,6 +24,36 @@ function ImageGrid(props: PropTypes) {
                         onImageSelected(id, images)
                     }}
                 >
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            width: "inherit",
+                            height: "inherit",
+                            opacity: 0,
+                            "&:hover":{
+                                opacity: 1
+                            },
+                        }}
+                    >
+                        <Checkbox
+                            color={"info"}
+                            checkedIcon={<CheckBoxFilled/>}
+                            onClick={(event) => {
+                                event.stopPropagation()
+                            }}
+                            onChange={() => {
+                                console.log(id)
+                            }}
+                            sx={{
+                                position: "absolute",
+                                left: 0,
+                                top: 0,
+                                "& .MuiSvgIcon-root": { fontSize: 32 }
+                            }}
+                        />
+                    </Box>
                     <Img
                         key={image_id.toString()}
                         src={`preview://${image_id}`}
@@ -70,7 +101,8 @@ const ImageCell = styled("div")({
     justifyContent: "center",
     backgroundClip: "content-box",
     backgroundColor: "#1E1E1E",
-    padding: 4
+    padding: 4,
+    cursor: "not-allowed"
 })
 
 interface PropTypes {
