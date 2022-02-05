@@ -1,18 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {IconButton, Stack, TextField} from "@mui/material";
 import {Search} from "@components/gallery/ImageGallery";
 import Settings from '@mui/icons-material/Settings';
 import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
+import {SearchPropsState} from "@components/App";
+import {orDefault} from "@components/utilities";
 
 function ImageSearch(props: PropTypes) {
 
     const {updateSearch} = props
 
-    const [title, setTitle] = useState("")
+    const {searchProp, setSearchProp} = useContext(SearchPropsState);
+
     const [tags, setTags] = useState<Tag[]>([])
-    const [incTags, setIncTags] = useState<Tag[]>([])
     const [asOpen, setASOpen] = useState(false)
 
     useEffect(() => {
@@ -21,8 +23,24 @@ function ImageSearch(props: PropTypes) {
         })
     }, [])
 
-    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(event.target.value)
+    const setIncTags = (incTags: Tag[]) => {
+        setSearchProp({
+            ...searchProp,
+            main: {
+                ...searchProp.main,
+                incTags
+            }
+        })
+    }
+
+    const setTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchProp({
+            ...searchProp,
+            main: {
+                ...searchProp.main,
+                title: event.target.value
+            }
+        })
     }
 
     const toggleAS = () => {
@@ -38,15 +56,16 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={title}
+                value={searchProp.main.title}
                 label="Search Title"
                 variant="outlined"
-                onChange={changeTitle}
+                onChange={setTitle}
             />
             <TagSelector
                 label={"Include Tags"}
+                limitTags={1}
                 tags={tags}
-                selectedTags={incTags}
+                selectedTags={orDefault(searchProp.main.incTags, [])}
                 onChange={setIncTags}
                 sx={{
                     width: 256,
@@ -59,11 +78,7 @@ function ImageSearch(props: PropTypes) {
                 open={asOpen}
                 toggleAS={toggleAS}
                 updateSearch={updateSearch}
-                title={title}
-                setTitle={setTitle}
                 tags={tags}
-                incTags={incTags}
-                setIncTags={setIncTags}
             />
         </Stack>
     );

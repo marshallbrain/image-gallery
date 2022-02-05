@@ -8,7 +8,7 @@ import {
     ToggleButton,
     ToggleButtonGroup, Typography
 } from '@mui/material';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -16,6 +16,7 @@ import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
 import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 import {Search} from "@components/gallery/ImageGallery";
+import {SearchPropsState, SearchPropsType} from "@components/App";
 
 const AdvancedSearch = (props: PropTypes) => {
 
@@ -23,17 +24,28 @@ const AdvancedSearch = (props: PropTypes) => {
         open,
         toggleAS,
         updateSearch,
-        title,
-        setTitle,
         tags,
-        incTags,
-        setIncTags
     } = props
 
+    const {searchProp, setSearchProp} = useContext(SearchPropsState);
+
     const [group, setGroup] = useState("Generic")
-    const [root, setRoot] = useState<{title: string, tags: Tag[]}>({title, tags: incTags})
-    const [genericSearch, setGenericSearch] = useState<GenericSearchType>({})
-    const [tagSearch, setTagSearch] = useState<TagSearchType>({})
+    const [searchPropTemp, setSearchPropTemp] = useState(searchProp)
+
+    const updateSearchPropT = (value: Partial<SearchPropsType>) => {
+        setSearchPropTemp({
+            ...searchPropTemp,
+            main: {
+                ...searchPropTemp.main,
+                title: value.main?.title,
+                incTags: value.main?.incTags,
+            },
+            generic: {
+            },
+            tag: {
+            },
+        })
+    }
 
     const changeGroup = (
         event: React.MouseEvent<HTMLElement>,
@@ -45,24 +57,10 @@ const AdvancedSearch = (props: PropTypes) => {
     }
 
     const onSearch = () => {
-
-        setTitle(root.title)
-        setIncTags(root.tags)
-
-        console.log({
-            ...genericSearch,
-            ...tagSearch
-        })
-
+        setSearchProp(searchPropTemp)
         toggleAS()
     }
 
-    const updateRoot = (newRoot: {title?: string, tags?: Tag[]}) => {
-        setRoot({
-            ...root,
-            ...newRoot
-        })
-    }
 
     return (
         <Dialog
@@ -102,19 +100,16 @@ const AdvancedSearch = (props: PropTypes) => {
                     {group} Filters
                 </Typography>
                 <Divider/>
-                <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
-                    {group === "Generic" && <GenericFilters
-                        titleInit={title}
-                        setSearch={setGenericSearch}
-                        updateRoot={updateRoot}
-                    />}
-                    {group === "Tag" && <TagFilters
-                        tags={tags}
-                        incTagsInit={incTags}
-                        setSearch={setTagSearch}
-                        updateRoot={updateRoot}
-                    />}
-                </Box>
+
+                <SearchPropTemp.Provider value={{
+                    searchProp: searchPropTemp,
+                    setSearchProp: updateSearchPropT
+                }}>
+                    <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
+                        {group === "Generic" && <GenericFilters/>}
+                        {group === "Tag" && <TagFilters tags={tags}/>}
+                    </Box>
+                </SearchPropTemp.Provider>
                 <Divider/>
             </DialogContent>
             <DialogActions>
@@ -125,15 +120,23 @@ const AdvancedSearch = (props: PropTypes) => {
     )
 }
 
+export interface SearchPropsOpp {
+    searchProp: SearchPropsType
+    setSearchProp: (value: Partial<SearchPropsType>) => void
+}
+
+export const SearchPropTemp = React.createContext<SearchPropsOpp>(
+    {
+        searchProp: {main: {}, generic: {}, tag:{}},
+        setSearchProp: (v) => {}
+    }
+)
+
 interface PropTypes {
     open: boolean
     toggleAS: () => void
     updateSearch: (value: Search) => void
-    title: string
-    setTitle: (value: string) => void
     tags: Tag[]
-    incTags: Tag[]
-    setIncTags: (value: Tag[]) => void
 }
 
 export default AdvancedSearch

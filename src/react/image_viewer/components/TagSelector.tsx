@@ -11,16 +11,12 @@ import {
 const TagSelector = (props: PropTypes) => {
 
     const {
-        freeSolo,
-        label,
-        tags,
-        selectedTags,
-        onChange,
         onCreateTag,
         onSelectTag,
         onRemoveTag,
         onClear,
-        sx
+        freeSolo,
+        sx,
     } = props
 
     const onChangeValue = (
@@ -38,7 +34,7 @@ const TagSelector = (props: PropTypes) => {
         else if (reason === "clear" && onClear)
             onClear()
         else {
-            onChange(newValue as Tag[])
+            props.onChange(newValue as Tag[])
         }
 
     }
@@ -46,9 +42,10 @@ const TagSelector = (props: PropTypes) => {
     return (
         <Autocomplete
             {...{freeSolo, sx}}
-            value={selectedTags}
-            options={tags}
+            value={props.selectedTags}
+            options={props.tags}
             onChange={onChangeValue}
+            limitTags={props.limitTags}
             clearOnBlur
             disableCloseOnSelect
             filterSelectedOptions
@@ -84,7 +81,7 @@ const TagSelector = (props: PropTypes) => {
                 </li>
             )}
             renderInput={(params) => (
-                <TextField {...params} label={label} />
+                <TextField {...params} label={props.label} />
             )}
             renderTags={(value, getTagProps) => {
                 return value.map((option, index) => (
@@ -101,6 +98,7 @@ interface PropTypes {
     freeSolo?: boolean
 
     label: string
+    limitTags?: number
     tags: Tag[]
     selectedTags: Tag[]
 

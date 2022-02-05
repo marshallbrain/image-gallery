@@ -1,24 +1,25 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
 import {Search} from "@components/gallery/ImageGallery";
+import {SearchPropsState, SearchPropsType} from "@components/App";
+import {orDefault} from "@components/utilities";
+import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
         tags,
-        incTagsInit,
-        setSearch,
-        updateRoot,
     } = props
 
-    const [incTags, setIncTags] = useState(incTagsInit)
+    const {searchProp, setSearchProp } = useContext(SearchPropTemp)
+
+    const [incTags, setIncTags] = useState<Tag[]>(orDefault(searchProp.main.incTags, []))
 
     useEffect(() => {
-
-        const incTagIDs: {tag_id: number}[] = incTags as unknown as {tag_id: number}[]
-        updateRoot({tags: incTags})
-        setSearch({
-            ...incTagIDs.length && {incTags: incTagIDs.map((value) => value.tag_id)}
+        setSearchProp({
+            main: {
+                incTags
+            }
         })
     }, [incTags])
 
@@ -36,9 +37,6 @@ const AdvancedSearch = (props: PropTypes) => {
 
 interface PropTypes {
     tags: Tag[]
-    incTagsInit: Tag[]
-    setSearch: (value: TagSearchType) => void
-    updateRoot: (root: {title?: string, tags?: Tag[]}) => void
 }
 
 export interface TagSearchType {
