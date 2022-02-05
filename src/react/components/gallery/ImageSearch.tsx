@@ -4,7 +4,7 @@ import {Search} from "@components/gallery/ImageGallery";
 import Settings from '@mui/icons-material/Settings';
 import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
-import AdvancedSearch from "@components/gallery/AdvancedSearch";
+import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
 
 function ImageSearch(props: PropTypes) {
 

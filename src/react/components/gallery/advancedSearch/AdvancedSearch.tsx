@@ -12,7 +12,7 @@ import React, {useEffect, useState} from 'react';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
+import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
 import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 import {Search} from "@components/gallery/ImageGallery";
