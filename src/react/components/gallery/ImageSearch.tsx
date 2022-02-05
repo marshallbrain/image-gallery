@@ -55,7 +55,14 @@ function ImageSearch(props: PropTypes) {
             <IconButton size="large" onClick={toggleAS} >
                 <Settings fontSize="inherit"/>
             </IconButton>
-            <AdvancedSearch open={asOpen} />
+            <AdvancedSearch
+                open={asOpen}
+                title={title}
+                changeTitle={changeTitle}
+                tags={tags}
+                incTags={incTags}
+                setIncTags={setIncTags}
+            />
         </Stack>
     );
 }
