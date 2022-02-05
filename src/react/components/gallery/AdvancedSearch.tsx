@@ -31,6 +31,7 @@ const AdvancedSearch = (props: PropTypes) => {
     } = props
 
     const [group, setGroup] = useState("Generic")
+    const [root, setRoot] = useState<{title: string, tags: Tag[]}>({title, tags: incTags})
     const [genericSearch, setGenericSearch] = useState<GenericSearchType>({})
     const [tagSearch, setTagSearch] = useState<TagSearchType>({})
 
@@ -45,12 +46,22 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const onSearch = () => {
 
+        setTitle(root.title)
+        setIncTags(root.tags)
+
         console.log({
             ...genericSearch,
             ...tagSearch
         })
 
         toggleAS()
+    }
+
+    const updateRoot = (newRoot: {title?: string, tags?: Tag[]}) => {
+        setRoot({
+            ...root,
+            ...newRoot
+        })
     }
 
     return (
@@ -92,14 +103,23 @@ const AdvancedSearch = (props: PropTypes) => {
                 </Typography>
                 <Divider/>
                 <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
-                    {group === "Generic" && <GenericFilters titleInit={title} setSearch={setGenericSearch}/>}
-                    {group === "Tag" && <TagFilters tags={tags} incTagsInit={incTags} setSearch={setTagSearch}/>}
+                    {group === "Generic" && <GenericFilters
+                        titleInit={title}
+                        setSearch={setGenericSearch}
+                        updateRoot={updateRoot}
+                    />}
+                    {group === "Tag" && <TagFilters
+                        tags={tags}
+                        incTagsInit={incTags}
+                        setSearch={setTagSearch}
+                        updateRoot={updateRoot}
+                    />}
                 </Box>
                 <Divider/>
             </DialogContent>
             <DialogActions>
-                <Button>Close</Button>
-                <Button onClick={onSearch} >Search</Button>
+                <Button onClick={toggleAS}>Close</Button>
+                <Button onClick={onSearch}>Search</Button>
             </DialogActions>
         </Dialog>
     )

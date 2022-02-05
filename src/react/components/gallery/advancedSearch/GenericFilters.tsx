@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {TextField} from "@mui/material";
 import {Search} from "@components/gallery/ImageGallery";
+import {Tag} from "../../../image_viewer/components/TagSelector";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
         titleInit,
-        setSearch
+        setSearch,
+        updateRoot
     } = props
 
     const [title, setTitle] = useState(titleInit)
@@ -17,6 +19,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     useEffect(() => {
 
+        updateRoot({title})
         setSearch({
             ...title && {title},
         })
@@ -38,6 +41,7 @@ const AdvancedSearch = (props: PropTypes) => {
 interface PropTypes {
     titleInit: string
     setSearch: (value: GenericSearchType) => void
+    updateRoot: (root: {title?: string, tags?: Tag[]}) => void
 }
 
 export interface GenericSearchType {
