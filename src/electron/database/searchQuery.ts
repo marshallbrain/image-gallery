@@ -20,16 +20,19 @@ export default () => {
         const tagQuery = [
             header,
             tagHeader,
-            ...suffix([searchQuery.incTags && incTagsSlice.replace(
-                "$tags",
-                searchQuery.incTags.map((
-                    (value, index) => `@incTags${index}`
-                )).join(",")),
-            searchQuery.excTags && excTagsSlice.replace(
-                "$tags",
-                searchQuery.excTags.map((
-                    (value, index) => `@excTags${index}`
-                )).join(","))], " and")
+            ...suffix([
+                searchQuery.tagLess && tagLessSlice,
+                searchQuery.tagLess && searchQuery.incTags && incTagsSlice.replace(
+                    "$tags",
+                    searchQuery.incTags.map((
+                        (value, index) => `@incTags${index}`
+                    )).join(",")),
+                searchQuery.tagLess && searchQuery.excTags && excTagsSlice.replace(
+                    "$tags",
+                    searchQuery.excTags.map((
+                        (value, index) => `@excTags${index}`
+                    )).join(","))
+            ], " and")
         ]
 
         const param = {
@@ -74,14 +77,14 @@ const incTagsSlice = "" +
 const excTagsSlice = "" +
     "sum(it.tag_id in ($tags)) = 0"
 
-const nulTagsSlice = "" +
+const tagLessSlice = "" +
     "it.tag_id is null"
 
 function join<T>(array: T[], sep=" ") {
     return _.compact(array).join(sep)
 }
 
-function suffix(array: (string|undefined)[], s: string) {
+function suffix(array: (string|undefined|false)[], s: string) {
     return _.compact(array).map((value, index, pact) =>
         value + ((index < pact.length-1)? s: ""))
 }

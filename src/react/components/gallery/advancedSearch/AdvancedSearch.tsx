@@ -47,7 +47,8 @@ const AdvancedSearch = (props: PropTypes) => {
         updateSearch({
             title: searchProp.generic?.title,
             incTags: searchProp.tag?.incTags && searchProp.tag.incTags.map((value) => (value).tag_id),
-            excTags: searchProp.tag?.excTags && searchProp.tag.excTags.map((value) => (value).tag_id)
+            excTags: searchProp.tag?.excTags && searchProp.tag.excTags.map((value) => (value).tag_id),
+            tagLess: searchProp.tag?.tagLess
         })
     }
 

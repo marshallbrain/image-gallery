@@ -19,6 +19,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
         onClear,
         freeSolo,
         sx,
+        disabled,
     } = props
 
     const onChangeValue = (
@@ -43,7 +44,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
 
     return (
         <Autocomplete
-            {...{freeSolo, sx}}
+            {...{freeSolo, sx, disabled}}
             value={orDefault(props.selectedChips, [])}
             options={props.chips}
             onChange={onChangeValue}
@@ -101,6 +102,7 @@ const filter = createFilterOptions<any & ChipBase>({ignoreCase: true, stringify:
 
 interface PropTypes<T extends ChipBase> {
     freeSolo?: boolean
+    disabled?: boolean
 
     label: string
     limitTags?: number

@@ -39,16 +39,6 @@ function App() {
     );
 }
 
-export interface SearchPropsType {
-    generic?: {
-        title?: string
-    }
-    tag?: {
-        incTags?: Tag[]
-        excTags?: Tag[]
-    }
-}
-
 export const SearchPropsState = React.createContext<{
     searchProp: SearchPropsType
     setSearchProp: (value: SearchPropsType) => void
@@ -67,6 +57,17 @@ export interface Image {
     image_id: number
     title?: string
     extension: string
+}
+
+export interface SearchPropsType {
+    generic?: {
+        title?: string
+    }
+    tag?: {
+        incTags?: Tag[]
+        excTags?: Tag[]
+        tagLess?: boolean
+    }
 }
 
 export default App;
