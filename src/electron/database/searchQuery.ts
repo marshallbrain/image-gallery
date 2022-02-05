@@ -82,6 +82,6 @@ function join<T>(array: T[], sep=" ") {
 }
 
 function suffix(array: (string|undefined)[], s: string) {
-    return _.compact(array).map((value, index) =>
-        value + ((index < array.length-1)? s: ""))
+    return _.compact(array).map((value, index, pact) =>
+        value + ((index < pact.length-1)? s: ""))
 }
