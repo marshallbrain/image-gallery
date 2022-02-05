@@ -56,7 +56,7 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={searchProp.main.title}
+                value={orDefault(searchProp.main.title, "")}
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}
