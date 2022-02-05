@@ -11,6 +11,7 @@ import MetadataEdit from "./MetadataEdit";
 import sqlQueries from "@utils/sqlQueries";
 import {Image} from "@components/App";
 import TitleRename from "./TitleRename";
+import EditIcon from '@mui/icons-material/Edit';
 
 const drawerWidth = 450;
 
@@ -33,11 +34,15 @@ function AppViewer(props: PropTypes) {
     useEffect(() => {
         setImage(imageList[index])
         if(imageList[index] != undefined) {
-            window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
-                setImageData(data)
-            }, imageList[index].image_id)
+            updateImageData()
         }
     }, [index])
+
+    const updateImageData = () => {
+        window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
+            setImageData(data)
+        }, imageList[index].image_id)
+    }
 
     const keyPressEvent = (e: KeyboardEvent) => {
         e.preventDefault()
@@ -80,13 +85,19 @@ function AppViewer(props: PropTypes) {
                     open={editOpen}
                 >
                     <SpeedDialAction
-                        key={"Edit Metadata"}
+                        key={"editMetadata"}
                         icon={<EditAttributesIcon />}
-                        tooltipTitle={"Edit Tags"}
+                        tooltipTitle={"Edit metadata"}
                         onClick={toggleEditMetadata}
                     />
                     <SpeedDialAction
-                        key={"Close"}
+                        key={"editTitle"}
+                        icon={<EditIcon />}
+                        tooltipTitle={"Edit title"}
+                        onClick={toggleTR}
+                    />
+                    <SpeedDialAction
+                        key={"close"}
                         icon={<CloseIcon />}
                         tooltipTitle={"Close"}
                         onClick={onClose}
@@ -96,7 +107,13 @@ function AppViewer(props: PropTypes) {
             {imageData &&
                 <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
             }
-            <TitleRename open={drawerTR} toggleTR={toggleTR}/>
+            <TitleRename
+                open={drawerTR}
+                toggleTR={toggleTR}
+                title={imageData?.title}
+                imageID={imageData?.image_id}
+                updateData={updateImageData}
+            />
         </View>
     );
 }

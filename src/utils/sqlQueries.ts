@@ -13,6 +13,7 @@ const queries = {
     addImageCollection: "addImageCollection",
     removeImageCollection: "removeImageCollection",
     clearImageCollection: "clearImageCollection",
+    setImageTitle: "setImageTitle",
 }
 
 export default queries
