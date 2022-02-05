@@ -10,6 +10,7 @@ import {KeyboardEvent, useState} from "react";
 import MetadataEdit from "./MetadataEdit";
 import sqlQueries from "@utils/sqlQueries";
 import {Image} from "@components/App";
+import TitleRename from "./TitleRename";
 
 const drawerWidth = 450;
 
@@ -21,6 +22,7 @@ function AppViewer(props: PropTypes) {
     const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
     const [imageFull, setImageFull] = useState(false)
+    const [drawerTR, setDrawerTR] = useState(false)
 
     useEffect(() => {
         window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
@@ -57,6 +59,10 @@ function AppViewer(props: PropTypes) {
         console.log(imageFull)
     }
 
+    const toggleTR = () => {
+        setDrawerTR(!drawerTR)
+    }
+
     return (
         <View>
             <ImageContainer tabIndex={0} open={editOpen} onKeyDown={keyPressEvent}>
@@ -80,11 +86,6 @@ function AppViewer(props: PropTypes) {
                         onClick={toggleEditMetadata}
                     />
                     <SpeedDialAction
-                        key={"Setting"}
-                        icon={<SettingsIcon />}
-                        tooltipTitle={"Setting"}
-                    />
-                    <SpeedDialAction
                         key={"Close"}
                         icon={<CloseIcon />}
                         tooltipTitle={"Close"}
@@ -95,6 +96,7 @@ function AppViewer(props: PropTypes) {
             {imageData &&
                 <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
             }
+            <TitleRename open={drawerTR} toggleTR={toggleTR}/>
         </View>
     );
 }
