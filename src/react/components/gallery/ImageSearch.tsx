@@ -4,6 +4,7 @@ import {Search} from "@components/gallery/ImageGallery";
 import Settings from '@mui/icons-material/Settings';
 import TagSelector, {Tag} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
+import AdvancedSearch from "@components/gallery/AdvancedSearch";
 
 function ImageSearch(props: PropTypes) {
 
@@ -12,6 +13,7 @@ function ImageSearch(props: PropTypes) {
     const [title, setTitle] = useState("")
     const [tags, setTags] = useState<Tag[]>([])
     const [includeTags, setIncludeTags] = useState<Tag[]>([])
+    const [asOpen, setASOpen] = useState(false)
 
     useEffect(() => {
         window.api.db.getImages(sqlQueries.getTags, (data: Tag[]) => {
@@ -30,6 +32,10 @@ function ImageSearch(props: PropTypes) {
 
     const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value)
+    }
+
+    const toggleAS = () => {
+        setASOpen(!asOpen)
     }
 
     return (
@@ -54,9 +60,10 @@ function ImageSearch(props: PropTypes) {
                     width: 256,
                 }}
             />
-            <IconButton size="large">
+            <IconButton size="large" onClick={toggleAS} >
                 <Settings fontSize="inherit"/>
             </IconButton>
+            <AdvancedSearch open={asOpen} />
         </Stack>
     );
 }
