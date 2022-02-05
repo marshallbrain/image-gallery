@@ -23,7 +23,7 @@ function ImageSearch(props: PropTypes) {
         })
     }, [])
 
-    const setIncTags = (incTags: Tag[]) => {
+    const setIncTags = (incTags: Tag[]|undefined) => {
         setSearchProp({
             ...searchProp,
             main: {

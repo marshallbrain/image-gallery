@@ -7,6 +7,7 @@ import {
     createFilterOptions, SxProps,
     TextField, Theme
 } from "@mui/material";
+import {orDefault} from "@components/utilities";
 
 const TagSelector = (props: PropTypes) => {
 
@@ -34,7 +35,7 @@ const TagSelector = (props: PropTypes) => {
         else if (reason === "clear" && onClear)
             onClear()
         else {
-            props.onChange(newValue as Tag[])
+            props.onChange((newValue.length > 0)? newValue as Tag[]: undefined)
         }
 
     }
@@ -42,7 +43,7 @@ const TagSelector = (props: PropTypes) => {
     return (
         <Autocomplete
             {...{freeSolo, sx}}
-            value={props.selectedTags}
+            value={orDefault(props.selectedTags, [])}
             options={props.tags}
             onChange={onChangeValue}
             limitTags={props.limitTags}
@@ -100,9 +101,9 @@ interface PropTypes {
     label: string
     limitTags?: number
     tags: Tag[]
-    selectedTags: Tag[]
+    selectedTags: Tag[] | undefined
 
-    onChange: (tag: Tag[]) => void
+    onChange: (tag: Tag[] | undefined) => void
     onCreateTag?: (tag: Tag) => void
     onSelectTag?: (tag: Tag) => void
     onRemoveTag?: (tag: Tag) => void

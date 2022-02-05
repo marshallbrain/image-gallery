@@ -42,8 +42,7 @@ const AdvancedSearch = (props: PropTypes) => {
     }, [searchProp])
 
     const compileSearch = () => {
-        const incTags: any = (orDefault(searchProp.main.incTags, []).length > 0)?
-                searchProp.main.incTags: undefined
+        const incTags: any = searchProp.main.incTags
 
         updateSearch({
             title: searchProp.main.title,
