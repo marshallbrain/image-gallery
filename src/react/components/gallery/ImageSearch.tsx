@@ -53,6 +53,7 @@ function ImageSearch(props: PropTypes) {
                 onChange={changeTitle}
             />
             <TagSelector
+                label={"Include Tags"}
                 tags={tags}
                 selectedTags={includeTags}
                 onChange={setIncludeTags}

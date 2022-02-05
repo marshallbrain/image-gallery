@@ -12,6 +12,7 @@ const TagSelector = (props: PropTypes) => {
 
     const {
         freeSolo,
+        label,
         tags,
         selectedTags,
         onChange,
@@ -83,7 +84,7 @@ const TagSelector = (props: PropTypes) => {
                 </li>
             )}
             renderInput={(params) => (
-                <TextField {...params} label="Image Tags" />
+                <TextField {...params} label={label} />
             )}
             renderTags={(value, getTagProps) => {
                 return value.map((option, index) => (
@@ -99,6 +100,7 @@ const filter = createFilterOptions<Tag>({ignoreCase: true, stringify: option => 
 interface PropTypes {
     freeSolo?: boolean
 
+    label: string
     tags: Tag[]
     selectedTags: Tag[]
 

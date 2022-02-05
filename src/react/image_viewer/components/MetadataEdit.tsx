@@ -153,6 +153,7 @@ const MetadataEdit = (props: PropTypes) => {
                 }}
             >
                 <TagSelector
+                    label={"Tags"}
                     tags={tags}
                     selectedTags={imageTags}
                     onChange={() => {}}
@@ -162,6 +163,7 @@ const MetadataEdit = (props: PropTypes) => {
                     onClear={onModifyTags("clear")}
                 />
                 <TagSelector
+                    label={"Collections"}
                     tags={collections}
                     selectedTags={imageCollections}
                     onChange={() => {}}
