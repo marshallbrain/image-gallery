@@ -8,7 +8,9 @@ function App() {
 
     const [imageIndex, setImageIndex] = React.useState(-1)
     const [imageList, setImageList] = React.useState<Image[]>([])
-    const [searchProp, setSearchProp] = useState<SearchPropsType>({generic: {}, tag:{}})
+    const [searchProp, setSearchProp] = useState<SearchPropsType>({
+        generic: {}, tag:{}, collection: {}
+    })
 
     const selectImage = (index: number, list: Image[]) => {
         console.log((imageList.length > 0 && imageIndex > -1))
@@ -44,13 +46,17 @@ export const SearchPropsState = React.createContext<{
     setSearchProp: (value: SearchPropsType) => void
 }>(
     {
-        searchProp: {generic: {}, tag:{}},
+        searchProp: {},
         setSearchProp: (v) => {}
     }
 )
 
 export interface Tag extends ChipBase {
     tag_id: number
+}
+
+export interface Col extends ChipBase {
+    collection_id: number
 }
 
 export interface Image {
@@ -67,6 +73,11 @@ export interface SearchPropsType {
         incTags?: Tag[]
         excTags?: Tag[]
         tagLess?: boolean
+    }
+    collection?: {
+        incCols?: Col[]
+        excCols?: Col[]
+        colLess?: boolean
     }
 }
 

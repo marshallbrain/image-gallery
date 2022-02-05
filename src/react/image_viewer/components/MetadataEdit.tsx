@@ -161,6 +161,7 @@ const MetadataEdit = (props: PropTypes) => {
                     onSelectTag={onModifyTags("select")}
                     onRemoveTag={onModifyTags("remove")}
                     onClear={onModifyTags("clear")}
+                    freeSolo
                 />
                 <TagSelector
                     label={"Collections"}
@@ -170,7 +171,9 @@ const MetadataEdit = (props: PropTypes) => {
                     onCreateTag={onModifyCollections("select")}
                     onSelectTag={onModifyCollections("select")}
                     onRemoveTag={onModifyCollections("remove")}
-                    onClear={onModifyCollections("clear")}/>
+                    onClear={onModifyCollections("clear")}
+                    freeSolo
+                />
             </Stack>
         </Drawer>
     )

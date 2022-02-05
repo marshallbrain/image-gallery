@@ -15,18 +15,18 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
 import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
-import {Search} from "@components/gallery/ImageGallery";
-import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
+import {Col, SearchPropsState, SearchPropsType, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
 import _ from "lodash";
+import CollectionFilters from "@components/gallery/advancedSearch/CollectionFilters";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
         open,
         toggleAS,
-        updateSearch,
         tags,
+        cols,
     } = props
 
     const {searchProp, setSearchProp} = useContext(SearchPropsState);
@@ -35,22 +35,8 @@ const AdvancedSearch = (props: PropTypes) => {
     const [searchPropTemp, setSearchPropTemp] = useState(searchProp)
 
     useEffect(() => {
-        compileSearch()
-    }, [])
-
-    useEffect(() => {
         setSearchPropTemp(searchProp)
-        compileSearch()
     }, [searchProp])
-
-    const compileSearch = () => {
-        updateSearch({
-            title: searchProp.generic?.title,
-            incTags: searchProp.tag?.incTags && searchProp.tag.incTags.map((value) => (value).tag_id),
-            excTags: searchProp.tag?.excTags && searchProp.tag.excTags.map((value) => (value).tag_id),
-            tagLess: searchProp.tag?.tagLess
-        })
-    }
 
     const updateSearchPropT = (value: SearchPropsType) => {
         setSearchPropTemp(_.defaults(value, searchPropTemp))
@@ -69,7 +55,6 @@ const AdvancedSearch = (props: PropTypes) => {
         setSearchProp(searchPropTemp)
         toggleAS()
     }
-
 
     return (
         <Dialog
@@ -123,6 +108,7 @@ const AdvancedSearch = (props: PropTypes) => {
                         >
                             {group === "Generic" && <GenericFilters/>}
                             {group === "Tag" && <TagFilters tags={tags}/>}
+                            {group === "Collection" && <CollectionFilters cols={cols}/>}
                         </Stack>
                     </Box>
                 </SearchPropTemp.Provider>
@@ -143,7 +129,7 @@ export interface SearchPropsOpp {
 
 export const SearchPropTemp = React.createContext<SearchPropsOpp>(
     {
-        searchProp: {generic: {}, tag:{}},
+        searchProp: {},
         setSearchProp: (v) => {}
     }
 )
@@ -151,8 +137,8 @@ export const SearchPropTemp = React.createContext<SearchPropsOpp>(
 interface PropTypes {
     open: boolean
     toggleAS: () => void
-    updateSearch: (value: Search) => void
     tags: Tag[]
+    cols: Col[]
 }
 
 export default AdvancedSearch

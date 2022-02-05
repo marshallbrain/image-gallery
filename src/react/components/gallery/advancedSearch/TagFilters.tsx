@@ -1,8 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {Search} from "@components/gallery/ImageGallery";
 import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
-import {orDefault} from "@components/utilities";
+import {orDefault, toAny} from "@components/utilities";
 import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 
@@ -16,7 +15,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const [incTags, setIncTags] = useState(searchProp.tag?.incTags)
     const [excTags, setExcTags] = useState(searchProp.tag?.excTags)
-    const [tagLess, setTagLess] = useState(searchProp.tag?.tagLess)
+    const [tagLess, setTagLess] = useState(orDefault(searchProp.tag?.tagLess, false))
 
     useEffect(() => {
         setSearchProp({
@@ -71,5 +70,11 @@ export interface TagSearchType {
     excTags?: number[]
     tagLess?: boolean
 }
+
+export const tagSearchMap = (search: SearchPropsType["tag"]): toAny<SearchPropsType>["tag"] => ({
+    incTags: search?.incTags?.map((value) => (value).tag_id),
+    excTags: search?.excTags?.map((value) => (value).tag_id),
+    tagLess: search?.tagLess
+})
 
 export default AdvancedSearch

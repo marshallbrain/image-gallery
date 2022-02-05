@@ -1,27 +1,38 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {IconButton, Stack, TextField} from "@mui/material";
-import {Search} from "@components/gallery/ImageGallery";
 import Settings from '@mui/icons-material/Settings';
 import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
-import {SearchPropsState, Tag} from "@components/App";
+import {Col, SearchPropsState, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
 
 function ImageSearch(props: PropTypes) {
 
-    const {updateSearch} = props
-
     const {searchProp, setSearchProp} = useContext(SearchPropsState);
 
     const [tags, setTags] = useState<Tag[]>([])
+    const [cols, setCols] = useState<Col[]>([])
     const [asOpen, setASOpen] = useState(false)
 
     useEffect(() => {
         window.api.db.getImages(sqlQueries.getTags, (data: Tag[]) => {
             setTags(data)
         })
+        window.api.db.getImages(sqlQueries.getCollections, (data: Col[]) => {
+            setCols(data)
+        })
     }, [])
+
+    const setTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchProp({
+            ...searchProp,
+            generic: {
+                ...searchProp.generic,
+                title: event.target.value
+            }
+        })
+    }
 
     const setIncTags = (incTags: Tag[]|undefined) => {
         setSearchProp({
@@ -33,12 +44,12 @@ function ImageSearch(props: PropTypes) {
         })
     }
 
-    const setTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const setIncCols = (incCols: Col[]|undefined) => {
         setSearchProp({
             ...searchProp,
-            generic: {
-                ...searchProp.generic,
-                title: event.target.value
+            collection: {
+                ...searchProp.collection,
+                incCols
             }
         })
     }
@@ -60,16 +71,28 @@ function ImageSearch(props: PropTypes) {
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}
+                sx={{
+                    width: 256
+                }}
             />
             <TagSelector
                 label={"Include Tags"}
-                limitTags={1}
                 chips={tags}
                 selectedChips={searchProp.tag?.incTags}
                 excludeChips={searchProp.tag?.excTags}
                 onChange={setIncTags}
                 sx={{
-                    width: 256,
+                    flexGrow: 1
+                }}
+            />
+            <TagSelector
+                label={"Include Collections"}
+                chips={cols}
+                selectedChips={searchProp.collection?.incCols}
+                excludeChips={searchProp.collection?.excCols}
+                onChange={setIncCols}
+                sx={{
+                    flexGrow: 1
                 }}
             />
             <IconButton size="large" onClick={toggleAS} >
@@ -78,15 +101,14 @@ function ImageSearch(props: PropTypes) {
             <AdvancedSearch
                 open={asOpen}
                 toggleAS={toggleAS}
-                updateSearch={updateSearch}
                 tags={tags}
+                cols={cols}
             />
         </Stack>
     );
 }
 
 interface PropTypes {
-    updateSearch: (value: Search) => void
 }
 
 export default ImageSearch;
