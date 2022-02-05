@@ -3,17 +3,17 @@ import {TextField} from "@mui/material";
 import {Search} from "@components/gallery/ImageGallery";
 import {Tag} from "../../../image_viewer/components/TagSelector";
 import {orDefault} from "@components/utilities";
-import {SearchPropsCon} from "@components/App";
+import {SearchPropsState, SearchPropsType} from "@components/App";
+import {SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {
-        titleInit,
         setSearch,
         updateRoot
     } = props
 
-    const {searchProp, setSearchProp} = useContext(SearchPropsCon);
+    const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
     const [title, setTitle] = useState("")
 
@@ -24,9 +24,7 @@ const AdvancedSearch = (props: PropTypes) => {
         return () => {
             console.log(titleRef.current)
             setSearchProp({
-                ...searchProp,
                 main: {
-                    ...searchProp.main,
                     title: titleRef.current
                 }
             })
@@ -60,7 +58,6 @@ const AdvancedSearch = (props: PropTypes) => {
 }
 
 interface PropTypes {
-    titleInit: string
     setSearch: (value: GenericSearchType) => void
     updateRoot: (root: {title?: string, tags?: Tag[]}) => void
 }

@@ -31,15 +31,15 @@ function App() {
                     onIndexChange={setImageIndex}
                     onClose={closeImage}
                 />:
-                <SearchPropsCon.Provider value={{searchProp, setSearchProp}}>
+                <SearchPropsState.Provider value={{searchProp, setSearchProp}}>
                     <ImageGallery onImageSelected={selectImage}/>
-                </SearchPropsCon.Provider>
+                </SearchPropsState.Provider>
             }
         </React.Fragment>
     );
 }
 
-interface SearchPropsType {
+export interface SearchPropsType {
     main: {
         title?: string
         incTags?: Tag[]
@@ -50,7 +50,7 @@ interface SearchPropsType {
     }
 }
 
-export const SearchPropsCon = React.createContext<{
+export const SearchPropsState = React.createContext<{
     searchProp: SearchPropsType
     setSearchProp: (value: SearchPropsType) => void
 }>(
