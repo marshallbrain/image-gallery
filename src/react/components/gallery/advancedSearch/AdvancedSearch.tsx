@@ -24,21 +24,13 @@ const AdvancedSearch = (props: PropTypes) => {
         open,
         toggleAS,
         updateSearch,
-        title,
-        setTitle,
         tags,
-        incTags,
-        setIncTags
     } = props
 
     const {searchProp, setSearchProp} = useContext(SearchPropsState);
 
     const [group, setGroup] = useState("Generic")
     const [searchPropTemp, setSearchPropTemp] = useState(searchProp)
-
-    const [main, setMain] = useState<{title: string, tags: Tag[]}>({title, tags: incTags})
-    const [genericSearch, setGenericSearch] = useState<GenericSearchType>({})
-    const [tagSearch, setTagSearch] = useState<TagSearchType>({})
 
     const updateSearchPropT = (value: Partial<SearchPropsType>) => {
         setSearchPropTemp({
@@ -66,21 +58,9 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const onSearch = () => {
         setSearchProp(searchPropTemp)
-
-        console.log({
-            ...genericSearch,
-            ...tagSearch
-        })
-
         toggleAS()
     }
 
-    const updateRoot = (newRoot: {title?: string, tags?: Tag[]}) => {
-        setMain({
-            ...main,
-            ...newRoot
-        })
-    }
 
     return (
         <Dialog
@@ -126,15 +106,8 @@ const AdvancedSearch = (props: PropTypes) => {
                     setSearchProp: updateSearchPropT
                 }}>
                     <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
-                        {group === "Generic" && <GenericFilters
-                            setSearch={setGenericSearch}
-                            updateRoot={updateRoot}
-                        />}
-                        {group === "Tag" && <TagFilters
-                            tags={tags}
-                            setSearch={setTagSearch}
-                            updateRoot={updateRoot}
-                        />}
+                        {group === "Generic" && <GenericFilters/>}
+                        {group === "Tag" && <TagFilters tags={tags}/>}
                     </Box>
                 </SearchPropTemp.Provider>
                 <Divider/>
@@ -163,11 +136,7 @@ interface PropTypes {
     open: boolean
     toggleAS: () => void
     updateSearch: (value: Search) => void
-    title: string
-    setTitle: (value: string) => void
     tags: Tag[]
-    incTags: Tag[]
-    setIncTags: (value: Tag[]) => void
 }
 
 export default AdvancedSearch

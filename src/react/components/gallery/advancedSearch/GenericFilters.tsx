@@ -8,35 +8,15 @@ import {SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch"
 
 const AdvancedSearch = (props: PropTypes) => {
 
-    const {
-        setSearch,
-        updateRoot
-    } = props
-
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [title, setTitle] = useState("")
-
-    const titleRef = useRef(title)
+    const [title, setTitle] = useState(orDefault(searchProp.main.title, ""))
 
     useEffect(() => {
-        setTitle(orDefault(searchProp.main.title, ""))
-        return () => {
-            console.log(titleRef.current)
-            setSearchProp({
-                main: {
-                    title: titleRef.current
-                }
-            })
-        }
-    }, [])
-
-    useEffect(() => {
-        titleRef.current = title
-
-        updateRoot({title})
-        setSearch({
-            ...title && {title},
+        setSearchProp({
+            main: {
+                title
+            }
         })
     }, [title])
 
@@ -58,8 +38,6 @@ const AdvancedSearch = (props: PropTypes) => {
 }
 
 interface PropTypes {
-    setSearch: (value: GenericSearchType) => void
-    updateRoot: (root: {title?: string, tags?: Tag[]}) => void
 }
 
 export interface GenericSearchType {

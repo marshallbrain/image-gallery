@@ -9,35 +9,17 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {
         tags,
-        setSearch,
-        updateRoot,
     } = props
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [incTags, setIncTags] = useState<Tag[]>([])
-
-    const incTagsRef = useRef(incTags)
+    const [incTags, setIncTags] = useState<Tag[]>(orDefault(searchProp.main.incTags, []))
 
     useEffect(() => {
-        setIncTags(orDefault(searchProp.main.incTags, []))
-        return () => {
-            setSearchProp({
-                main: {
-                    incTags: incTagsRef.current
-                }
-            })
-        }
-    }, [])
-
-    useEffect(() => {
-        incTagsRef.current = incTags
-
-        const incTagIDs: {tag_id: number}[] = incTags as unknown as {tag_id: number}[]
-
-        updateRoot({tags: incTags})
-        setSearch({
-            ...incTagIDs.length && {incTags: incTagIDs.map((value) => value.tag_id)}
+        setSearchProp({
+            main: {
+                incTags
+            }
         })
     }, [incTags])
 
@@ -55,8 +37,6 @@ const AdvancedSearch = (props: PropTypes) => {
 
 interface PropTypes {
     tags: Tag[]
-    setSearch: (value: TagSearchType) => void
-    updateRoot: (root: {title?: string, tags?: Tag[]}) => void
 }
 
 export interface TagSearchType {
