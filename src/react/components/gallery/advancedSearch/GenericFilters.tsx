@@ -10,7 +10,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [title, setTitle] = useState(orDefault(searchProp.main.title, ""))
+    const [title, setTitle] = useState(orDefault(searchProp.main?.title, ""))
 
     useEffect(() => {
         setSearchProp({

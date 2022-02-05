@@ -40,13 +40,13 @@ function App() {
 }
 
 export interface SearchPropsType {
-    main: {
+    main?: {
         title?: string
         incTags?: Tag[]
     }
-    generic: {
+    generic?: {
     }
-    tag: {
+    tag?: {
         excTags?: Tag[]
     }
 }

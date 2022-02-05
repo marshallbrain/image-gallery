@@ -13,8 +13,8 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [incTags, setIncTags] = useState(searchProp.main.incTags)
-    const [excTags, setExcTags] = useState(searchProp.tag.excTags)
+    const [incTags, setIncTags] = useState(searchProp.main?.incTags)
+    const [excTags, setExcTags] = useState(searchProp.tag?.excTags)
 
     useEffect(() => {
         setSearchProp({

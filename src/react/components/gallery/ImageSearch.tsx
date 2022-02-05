@@ -65,7 +65,7 @@ function ImageSearch(props: PropTypes) {
                 label={"Include Tags"}
                 limitTags={1}
                 chips={tags}
-                selectedChips={orDefault(searchProp.main.incTags, [])}
+                selectedChips={searchProp.main.incTags}
                 onChange={setIncTags}
                 sx={{
                     width: 256,

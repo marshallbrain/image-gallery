@@ -18,6 +18,7 @@ import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagF
 import {Search} from "@components/gallery/ImageGallery";
 import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
 import {orDefault} from "@components/utilities";
+import _ from "lodash";
 
 const AdvancedSearch = (props: PropTypes) => {
 
@@ -38,6 +39,7 @@ const AdvancedSearch = (props: PropTypes) => {
     }, [])
 
     useEffect(() => {
+        setSearchPropTemp(searchProp)
         compileSearch()
     }, [searchProp])
 
@@ -49,21 +51,18 @@ const AdvancedSearch = (props: PropTypes) => {
         })
     }
 
-    const updateSearchPropT = (value: Partial<SearchPropsType>) => {
-        setSearchPropTemp({
+    const updateSearchPropT = (value: SearchPropsType) => {
+        setSearchPropTemp(_.defaultsDeep({
             main: {
-                ...searchPropTemp.main,
                 title: value.main?.title,
                 incTags: value.main?.incTags,
             },
             generic: {
-                ...searchPropTemp.generic
             },
             tag: {
-                ...searchPropTemp.tag,
                 excTags: value.tag?.excTags
             },
-        })
+        }, searchPropTemp))
     }
 
     const changeGroup = (
@@ -148,7 +147,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
 export interface SearchPropsOpp {
     searchProp: SearchPropsType
-    setSearchProp: (value: Partial<SearchPropsType>) => void
+    setSearchProp: (value: SearchPropsType) => void
 }
 
 export const SearchPropTemp = React.createContext<SearchPropsOpp>(
