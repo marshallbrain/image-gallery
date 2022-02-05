@@ -14,14 +14,18 @@ const AdvancedSearch = (props: PropTypes) => {
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
     const [incTags, setIncTags] = useState(searchProp.main.incTags)
+    const [excTags, setExcTags] = useState(searchProp.tag.excTags)
 
     useEffect(() => {
         setSearchProp({
             main: {
-                incTags
+                incTags,
+            },
+            tag: {
+                excTags,
             }
         })
-    }, [incTags])
+    }, [incTags, excTags])
 
     return (
         <React.Fragment>
@@ -30,6 +34,12 @@ const AdvancedSearch = (props: PropTypes) => {
                 chips={tags}
                 selectedChips={incTags}
                 onChange={setIncTags}
+            />
+            <TagSelector
+                label={"Exclude Tags"}
+                chips={tags}
+                selectedChips={excTags}
+                onChange={setExcTags}
             />
         </React.Fragment>
     )
@@ -41,6 +51,7 @@ interface PropTypes {
 
 export interface TagSearchType {
     incTags?: number[]
+    excTags?: number[]
 }
 
 export default AdvancedSearch

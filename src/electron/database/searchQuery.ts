@@ -15,29 +15,35 @@ export default () => {
             header,
             imageHeader,
             searchQuery.title && titleSlice
-        ].join(" ")
+        ]
 
         const tagQuery = [
             header,
             tagHeader,
-            searchQuery.incTags && incTagsSlice.replace(
+            ...suffix([searchQuery.incTags && incTagsSlice.replace(
                 "$tags",
                 searchQuery.incTags.map((
                     (value, index) => `@incTags${index}`
-                )).join(","))
-        ].filter((value) => value != undefined)
+                )).join(",")),
+            searchQuery.excTags && excTagsSlice.replace(
+                "$tags",
+                searchQuery.excTags.map((
+                    (value, index) => `@excTags${index}`
+                )).join(","))], " and")
+        ]
 
         const param = {
             title: searchQuery.title,
             incTagsLen: searchQuery.incTags?.length,
-            ...searchQuery.incTags?.reduce((p, v, i) => ({...p, [`incTags${i}`]: v}), {})
+            ...searchQuery.incTags?.reduce((p, v, i) => ({...p, [`incTags${i}`]: v}), {}),
+            ...searchQuery.excTags?.reduce((p, v, i) => ({...p, [`excTags${i}`]: v}), {})
         }
 
-        const query = [
-            imageQuery,
+        const query = join([
+            join(imageQuery),
             tagQuery.length > 2 && "intersect",
-            tagQuery.length > 2 && tagQuery.join(" ")
-        ].filter((value) => value != false).join(" ")
+            tagQuery.length > 2 && join(tagQuery)
+        ])
 
         event.reply(channel, db.prepare(query).all(param))
     })
@@ -70,3 +76,12 @@ const excTagsSlice = "" +
 
 const nulTagsSlice = "" +
     "it.tag_id is null"
+
+function join<T>(array: T[], sep=" ") {
+    return _.compact(array).join(sep)
+}
+
+function suffix(array: (string|undefined)[], s: string) {
+    return _.compact(array).map((value, index) =>
+        value + ((index < array.length-1)? s: ""))
+}

@@ -47,6 +47,7 @@ export interface SearchPropsType {
     generic: {
     }
     tag: {
+        excTags?: Tag[]
     }
 }
 

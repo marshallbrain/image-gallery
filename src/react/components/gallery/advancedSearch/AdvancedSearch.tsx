@@ -4,7 +4,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle, Divider, TextField,
+    DialogTitle, Divider, Stack, TextField,
     ToggleButton,
     ToggleButtonGroup, Typography
 } from '@mui/material';
@@ -44,21 +44,24 @@ const AdvancedSearch = (props: PropTypes) => {
     const compileSearch = () => {
         updateSearch({
             title: searchProp.main.title,
-            incTags: searchProp.main.incTags && searchProp.main.incTags.map((value) => (value).tag_id)
+            incTags: searchProp.main.incTags && searchProp.main.incTags.map((value) => (value).tag_id),
+            excTags: searchProp.tag.excTags && searchProp.tag.excTags.map((value) => (value).tag_id)
         })
     }
 
     const updateSearchPropT = (value: Partial<SearchPropsType>) => {
         setSearchPropTemp({
-            ...searchPropTemp,
             main: {
                 ...searchPropTemp.main,
                 title: value.main?.title,
                 incTags: value.main?.incTags,
             },
             generic: {
+                ...searchPropTemp.generic
             },
             tag: {
+                ...searchPropTemp.tag,
+                excTags: value.tag?.excTags
             },
         })
     }
@@ -122,8 +125,15 @@ const AdvancedSearch = (props: PropTypes) => {
                     setSearchProp: updateSearchPropT
                 }}>
                     <Box sx={{maxHeight: 400, overflow: "auto", p: 2}}>
-                        {group === "Generic" && <GenericFilters/>}
-                        {group === "Tag" && <TagFilters tags={tags}/>}
+                        <Stack
+                            direction="column"
+                            justifyContent="center"
+                            alignItems="stretch"
+                            spacing={2}
+                        >
+                            {group === "Generic" && <GenericFilters/>}
+                            {group === "Tag" && <TagFilters tags={tags}/>}
+                        </Stack>
                     </Box>
                 </SearchPropTemp.Provider>
                 <Divider/>
