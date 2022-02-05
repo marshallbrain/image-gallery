@@ -56,7 +56,7 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={orDefault(searchProp.main.title, "")}
+                value={orDefault(searchProp.main?.title, "")}
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}
@@ -65,7 +65,8 @@ function ImageSearch(props: PropTypes) {
                 label={"Include Tags"}
                 limitTags={1}
                 chips={tags}
-                selectedChips={searchProp.main.incTags}
+                selectedChips={searchProp.main?.incTags}
+                excludeChips={searchProp.tag?.excTags}
                 onChange={setIncTags}
                 sx={{
                     width: 256,

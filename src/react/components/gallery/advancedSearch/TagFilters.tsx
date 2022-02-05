@@ -33,12 +33,14 @@ const AdvancedSearch = (props: PropTypes) => {
                 label={"Include Tags"}
                 chips={tags}
                 selectedChips={incTags}
+                excludeChips={excTags}
                 onChange={setIncTags}
             />
             <TagSelector
                 label={"Exclude Tags"}
                 chips={tags}
                 selectedChips={excTags}
+                excludeChips={incTags}
                 onChange={setExcTags}
             />
         </React.Fragment>

@@ -8,6 +8,7 @@ import {
     TextField, Theme
 } from "@mui/material";
 import {orDefault} from "@components/utilities";
+import _ from "lodash";
 
 const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
 
@@ -56,7 +57,10 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
-                const filtered = filter(options, params);
+
+                const without = props.excludeChips && _.without(options, ...props.excludeChips)
+
+                const filtered = filter(without || options, params);
                 const { inputValue } = params;
 
                 if (freeSolo) {
@@ -101,7 +105,8 @@ interface PropTypes<T extends ChipBase> {
     label: string
     limitTags?: number
     chips: T[]
-    selectedChips: T[] | undefined
+    selectedChips?: T[]
+    excludeChips?: T[]
 
     onChange: (chip: T[] | undefined) => void
     onCreateTag?: (chip: ChipBase) => void
