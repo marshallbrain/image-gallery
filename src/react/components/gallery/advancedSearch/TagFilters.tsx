@@ -1,6 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import TagSelector, {Tag} from "../../../image_viewer/components/TagSelector";
 import {Search} from "@components/gallery/ImageGallery";
+import {SearchPropsCon} from "@components/App";
+import {orDefault} from "@components/utilities";
 
 const AdvancedSearch = (props: PropTypes) => {
 
@@ -11,11 +13,31 @@ const AdvancedSearch = (props: PropTypes) => {
         updateRoot,
     } = props
 
-    const [incTags, setIncTags] = useState(incTagsInit)
+    const {searchProp, setSearchProp} = useContext(SearchPropsCon);
+
+    const [incTags, setIncTags] = useState<Tag[]>([])
+
+    const incTagsRef = useRef(incTags)
 
     useEffect(() => {
+        setIncTags(orDefault(searchProp.main.incTags, []))
+        return () => {
+            console.log(incTagsRef.current)
+            setSearchProp({
+                ...searchProp,
+                main: {
+                    ...searchProp.main,
+                    incTags: incTagsRef.current
+                }
+            })
+        }
+    }, [])
+
+    useEffect(() => {
+        incTagsRef.current = incTags
 
         const incTagIDs: {tag_id: number}[] = incTags as unknown as {tag_id: number}[]
+
         updateRoot({tags: incTags})
         setSearch({
             ...incTagIDs.length && {incTags: incTagIDs.map((value) => value.tag_id)}

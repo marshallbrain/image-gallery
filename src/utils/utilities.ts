@@ -26,6 +26,3 @@ export function appData(...path: string[]): string {
     }
 }
 
-export interface AnyObject {
-    [key: string]: any
-}

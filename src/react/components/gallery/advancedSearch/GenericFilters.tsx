@@ -1,7 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {TextField} from "@mui/material";
 import {Search} from "@components/gallery/ImageGallery";
 import {Tag} from "../../../image_viewer/components/TagSelector";
+import {orDefault} from "@components/utilities";
+import {SearchPropsCon} from "@components/App";
 
 const AdvancedSearch = (props: PropTypes) => {
 
@@ -11,19 +13,38 @@ const AdvancedSearch = (props: PropTypes) => {
         updateRoot
     } = props
 
-    const [title, setTitle] = useState(titleInit)
+    const {searchProp, setSearchProp} = useContext(SearchPropsCon);
 
-    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(event.target.value)
-    }
+    const [title, setTitle] = useState("")
+
+    const titleRef = useRef(title)
 
     useEffect(() => {
+        setTitle(orDefault(searchProp.main.title, ""))
+        return () => {
+            console.log(titleRef.current)
+            setSearchProp({
+                ...searchProp,
+                main: {
+                    ...searchProp.main,
+                    title: titleRef.current
+                }
+            })
+        }
+    }, [])
+
+    useEffect(() => {
+        titleRef.current = title
 
         updateRoot({title})
         setSearch({
             ...title && {title},
         })
     }, [title])
+
+    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(event.target.value)
+    }
 
     return (
         <React.Fragment>
