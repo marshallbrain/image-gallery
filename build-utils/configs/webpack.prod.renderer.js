@@ -10,11 +10,14 @@ const webpack = require("webpack");
 module.exports = merge(base, {
     mode: "production",
     target: "electron-renderer",
-    entry: ["./src/react/index.js"],
+    entry: {
+        index: ["./src/react/index.js"],
+        indexView: ["./src/react/image_viewer/index_viewer.js"]
+    },
     devtool: false,
     output: {
         path: path.resolve(__dirname, "../../build"), // Where all the output files get dropped after webpack is done with them
-        filename: "./prod.render.js" // The name of the webpack bundle that's generated
+        filename: "./prod.[name].js" // The name of the webpack bundle that's generated
     },
     module: {
         rules: [
@@ -54,7 +57,14 @@ module.exports = merge(base, {
         new HtmlWebpackPlugin({
             template: path.resolve(__dirname, "../../src/react/index.html"),
             filename: "index.html",
-            base: "app://rse"
+            base: "app://rse",
+            chunks: ['index']
+        }),
+        new HtmlWebpackPlugin({
+            template: path.resolve(__dirname, "../../src/react/image_viewer/index_viewer.html"),
+            filename: "index_viewer.html",
+            base: "app://rse",
+            chunks: ['indexView']
         }),
         new CspHtmlWebpackPlugin({
             "base-uri": ["'self'"],

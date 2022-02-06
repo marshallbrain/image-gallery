@@ -21,8 +21,7 @@ export function appData(...path: string[]): string {
     if (isDev) {
         return fullPath
     } else {
-        exception()
-        return ""
+        return fullPath
     }
 }
 

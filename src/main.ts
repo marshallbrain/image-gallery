@@ -37,7 +37,7 @@ const windowSetup = async (
             nodeIntegrationInWorker: false,
             nodeIntegrationInSubFrames: false,
             contextIsolation: true,
-            preload: path.join(__dirname, "electron/preloads/preload.js"),
+            preload: path.join(__dirname, (isDev)? "electron/preloads/preload.js": "preload.js"),
             /* eng-disable PRELOAD_JS_CHECK */
             disableBlinkFeatures: "Auxclick"
         }

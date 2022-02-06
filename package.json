@@ -18,9 +18,6 @@
   "build": {
     "productName": "{Project Name}",
     "appId": "com.marshalldbrain.projectname",
-    "directories": {
-      "buildResources": "resources"
-    },
     "files": [
       "build/**/*",
       "package.json"

@@ -7,7 +7,7 @@ import {Dialog} from "@mui/material";
 function PersistentDialogs() {
 
     const [importImages, setImportImages] = React.useState(false);
-    const [importProgress, setImportProgress] = React.useState(true);
+    const [importProgress, setImportProgress] = React.useState(false);
     const [reimportImages, setReimportImages] = React.useState(false);
 
     useEffect(() => {
