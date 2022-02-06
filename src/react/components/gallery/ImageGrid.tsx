@@ -11,17 +11,12 @@ const headerOffset = 0
 
 function ImageGrid(props: PropTypes) {
 
-    const {images, onImageSelected} = props
-
-    const [selected, setSelected] = useState<Set<number>>(new Set())
-
-    const selectAll = () => {
-        setSelected(new Set(images.map(((value) => value.image_id))))
-    }
-
-    const deselectAll = () => {
-        setSelected(new Set())
-    }
+    const {
+        images,
+        onImageSelected,
+        selected,
+        setSelected
+    } = props
 
     const Cell = (column: number) => (cell: any) => {
 
@@ -86,61 +81,31 @@ function ImageGrid(props: PropTypes) {
     }
 
     return (
-        <Stack
-            direction="column"
-            justifyContent="flex-start"
-            alignItems="stretch"
-            spacing={0}
-            sx={{height: "-webkit-fill-available", marginX: 1, marginBottom: 1}}
-        >
-            {selected.size > 0 && <Paper elevation={4} sx={{p: 1}}>
-                <Stack
-                    direction="row"
-                    justifyContent="flex-start"
-                    alignItems="center"
-                    spacing={1}
-                >
-                    <IconButton color="info" sx={{pr: 0}} onClick={deselectAll}>
-                        <IndeterminateCheckBoxIcon/>
-                    </IconButton>
-                    <Button variant="outlined" color={"info"} onClick={selectAll}>Select all</Button>
-                    <Typography variant={"subtitle1"} sx={{fontWeight: "bold", px: 2}}>
-                        <StyledText>{selected.size}</StyledText>
-                        {(selected.size > 1) ? " Images" : " Image"} selected
-                    </Typography>
-                    <Button variant="outlined" color={"info"}>Copy</Button>
-                </Stack>
-            </Paper>}
-            <Box sx={{flexGrow: 1}}>
-                <AutoSizer>
-                    {({height, width}) => {
-                        const columnCount = 5
-                        const rowCount = Math.ceil(images.length / columnCount)
-                        const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
-                        const colWidth = Math.floor((width-widthOffset) / columnCount)
-                        return (
-                            <WindowGrid
-                                columnCount={columnCount}
-                                columnWidth={colWidth}
-                                height={height}
-                                rowCount={rowCount}
-                                rowHeight={colWidth}
-                                width={width}
-                            >
-                                {Cell(columnCount)}
-                            </WindowGrid>
-                        )
-                    }}
-                </AutoSizer>
-            </Box>
-        </Stack>
+        <Box sx={{height: "-webkit-fill-available", marginX: 1}}>
+            <AutoSizer>
+                {({height, width}) => {
+                    const columnCount = 5
+                    const rowCount = Math.ceil(images.length / columnCount)
+                    const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
+                    const colWidth = Math.floor((width-widthOffset) / columnCount)
+                    return (
+                        <WindowGrid
+                            columnCount={columnCount}
+                            columnWidth={colWidth}
+                            height={height}
+                            rowCount={rowCount}
+                            rowHeight={colWidth}
+                            width={width}
+                        >
+                            {Cell(columnCount)}
+                        </WindowGrid>
+                    )
+                }}
+            </AutoSizer>
+        </Box>
     );
 
 }
-
-const StyledText = styled("span")(({theme}) => ({
-    color: theme.palette.info.dark
-}))
 
 const Img = styled("img")({
     maxWidth: "100%",
@@ -160,6 +125,8 @@ const ImageCell = styled("div")({
 interface PropTypes {
     images: Image[]
     onImageSelected: (index: number, imageList: Image[]) => void
+    selected: Set<number>
+    setSelected: (selected: Set<number>) => void
 }
 
 export default ImageGrid;
