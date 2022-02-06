@@ -2,8 +2,8 @@ import {ImageFile, Mapper} from "@components/dialogs/import_images/ImportImages"
 import sharp from "sharp";
 import {imageImportColumns} from "@utils/constants";
 import fs from "fs";
-import pathModule, {ParsedPath} from "path";
-import path from "path";
+import pathModule from "path";
+import path, {ParsedPath} from "path";
 import dotProp from "dot-prop";
 import * as exifReader from "exifreader"
 import {db} from "@electron/database/database";
@@ -26,18 +26,9 @@ const columnsFull: string[] = [
 export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
     if (files.length == 0) return
     const imagesData = retrieveMetadata(files, mappers)
-    importImageData(imagesData, event)
-}
-
-const addImageTag = db.prepare("" +
-    "insert into images_tags " +
-    "select ?, ?"
-)
-
-const additionalStatement = (imageID: number | bigint) => {
-    for (let i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
-        addImageTag.run(imageID, Math.floor(Math.random() * 26) + 1)
-    }
+    new Promise(() => {
+        importImageData(imagesData, event)
+    }).then(() => {})
 }
 
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
@@ -69,9 +60,7 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                     const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
                     try {
                         return db.transaction(() => {
-                            const imageID = importStatement.run(entry).lastInsertRowid
-                            additionalStatement(imageID)
-                            return imageID
+                            return importStatement.run(entry).lastInsertRowid
                         })()
                     } catch (e) {
                         throw image.file.base
