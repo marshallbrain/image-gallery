@@ -101,7 +101,11 @@ function ImageGallery(props: PropTypes) {
                     />
                 </Grid>
             </Grid>
-            <ExportDialog open={exportDialog} toggle={toggleExportDialog} selected={selected} />
+            <ExportDialog
+                open={exportDialog}
+                toggle={toggleExportDialog}
+                selected={selected}
+            />
         </React.Fragment>
     )
 

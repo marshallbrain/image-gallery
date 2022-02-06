@@ -18,24 +18,24 @@ import AutoSizer from "react-virtualized-auto-sizer";
 
 const ImportProgressDialog = (props: PropTypes) => {
 
-    const {open, onClose} = props
+    const {open, onClose, updateChannel, completeChannel} = props
 
     const [importCount, setImportCount] = React.useState(0)
     const [lastFilename, setLastFilename] = React.useState("")
     const [errored, setErrored] = React.useState([])
 
     useEffect(() => {
-        const imageImportedKey = window.api.receive(channels.imageImported, (presentDone, filename) => {
+        const imageImportedKey = window.api.receive(updateChannel, (presentDone, filename) => {
             setImportCount(presentDone * 100)
             setLastFilename(filename)
         })
-        const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, (errored) => {
+        const imageImportCompleteKey = window.api.receive(completeChannel, (errored) => {
             setErrored(errored)
             onClose()
         })
         return function cleanup() {
-            window.api.remove(channels.imageImported, imageImportedKey)
-            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
+            window.api.remove(updateChannel, imageImportedKey)
+            window.api.remove(completeChannel, imageImportCompleteKey)
         }
     }, [])
 
@@ -48,7 +48,7 @@ const ImportProgressDialog = (props: PropTypes) => {
     return (
         <React.Fragment>
             <Dialog
-                open={errored.length > 0 && open}
+                open={errored && errored.length > 0 && open}
                 maxWidth={"sm"}
                 fullWidth
             >
@@ -102,7 +102,8 @@ const ImportProgressDialog = (props: PropTypes) => {
 };
 
 interface PropTypes extends DialogPropType {
-
+    updateChannel: string
+    completeChannel: string
 }
 
 export default ImportProgressDialog;

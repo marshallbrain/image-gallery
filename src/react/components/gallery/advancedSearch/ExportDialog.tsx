@@ -11,24 +11,37 @@ import {
     TextField, Typography
 } from "@mui/material";
 import {ImageFile} from "@components/dialogs/import_images/ImportImages";
+import {channels, ipcChannels} from "@utils/ipcCommands";
+import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
+import {useEffect} from "react";
 
 const ExportDialog = (props: PropTypes) => {
 
     const {
         open,
         toggle,
-        selected
+        selected,
     } = props
 
-    const [title, setTitle] = useState("image_id")
-    const [folder, setFolder] = useState("")
+    const [title, setTitle] = useState("title")
+    const [exporting, setExporting] = useState(false)
+
+    useEffect(() => {
+        window.api.once(channels.imageExported, () => {
+            setExporting(true)
+        })
+    }, [])
 
     const changeTitle = (event: SelectChangeEvent) => {
         setTitle(event.target.value)
     }
 
-    const getExportFolder = () => {
+    const exportImages = () => {
+        window.api.send(channels.exportImages, {selected, title})
+    }
 
+    const exportDone = () => {
+        toggle()
     }
 
     return (
@@ -57,22 +70,18 @@ const ExportDialog = (props: PropTypes) => {
                             <MenuItem value={"title"}>Title</MenuItem>
                         </Select>
                     </FormControl>
-                    <Button
-                        variant="contained"
-                        sx={{alignSelf: "flex-start"}}
-                        onClick={getExportFolder}
-                    >
-                        select folder
-                    </Button>
-                    {folder !== "" && <Typography>
-                        {folder}
-                    </Typography>}
                 </Stack>
             </DialogContent>
             <DialogActions>
-                <Button onClick={toggle} >Cancel</Button>
-                <Button>Export</Button>
+                <Button onClick={toggle}>Cancel</Button>
+                <Button onClick={exportImages}>Export</Button>
             </DialogActions>
+            <ImportProgressDialog
+                updateChannel={channels.imageExported}
+                completeChannel={channels.imageExportComplete}
+                open={exporting}
+                onClose={exportDone}
+            />
         </Dialog>
     )
 }

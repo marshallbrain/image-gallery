@@ -47,6 +47,8 @@ function PersistentDialogs() {
             <ImportProgressDialog
                 open={importProgress}
                 onClose={close(Dialog.importProgress)}
+                updateChannel={channels.imageImported}
+                completeChannel={channels.imageImportComplete}
             />
         </React.Fragment>
     );

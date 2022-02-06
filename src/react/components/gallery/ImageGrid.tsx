@@ -49,6 +49,7 @@ function ImageGrid(props: PropTypes) {
                         }}
                     >
                         <Checkbox
+                            key={image_id.toString()}
                             checked={selected.has(image_id)}
                             color={"info"}
                             checkedIcon={<CheckBoxFilled/>}
@@ -70,7 +71,6 @@ function ImageGrid(props: PropTypes) {
                         />
                     </Box>
                     <Img
-                        key={image_id.toString()}
                         src={`preview://${image_id}`}
                         alt={title}
                     />

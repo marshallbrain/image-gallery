@@ -1,16 +1,17 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
-import {app, BrowserWindow, ipcMain} from "electron";
-import {channels} from "@utils/ipcCommands";
+import {app, BrowserWindow, ipcMain, dialog} from "electron";
+import {channels, ipcChannels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
 import importImages from "./database/importImages";
-import setupDatabase from "@electron/database/database";
+import setupDatabase, {db} from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
 import pathModule from "path";
 import reimportImages from "@electron/database/reimportImages";
-import {isDev} from "@utils/utilities";
+import {appData, isDev} from "@utils/utilities";
+import sharp from "sharp";
 
 export default (createWindow: WindowSetupFunction) => {
 
@@ -59,6 +60,60 @@ const createChannelListeners = () => {
         reimportImages(mappers, () => {
             event.reply(channels.reimportImagesComplete)
         })
+    })
+
+    ipcMain.on(channels.getFolder, (event, {callBackChannel, data}) => {
+    })
+
+    ipcMain.on(channels.exportImages, (event, [{selected, title}]) => {
+        const location = dialog.showOpenDialogSync({
+            buttonLabel: "Select",
+            message: "Select export folder",
+            properties: [
+                "openDirectory",
+                "createDirectory",
+                "treatPackageAsDirectory"
+            ]
+        })
+
+        if (!location) return
+        const folder = location[0]
+
+        const statement = db.prepare(`select image_id, extension, ${title} from images where image_id = ?`)
+
+        const imagesLeft = new Set(selected)
+        for (const id of selected) {
+            new Promise((resolve, reject) => {
+                const image = db.transaction(() => {
+                    return statement.get(id)
+                })() as { image_id: number, extension: string, [p: string]: any }
+
+                const filename =
+                    image[title] +
+                    ((title != "image_id")? `.${image.image_id}`: "") +
+                    `.${image.extension}`
+                sharp(appData("images", "raw", `${image.image_id}.${image.extension}`))
+                    .toFile(pathModule.join(folder, filename))
+                    .then(() => {
+                        resolve(filename)
+                    })
+                    .catch(() => {
+                        reject()
+                    })
+
+            }).then((filename) => {
+                imagesLeft.delete(id)
+                event.reply(
+                    channels.imageExported,
+                    (selected.size - imagesLeft.size) / selected.size,
+                    filename
+                )
+            }).finally(() => {
+                if (imagesLeft.size == 0) {
+                    event.reply(channels.imageExportComplete)
+                }
+            })
+        }
     })
 
 }
