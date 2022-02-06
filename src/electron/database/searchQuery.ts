@@ -29,7 +29,8 @@ export default () => {
             tagQuery.length > 2 && "intersect",
             tagQuery.length > 2 && join(tagQuery),
             collectionQuery.length > 2 && "intersect",
-            collectionQuery.length > 2 && join(collectionQuery)
+            collectionQuery.length > 2 && join(collectionQuery),
+            orderByTitle
         ])
 
         console.log(query)
@@ -103,6 +104,9 @@ const getCollectionQuery = (query: toAny<SearchPropsType>["collection"]) => ({
 
 const header = "select " +
     "i.image_id, i.title, i.extension"
+
+const orderByTitle = "" +
+    "order by i.title"
 
 //---------------
 
