@@ -3,7 +3,7 @@ import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
-import {Button, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
+import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import {Image, SearchPropsState, SearchPropsType} from "@components/App";
 import {genericSearchMap, GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import {tagSearchMap, TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
@@ -101,11 +101,17 @@ function ImageGallery(props: PropTypes) {
                     />
                 </Grid>
             </Grid>
-            <ExportDialog
+            <Dialog
                 open={exportDialog}
-                toggle={toggleExportDialog}
-                selected={selected}
-            />
+                onClose={toggleExportDialog}
+                fullWidth
+                maxWidth={"xs"}
+            >
+                <ExportDialog
+                    toggle={toggleExportDialog}
+                    selected={selected}
+                />
+            </Dialog>
         </React.Fragment>
     )
 

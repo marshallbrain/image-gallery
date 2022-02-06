@@ -18,7 +18,6 @@ import {useEffect} from "react";
 const ExportDialog = (props: PropTypes) => {
 
     const {
-        open,
         toggle,
         selected,
     } = props
@@ -45,12 +44,7 @@ const ExportDialog = (props: PropTypes) => {
     }
 
     return (
-        <Dialog
-            open={open}
-            onClose={toggle}
-            fullWidth
-            maxWidth={"xs"}
-        >
+        <React.Fragment>
             <DialogTitle>Export Images</DialogTitle>
             <DialogContent>
                 <Stack
@@ -82,7 +76,7 @@ const ExportDialog = (props: PropTypes) => {
                 open={exporting}
                 onClose={exportDone}
             />
-        </Dialog>
+        </React.Fragment>
     )
 }
 
@@ -93,7 +87,6 @@ const Input = styled('input')({
 });
 
 interface PropTypes {
-    open: boolean
     toggle: () => void
     selected: Set<number>
 }
