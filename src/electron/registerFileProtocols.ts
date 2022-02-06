@@ -3,7 +3,7 @@ import pathModule from "path";
 import fs from "fs";
 import sharp from "sharp";
 import {db} from "@electron/database/database";
-import {appData, appDataDir} from "@utils/utilities";
+import {appData} from "@utils/utilities";
 
 export default () => {
     protocol.registerFileProtocol('preview', (request, callback) => {
