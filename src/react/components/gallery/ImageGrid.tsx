@@ -32,7 +32,7 @@ function ImageGrid(props: PropTypes) {
                         top: cell.style.top
                     }}
                     onClick={() => {
-                        onImageSelected(image_id, images)
+                        onImageSelected(id, images)
                     }}
                 >
                     <Box
@@ -73,6 +73,7 @@ function ImageGrid(props: PropTypes) {
                     <Img
                         src={`preview://${image_id}`}
                         alt={title}
+                        loading={"lazy"}
                     />
                 </ImageCell>
             )
