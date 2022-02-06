@@ -1,14 +1,27 @@
 import React, {useState} from 'react';
-import {Box, Checkbox, Paper, styled} from "@mui/material";
+import {Box, Button, Checkbox, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import {channels} from "@utils/ipcCommands";
 import {Image} from "@components/App";
 import CheckBoxFilled from "@components/icons/CheckBoxFilled";
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+
+const headerOffset = 0
 
 function ImageGrid(props: PropTypes) {
 
     const {images, onImageSelected} = props
+
+    const [selected, setSelected] = useState<Set<number>>(new Set())
+
+    const selectAll = () => {
+        setSelected(new Set(images.map(((value) => value.image_id))))
+    }
+
+    const deselectAll = () => {
+        setSelected(new Set())
+    }
 
     const Cell = (column: number) => (cell: any) => {
 
@@ -19,9 +32,12 @@ function ImageGrid(props: PropTypes) {
 
             return (
                 <ImageCell
-                    style={cell.style}
+                    style={{
+                        ...cell.style,
+                        top: cell.style.top
+                    }}
                     onClick={() => {
-                        onImageSelected(id, images)
+                        onImageSelected(image_id, images)
                     }}
                 >
                     <Box
@@ -31,20 +47,24 @@ function ImageGrid(props: PropTypes) {
                             top: 0,
                             width: "inherit",
                             height: "inherit",
-                            opacity: 0,
+                            opacity: (selected.has(image_id))? 1: 0,
                             "&:hover":{
                                 opacity: 1
                             },
                         }}
                     >
                         <Checkbox
+                            checked={selected.has(image_id)}
                             color={"info"}
                             checkedIcon={<CheckBoxFilled/>}
-                            onClick={(event) => {
-                                event.stopPropagation()
-                            }}
+                            onClick={(event) => {event.stopPropagation()}}
                             onChange={() => {
-                                console.log(id)
+                                if (selected.has(image_id)) {
+                                    selected.delete(image_id)
+                                    setSelected(new Set(selected))
+                                } else {
+                                    setSelected(new Set(selected.add(image_id)))
+                                }
                             }}
                             sx={{
                                 position: "absolute",
@@ -66,29 +86,61 @@ function ImageGrid(props: PropTypes) {
     }
 
     return (
-        <Paper sx={{height: "-webkit-fill-available", marginX: 1, marginBottom: 1}} elevation={0}>
-            <AutoSizer>
-                {({height, width}) => {
-                    const columnCount = 5
-                    const rowCount = Math.ceil(images.length / columnCount)
-                    const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
-                    const colWidth = Math.floor((width-widthOffset) / columnCount)
-                    return (<WindowGrid
-                        columnCount={columnCount}
-                        columnWidth={colWidth}
-                        height={height}
-                        rowCount={rowCount}
-                        rowHeight={colWidth}
-                        width={width}
-                    >
-                        {Cell(columnCount)}
-                    </WindowGrid>)
-                }}
-            </AutoSizer>
-        </Paper>
+        <Stack
+            direction="column"
+            justifyContent="flex-start"
+            alignItems="stretch"
+            spacing={0}
+            sx={{height: "-webkit-fill-available", marginX: 1, marginBottom: 1}}
+        >
+            {selected.size > 0 && <Paper elevation={4} sx={{p: 1}}>
+                <Stack
+                    direction="row"
+                    justifyContent="flex-start"
+                    alignItems="center"
+                    spacing={1}
+                >
+                    <IconButton color="info" sx={{pr: 0}} onClick={deselectAll}>
+                        <IndeterminateCheckBoxIcon/>
+                    </IconButton>
+                    <Button variant="outlined" color={"info"} onClick={selectAll}>Select all</Button>
+                    <Typography variant={"subtitle1"} sx={{fontWeight: "bold", px: 2}}>
+                        <StyledText>{selected.size}</StyledText>
+                        {(selected.size > 1) ? " Images" : " Image"} selected
+                    </Typography>
+                    <Button variant="outlined" color={"info"}>Copy</Button>
+                </Stack>
+            </Paper>}
+            <Box sx={{flexGrow: 1}}>
+                <AutoSizer>
+                    {({height, width}) => {
+                        const columnCount = 5
+                        const rowCount = Math.ceil(images.length / columnCount)
+                        const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
+                        const colWidth = Math.floor((width-widthOffset) / columnCount)
+                        return (
+                            <WindowGrid
+                                columnCount={columnCount}
+                                columnWidth={colWidth}
+                                height={height}
+                                rowCount={rowCount}
+                                rowHeight={colWidth}
+                                width={width}
+                            >
+                                {Cell(columnCount)}
+                            </WindowGrid>
+                        )
+                    }}
+                </AutoSizer>
+            </Box>
+        </Stack>
     );
 
 }
+
+const StyledText = styled("span")(({theme}) => ({
+    color: theme.palette.info.dark
+}))
 
 const Img = styled("img")({
     maxWidth: "100%",
