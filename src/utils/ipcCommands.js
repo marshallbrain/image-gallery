@@ -32,7 +32,14 @@ export const channels = {
     openImageViewer: "openImageViewer",
     onImageViewerOpen: "onImageViewerOpen",
     updateImageViewerList: "updateImageViewerList",
-    updateTagLists: "updateTags"
+    updateTagLists: "updateTags",
+    
+    getFolder: "getFolder",
+    exportImages: "exportImages",
+    
+    imageExported: "imageExported",
+    imageExportComplete: "imageExportComplete",
+    
 }
 
 export const ipcChannels = new Set(Object.values(channels))

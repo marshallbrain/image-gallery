@@ -1,5 +1,3 @@
-import {Search} from "@components/gallery/ImageGallery";
-
 interface types {
     savedStore: {
         get: (key: string) => any
@@ -25,11 +23,13 @@ interface types {
         ) => void
         search: (
             callback: (...data: any[]) => void,
-            args: Search
+            args: any
         ) => void
     }
+    request: (channel: string, callback: (data: any) => void, ...data: any[]) => void
     send: (channel: string, ...data: any[]) => void
-    receive: (channel: string, func: (...args: any[]) => void) => (...args: any[]) => void
+    receive: (channel: string, func: (...args: any[]) => void) => (...args: any[]) => any
+    once: (channel: string, func: (...args: any[]) => void) => (...args: any[]) => void
     remove: (channel: string, listener: (...args: any[]) => void) => void
     removeAll: (channel: string) => void
 }
