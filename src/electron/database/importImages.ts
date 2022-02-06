@@ -41,10 +41,10 @@ const additionalStatement = (imageID: number | bigint) => {
 }
 
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
-    const totalImages = imageData.length
+    let totalImages = imageData.length
     const importRemaining = new Set(imageData.map(({file}) => file.base))
-    const imagesRemaining = new Set(importRemaining)
-    const errored: string[] = []
+    const thumbnailsRemaining = new Set(importRemaining)
+    const errored = new Set<string>()
 
     const importStatement = db.prepare("" +
         "insert into images (" +
@@ -53,9 +53,13 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
         columnsFull.map(() => "?").join(", ") +
         ")"
     )
+    const deleteStatement = db.prepare("" +
+        "delete from images " +
+        "where image_id = ?"
+    )
 
     for (const image of imageData) {
-        new Promise((resolve, reject) => {
+        new Promise<string>((resolve, reject) => {
             const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
             sharpImage
                 .withMetadata()
@@ -70,59 +74,63 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                             return imageID
                         })()
                     } catch (e) {
-                        reject(image.file.base)
-                        return -1
+                        throw image.file.base
                     }
                 })
                 .then((imageID) => {
                     sharpImage
                         .toFile(pathModule.join(rawFolder, imageID+image.file.ext))
                         .then(() => {
-                            return sharpImage
-                                .resize(256, 256, {fit: sharp.fit.inside})
-                                .toFormat("jpeg")
-                                .jpeg({
-                                    quality: 80,
-                                    mozjpeg: true
-                                })
-                                .toFile(pathModule.join(prevFolder, `${imageID}.jpeg`))
-                        })
-                        .then(() => {
-                            imagesRemaining.delete(image.file.base)
-                            if (importRemaining.size == 0) {
-                                event.reply(
-                                    channels.imageImported,
-                                    (totalImages - imagesRemaining.size) / totalImages,
-                                    "Creating thumbnails")
-                            }
+                            resolve(image.file.base)
                         })
                         .catch(() => {
-                            reject(image.file.base)
+                            throw [image.file.base, imageID]
                         })
-                        .finally(() => {
-                            if (importRemaining.size == 0 && imagesRemaining.size == 0) {
-                                event.reply(channels.imageImportComplete, errored)
-                            }
-                        })
-                }).then(() => {
-                    resolve(image.file.base)
+                    return imageID
                 })
-                .catch(() => {
-                    reject(image.file.base)
+                .then((imageId) => {
+                    return sharpImage
+                        .resize(256, 256, {fit: sharp.fit.inside})
+                        .toFormat("jpeg")
+                        .jpeg({
+                            quality: 80,
+                            mozjpeg: true
+                        })
+                        .toFile(pathModule.join(prevFolder, `${imageId}.jpeg`))
+                        .catch(() => {
+                            thumbnailsRemaining.delete(image.file.base)
+                            errored.add(image.file.base)
+                            deleteStatement.run(imageId)
+                        })
+                })
+                .then(() => {
+                    thumbnailsRemaining.delete(image.file.base)
+                    if (importRemaining.size == 0) event.reply(
+                        channels.imageImported,
+                        (totalImages - thumbnailsRemaining.size) / totalImages,
+                        "Creating thumbnails"
+                    )
+                })
+                .finally(() => {
+                    if (importRemaining.size == 0 && thumbnailsRemaining.size == 0) {
+                        event.reply(channels.imageImportComplete, Array.of(errored))
+                    }
                 })
         })
             .then((filename) => {
-                importRemaining.delete(filename as string)
+                importRemaining.delete(filename)
                 event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
-            .catch((filename) => {
-                importRemaining.delete(filename as string)
-                errored.push(filename)
+            .catch(([filename, imageId]) => {
+                importRemaining.delete(filename)
+                thumbnailsRemaining.delete(filename)
+                errored.add(filename)
+                deleteStatement.run(imageId)
                 event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
             .finally(() => {
-                if (importRemaining.size == 0 && imagesRemaining.size == 0) {
-                    event.reply(channels.imageImportComplete, errored)
+                if (importRemaining.size == 0 && thumbnailsRemaining.size == 0) {
+                    event.reply(channels.imageImportComplete, Array.of(errored))
                 }
             })
     }
