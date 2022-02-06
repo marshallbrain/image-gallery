@@ -18,7 +18,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 
 const ImportProgressDialog = (props: PropTypes) => {
 
-    const {open, onClose, updateChannel, completeChannel} = props
+    const {onClose, updateChannel, completeChannel} = props
 
     const [importCount, setImportCount] = React.useState(0)
     const [lastFilename, setLastFilename] = React.useState("")
@@ -48,7 +48,7 @@ const ImportProgressDialog = (props: PropTypes) => {
     return (
         <React.Fragment>
             <Dialog
-                open={errored && errored.length > 0 && open}
+                open={errored && errored.length > 0}
                 maxWidth={"sm"}
                 fullWidth
             >
@@ -74,29 +74,32 @@ const ImportProgressDialog = (props: PropTypes) => {
                     <Button onClick={onClose}>Close</Button>
                 </DialogActions>
             </Dialog>
-            <Dialog
-                open={open}
-                maxWidth={"sm"}
-                fullWidth
-            >
-                <DialogTitle>Import Progress</DialogTitle>
-                <DialogContent>
-                    <Stack
-                        direction={"row"}
-                        justifyContent="center"
-                        alignItems="center"
-                        spacing={2}
-                    >
-                        <LinearProgress variant="determinate" value={importCount} sx={{flexGrow: 1}}/>
-                        <Typography variant="body2" color="text.secondary">{`${Math.round(
-                            importCount,
-                        )}%`}</Typography>
-                    </Stack>
-                    <Typography variant="body1" color="text.secondary">
-                        {lastFilename}
-                    </Typography>
-                </DialogContent>
-            </Dialog>
+            <DialogTitle>Import Progress</DialogTitle>
+            <DialogContent>
+                <Stack
+                    direction={"row"}
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <LinearProgress
+                        variant={(importCount <= 0 || importCount >= 100)? "indeterminate": "determinate"}
+                        value={importCount}
+                        sx={{
+                            flexGrow: 1,
+                            ".MuiLinearProgress-bar": {
+                                transition: "none"
+                            }
+                        }}
+                    />
+                    <Typography variant="body2" color="text.secondary">{`${Math.round(
+                        importCount,
+                    )}%`}</Typography>
+                </Stack>
+                <Typography variant="body1" color="text.secondary">
+                    {lastFilename}
+                </Typography>
+            </DialogContent>
         </React.Fragment>
     );
 };

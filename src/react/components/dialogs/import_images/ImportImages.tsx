@@ -22,7 +22,7 @@ import {channels} from "@utils/ipcCommands";
 
 function ImportImages(props: PropTypes) {
 
-    const {open, close, reimport} = props
+    const {close, reimport} = props
 
     const [openDelete, setOpenDelete] = React.useState(false)
     const [mappers, setMappers] = React.useState<Mapper[]>([])
@@ -120,7 +120,7 @@ function ImportImages(props: PropTypes) {
     }
 
     return (
-        <Dialog open={open} onClose={close}>
+        <React.Fragment>
             <DialogTitle>
                 Import Images
             </DialogTitle>
@@ -203,7 +203,7 @@ function ImportImages(props: PropTypes) {
                 <Button onClick={close}>Cancel</Button>
                 <Button onClick={importImages}>Import</Button>
             </DialogActions>
-        </Dialog>
+        </React.Fragment>
     )
 }
 
@@ -213,7 +213,6 @@ const Input = styled('input')({
 });
 
 interface PropTypes {
-    open: boolean
     close: () => void
     reimport: boolean
 }
