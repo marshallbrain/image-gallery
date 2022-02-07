@@ -68,11 +68,16 @@ function AppViewer(props: PropTypes) {
 
     return (
         <View>
-            <ImageContainer tabIndex={0} open={editOpen} onKeyDown={keyPressEvent}>
+            <ImageContainer
+                tabIndex={1}
+                open={editOpen}
+                onKeyDown={keyPressEvent}
+                landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
+            >
                 {(image) && <ImageDisplay
                     key={image.image_id}
                     src={`image://${image.image_id}.${image.extension}`}
-                    landscape={(imageData)? (imageData.image_width > imageData.image_height): true}
+                    landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
                     fullscreen={imageFull}
                     onClick={toggleImageFull}
                 />}
@@ -130,7 +135,7 @@ const ImageDisplay = styled("img", {
             width: (landscape)? "auto": "100%",
             padding: (landscape)? "inherit": "0",
             alignSelf: "flex-start",
-            margin: "auto"
+            margin: "auto",
         }: {
             maxHeight: "100vh",
             maxWidth: "100%",
@@ -139,14 +144,20 @@ const ImageDisplay = styled("img", {
 )
 
 const ImageContainer = styled("div", {
-    shouldForwardProp: (prop) => prop !== 'open'
+    shouldForwardProp: (prop) =>
+        prop !== 'open' &&
+        prop !== 'landscape'
 })<{
     open: boolean
+    landscape: boolean
 }>(
-    ({theme, open}) => ({
+    ({theme, open, landscape}) => ({
         minHeight: "100vh",
+        maxHeight: "100vh",
+        minWidth: "100%",
+        overflowY: "auto",
         display: "flex",
-        flexDirection: "column",
+        flexDirection: (landscape)? "column": "row",
         justifyContent: "center",
         alignItems: "center",
         transition: theme.transitions.create('padding', {
@@ -164,6 +175,11 @@ const ImageContainer = styled("div", {
             }),
             paddingRight: drawerWidth,
         }),
+        "::-webkit-scrollbar": {
+            // width: 0,
+            // height: 0,
+            display: "none"
+        },
     })
 )
 
@@ -189,6 +205,11 @@ const Options = styled(SpeedDial, {
 )
 
 const View = styled("div")({
+    "::-webkit-scrollbar": {
+        // width: 0,
+        // height: 0,
+        display: "none"
+    },
 })
 
 interface PropTypes {

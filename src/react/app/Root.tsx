@@ -19,20 +19,32 @@ window.api.system.registerListener.log((...data: any[]) => {
 
 function Root() {
 
-    const [themeOptions, setThemeOptions] = React.useState<Theme>(
+    const [themeOptions, setThemeOptions] = React.useState<ThemeOptions>(
         {
             palette: {
                 mode: 'dark',
-            }
+            },
+            components: {
+                MuiCssBaseline: {
+                    styleOverrides: {
+                        "::-webkit-scrollbar-track": {
+                        },
+
+                        "::-webkit-scrollbar-thumb": {
+                        }
+                    },
+                },
+            },
         }
     )
 
     const colorMode = React.useMemo(
         () => ({
             toggleColorMode: () => {
+
                 return setThemeOptions((prevMode) => ({
                     ...prevMode,
-                    palette: {
+                    palette: {// @ts-ignore
                         mode: prevMode.palette.mode === 'light' ? 'dark' : 'light'
                     }
                 }));

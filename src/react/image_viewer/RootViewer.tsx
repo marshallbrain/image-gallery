@@ -10,15 +10,6 @@ function RootViewer() {
             palette: {
                 mode: 'dark',
             },
-            components: {
-                MuiCssBaseline: {
-                    styleOverrides: {
-                        "::-webkit-scrollbar": {
-                            display: "none"
-                        },
-                    }
-                },
-            },
         }
     )
 
@@ -32,7 +23,7 @@ function RootViewer() {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline enableColorScheme />
-            <AppViewer/>
+            {/*<AppViewer/>*/}
         </ThemeProvider>
     );
 }
