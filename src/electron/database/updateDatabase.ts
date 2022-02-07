@@ -98,7 +98,7 @@ const tableDef = {
             "name text not null unique"
     },
     imageCollection: {
-        name: "image_collection",
+        name: "images_collections",
         def: "" +
             "image_id integer not null," +
             "collection_id integer not null," +

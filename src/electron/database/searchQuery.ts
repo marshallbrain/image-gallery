@@ -134,7 +134,7 @@ const tagLessSlice = "" +
 
 const collectionHeader = "" +
     "from images i " +
-    "left join image_collection it on i.image_id = it.image_id " +
+    "left join images_collections it on i.image_id = it.image_id " +
     "group by i.image_id " +
     "having"
 

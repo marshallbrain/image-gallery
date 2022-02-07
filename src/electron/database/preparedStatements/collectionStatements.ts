@@ -12,7 +12,7 @@ const prepared: () => PreparedStatementsFull = () => {
 
     const getImageCollections = db.prepare("" +
         "select c.collection_id, c.name " +
-        "from image_collection i " +
+        "from images_collections i " +
         "left join collections c on i.collection_id = c.collection_id " +
         "where i.image_id = ?"
     )
@@ -23,17 +23,17 @@ const prepared: () => PreparedStatementsFull = () => {
     )
 
     const addImageCollection = db.prepare("" +
-        "insert into image_collection " +
+        "insert into images_collections " +
         "select ?, ?"
     )
 
     const removeImageCollection = db.prepare("" +
-        "delete from image_collection " +
+        "delete from images_collections " +
         "where image_id = ? and collection_id = ?"
     )
 
     const clearImageCollection = db.prepare("" +
-        "delete from image_collection " +
+        "delete from images_collections " +
         "where image_id = ?"
     )
 
