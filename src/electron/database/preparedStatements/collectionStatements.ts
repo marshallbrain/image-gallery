@@ -14,7 +14,9 @@ const prepared: () => PreparedStatementsFull = () => {
         "select c.collection_id, c.name " +
         "from images_collections i " +
         "left join collections c on i.collection_id = c.collection_id " +
-        "where i.image_id = ?"
+        "where i.image_id = ? " +
+        "order by " +
+        "name"
     )
 
     const createCollection = db.prepare("" +
