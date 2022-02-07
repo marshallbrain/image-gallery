@@ -33,9 +33,6 @@ export default () => {
             orderByTitle
         ])
 
-        console.log(query)
-        console.log(param)
-
         event.reply(channel, db.prepare(query).all(param))
     })
 }
@@ -65,7 +62,7 @@ const getTagQuery = (query: toAny<SearchPropsType>["tag"]) => ({
                 )).join(",")),
             !query.tagLess && query.excTags && excTagsSlice.replace(
                 "$tags",
-                query.tag?.excTags.map((
+                query.excTags.map((
                     (value: any, index: any) => `@excTags${index}`
                 )).join(","))
         ], " and")
