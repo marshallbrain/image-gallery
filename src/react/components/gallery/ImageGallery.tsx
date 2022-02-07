@@ -22,6 +22,17 @@ function ImageGallery(props: PropTypes) {
     const [selected, setSelected] = useState<Set<number>>(new Set())
     const [exportDialog, setExportDialog] = useState(false)
 
+    useEffect(() => {
+        getImages()
+        window.api.send(channels.setWindowTitle, "Gallery")
+        const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, () => {
+            getImages()
+        })
+        return function cleanup() {
+            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
+        }
+    }, [])
+
     const selectAll = () => {
         setSelected(new Set(images.map(((value) => value.image_id))))
     }
@@ -33,16 +44,6 @@ function ImageGallery(props: PropTypes) {
     const toggleExportDialog = () => {
         setExportDialog((!exportDialog))
     }
-
-    useEffect(() => {
-        getImages()
-        const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, () => {
-            getImages()
-        })
-        return function cleanup() {
-            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
-        }
-    }, [])
 
     useEffect(() => {
         getImages()

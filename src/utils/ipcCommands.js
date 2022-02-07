@@ -40,6 +40,8 @@ export const channels = {
     imageExported: "imageExported",
     imageExportComplete: "imageExportComplete",
     
+    setWindowTitle: "setWindowTitle"
+    
 }
 
 export const ipcChannels = new Set(Object.values(channels))

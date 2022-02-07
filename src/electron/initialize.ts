@@ -24,6 +24,13 @@ export default (createWindow: WindowSetupFunction) => {
 
     createWindow("index.html", MainMenu).then((window: BrowserWindow) => {
         system.setLoggingWindow(window)
+
+        ipcMain.on(channels.setWindowTitle, (event, [title]) => {
+            if (event.frameId == window.id){
+                window.setTitle(title)
+            }
+        })
+
         createChannelListeners()
 
         let imageViewerWindow = false

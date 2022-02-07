@@ -26,13 +26,12 @@ function AppViewer(props: PropTypes) {
     const [drawerTR, setDrawerTR] = useState(false)
 
     useEffect(() => {
-        window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
-            setImageData(data)
-        }, imageList[index].image_id)
+        updateImageData()
     }, [])
 
     useEffect(() => {
         setImage(imageList[index])
+        window.api.send(channels.setWindowTitle, imageList[index].title)
         if(imageList[index] != undefined) {
             updateImageData()
         }
@@ -61,7 +60,6 @@ function AppViewer(props: PropTypes) {
 
     const toggleImageFull = () => {
         setImageFull(!imageFull)
-        console.log(imageFull)
     }
 
     const toggleTR = () => {

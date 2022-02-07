@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import sqlQueries from "@utils/sqlQueries";
+import {channels} from "@utils/ipcCommands";
 
 const TitleRename = (props: PropTypes) => {
 
@@ -9,19 +10,25 @@ const TitleRename = (props: PropTypes) => {
         toggleTR,
         imageID,
         updateData,
+        title
     } = props
 
-    const [title, setTitle] = useState(props.title)
+    const [editTitle, setEditTitle] = useState<string|undefined>("")
+
+    useEffect(() => {
+        setEditTitle(title)
+    }, [title])
 
     const updateTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(event.target.value)
+        setEditTitle(event.target.value)
     }
 
     const saveTitle = () => {
         window.api.db.getImages(sqlQueries.setImageTitle, () => {
             updateData()
             toggleTR()
-        }, {imageID, title})
+            window.api.send(channels.setWindowTitle, editTitle)
+        }, {imageID, title: editTitle})
     }
 
     return (
@@ -39,7 +46,7 @@ const TitleRename = (props: PropTypes) => {
                         fullWidth
                         variant="outlined"
                         label="Name"
-                        value={title}
+                        value={editTitle}
                         onChange={updateTitle}
                     />
                 </Box>

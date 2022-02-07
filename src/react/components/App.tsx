@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import PersistentDialogs from "./PersistentDialogs";
 import ImageGallery from "@components/gallery/ImageGallery";
 import AppViewer from "../image_viewer/components/AppViewer";

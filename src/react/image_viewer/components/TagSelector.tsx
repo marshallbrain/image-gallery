@@ -58,7 +58,6 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
-
                 const without = props.excludeChips? _.without(options, ...props.excludeChips): options
                 const filtered = filter(without || options, params);
                 const { inputValue } = params;
