@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-template",
-  "version": "0.0.1",
-  "description": "Personal template based off of secure-electron-template by reZach",
+  "name": "image-gallery",
+  "version": "0.1.0",
+  "description": "Image collection management application",
   "private": true,
   "homepage": "./",
   "main": "build/prod.main.js",
@@ -16,8 +16,8 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
-    "productName": "{Project Name}",
-    "appId": "com.marshalldbrain.projectname",
+    "productName": "Image Gallery",
+    "appId": "com.marshalldbrain.image-gallery",
     "files": [
       "build/**/*",
       "package.json"
