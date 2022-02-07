@@ -1,4 +1,4 @@
-import {logFeedChannel} from "@electron/ipcCommands";
+import {logFeedChannel} from "@utils/ipcCommands";
 import {BrowserWindow} from "electron";
 
 let loggingWindow: BrowserWindow

@@ -6,7 +6,7 @@ module.exports = {
             {
                 // loads .html files
                 test: /\.(html)$/,
-                include: [path.resolve(__dirname, "app/src")],
+                include: path.resolve(__dirname, "src/react/"),
                 use: {
                     loader: "html-loader",
                     options: {

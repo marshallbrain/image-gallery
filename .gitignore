@@ -97,5 +97,7 @@ dist/
 # VSCode specific
 .vscode/
 
-# Dev resources
-dev-resources/
+# Resources
+resources/
+
+.idea
