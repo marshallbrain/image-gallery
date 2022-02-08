@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react/index';
+import React, {useEffect, useRef} from 'react';
 import {channels} from "@utils/ipcCommands";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -25,8 +25,11 @@ function AppViewer(props: PropTypes) {
     const [imageFull, setImageFull] = useState(false)
     const [drawerTR, setDrawerTR] = useState(false)
 
+    const imageRef = useRef<HTMLDivElement>(null)
+
     useEffect(() => {
         updateImageData()
+        imageRef.current?.focus()
     }, [])
 
     useEffect(() => {
@@ -70,6 +73,7 @@ function AppViewer(props: PropTypes) {
         <View>
             <ImageContainer
                 tabIndex={1}
+                ref={imageRef}
                 onKeyDown={keyPressEvent}
                 open={editOpen}
                 landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
