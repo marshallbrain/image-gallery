@@ -44,12 +44,12 @@ function AppViewer(props: PropTypes) {
     }
 
     const keyPressEvent = (e: KeyboardEvent) => {
-        e.preventDefault()
-
         if (e.key === "ArrowRight" && index+1 < imageList.length) {
+            e.preventDefault()
             onIndexChange(index+1)
         }
         if (e.key === "ArrowLeft" && index > 0) {
+            e.preventDefault()
             onIndexChange(index-1)
         }
     }
@@ -70,8 +70,8 @@ function AppViewer(props: PropTypes) {
         <View>
             <ImageContainer
                 tabIndex={1}
-                open={editOpen}
                 onKeyDown={keyPressEvent}
+                open={editOpen}
                 landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
             >
                 {(image) && <ImageDisplay
@@ -82,10 +82,11 @@ function AppViewer(props: PropTypes) {
                     onClick={toggleImageFull}
                 />}
                 <Options
-                    ariaLabel=""
+                    ariaLabel="speed-dial"
                     sx={{ position: 'fixed', bottom: 16, right: 16 }}
-                    icon={<SpeedDialIcon icon={<MoreHorizIcon />} openIcon={<BookmarkBorderIcon />} />}
+                    icon={<SpeedDialIcon icon={<MoreHorizIcon />} openIcon={<BookmarkBorderIcon />}/>}
                     open={editOpen}
+                    FabProps={{tabIndex: -1}}
                 >
                     <SpeedDialAction
                         key={"editMetadata"}
