@@ -70,12 +70,17 @@ const ExportDialog = (props: PropTypes) => {
                 <Button onClick={toggle}>Cancel</Button>
                 <Button onClick={exportImages}>Export</Button>
             </DialogActions>
-            <ImportProgressDialog
-                updateChannel={channels.imageExported}
-                completeChannel={channels.imageExportComplete}
+            <Dialog
                 open={exporting}
-                onClose={exportDone}
-            />
+                maxWidth={"sm"}
+                fullWidth
+            >
+                <ImportProgressDialog
+                    updateChannel={channels.imageExported}
+                    completeChannel={channels.imageExportComplete}
+                    onClose={exportDone}
+                />
+            </Dialog>
         </React.Fragment>
     )
 }
