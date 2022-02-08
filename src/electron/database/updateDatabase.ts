@@ -1,4 +1,6 @@
 import {db} from "@electron/database/database";
+import {appData} from "@utils/utilities";
+import moment from "moment";
 
 const currentDBVersion = 2
 
@@ -6,7 +8,13 @@ export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
     if (userVersion == currentDBVersion) return
     else if (userVersion == 0) createDB()
-    else if (userVersion < currentDBVersion) updateDB(userVersion)
+    else if (userVersion < currentDBVersion){
+        db.backup(appData(`database-${moment().format("YY-MM-DD_HH-mm-ss")}.db.bak`)).then(() => {
+            db.pragma("foreign_keys = off")
+            updateDB(userVersion)
+            db.pragma("foreign_keys = on")
+        })
+    }
     else throw "Unknown database version"
 }
 
@@ -39,7 +47,6 @@ const updateDB = db.transaction((version: number) => {
     }
 
     db.pragma(`user_version = ${currentDBVersion}`)
-
 })
 
 function moveTable(table: {name: string, def: string}, newColumns?: string, oldColumns?: string) {
