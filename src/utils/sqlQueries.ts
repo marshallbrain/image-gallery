@@ -14,6 +14,7 @@ const queries = {
     removeImageCollection: "removeImageCollection",
     clearImageCollection: "clearImageCollection",
     setImageTitle: "setImageTitle",
+    addImageTagName: "addImageTagName"
 }
 
 export default queries

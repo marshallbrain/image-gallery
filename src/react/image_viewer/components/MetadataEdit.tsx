@@ -72,11 +72,18 @@ const MetadataEdit = (props: PropTypes) => {
             case "select":
                 if (tag?.value) {
                     window.api.db.getImages(sqlQueries.createTag, ({lastInsertRowid}: RunResult) => {
-                        window.api.db.getImages(
-                            sqlQueries.addImageTag, () => {
-                                updateImageTags()
-                            }, [imageData?.image_id, lastInsertRowid])
-                        updateTags()
+                        if (lastInsertRowid) {
+                            window.api.db.getImages(
+                                sqlQueries.addImageTag, () => {
+                                    updateImageTags()
+                                }, [imageData?.image_id, lastInsertRowid])
+                            updateTags()
+                        } else {
+                            window.api.db.getImages(
+                                sqlQueries.addImageTagName, () => {
+                                    updateImageTags()
+                                }, [imageData?.image_id, tag.value])
+                        }
                     }, tag?.value)
                 } else {
                     window.api.db.getImages(sqlQueries.addImageTag, () => {

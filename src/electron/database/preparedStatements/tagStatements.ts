@@ -13,7 +13,9 @@ const prepared: () => PreparedStatementsFull = () => {
         "select t.tag_id, t.name " +
         "from images_tags i " +
         "left join tags t on i.tag_id = t.tag_id " +
-        "where i.image_id = ?"
+        "where i.image_id = ? " +
+        "order by " +
+        "name"
     )
 
     const createTag = db.prepare("" +
@@ -24,6 +26,13 @@ const prepared: () => PreparedStatementsFull = () => {
     const addImageTag = db.prepare("" +
         "insert into images_tags " +
         "select ?, ?"
+    )
+
+    const addImageTagName = db.prepare("" +
+        "insert into images_tags " +
+        "select ?, tag_id " +
+        "from tags " +
+        "where name like ?"
     )
 
     const removeImageTag = db.prepare("" +
@@ -44,6 +53,7 @@ const prepared: () => PreparedStatementsFull = () => {
         runStatements: {
             createTag,
             addImageTag,
+            addImageTagName,
             removeImageTag,
             clearImageTag,
         }
