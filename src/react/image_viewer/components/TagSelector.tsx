@@ -28,6 +28,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
         reason: AutocompleteChangeReason,
         details: AutocompleteChangeDetails<T> | undefined
     ) => {
+        console.log()
         if (reason === "createOption" && onCreateTag)
             onCreateTag({name: "", value: details?.option as unknown as string})
         else if (reason === "selectOption" && onSelectTag)
@@ -55,21 +56,24 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
             handleHomeEndKeys
             multiple
             selectOnFocus
+            autoHighlight
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
                 const without = props.excludeChips? _.without(options, ...props.excludeChips): options
-                const filtered = filter(without || options, params);
+                const filtered = filter(without, params);
                 const { inputValue } = params;
 
                 if (freeSolo) {
-                    const isExisting = options.some((option) => inputValue === option.name);
+                    const isExisting = options.some((option) =>
+                        inputValue.toLowerCase() === option.name.toLowerCase()
+                    );
                     if (inputValue !== '' && !isExisting) {
-                        return [{
+                        return [...filtered, {
                             tag_id: 0,
                             name: `Create "${inputValue}"`,
                             value: inputValue
-                        }, ...filtered]
+                        }]
                     }
                 }
 
