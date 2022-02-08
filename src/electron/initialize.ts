@@ -101,7 +101,9 @@ const createChannelListeners = () => {
                     ((title != "image_id")? `.${image.image_id}`: "") +
                     `.${image.extension}`
                 sharp(appData("images", "raw", `${image.image_id}.${image.extension}`))
-                    .toFile(pathModule.join(folder, filename))
+                    .toFile(
+                        pathModule.join(folder, filename.replace(/[/\\?%*:|"<>]/g, '_'))
+                    )
                     .then(() => {
                         resolve(filename)
                     })
