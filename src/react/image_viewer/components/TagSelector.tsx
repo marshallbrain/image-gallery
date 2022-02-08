@@ -28,6 +28,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
         reason: AutocompleteChangeReason,
         details: AutocompleteChangeDetails<T> | undefined
     ) => {
+        console.log()
         if (reason === "createOption" && onCreateTag)
             onCreateTag({name: "", value: details?.option as unknown as string})
         else if (reason === "selectOption" && onSelectTag)
@@ -55,6 +56,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
             handleHomeEndKeys
             multiple
             selectOnFocus
+            autoHighlight
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
