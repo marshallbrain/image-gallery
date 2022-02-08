@@ -28,6 +28,13 @@ const prepared: () => PreparedStatementsFull = () => {
         "select ?, ?"
     )
 
+    const addImageTagName = db.prepare("" +
+        "insert into images_tags " +
+        "select ?, tag_id " +
+        "from tags " +
+        "where name like ?"
+    )
+
     const removeImageTag = db.prepare("" +
         "delete from images_tags " +
         "where image_id = ? and tag_id = ?"
@@ -46,6 +53,7 @@ const prepared: () => PreparedStatementsFull = () => {
         runStatements: {
             createTag,
             addImageTag,
+            addImageTagName,
             removeImageTag,
             clearImageTag,
         }
