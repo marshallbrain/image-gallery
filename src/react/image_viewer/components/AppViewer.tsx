@@ -34,6 +34,7 @@ function AppViewer(props: PropTypes) {
 
     useEffect(() => {
         setImage(imageList[index])
+        imageRef.current?.focus()
         window.api.send(channels.setWindowTitle, imageList[index].title)
         if(imageList[index] != undefined) {
             updateImageData()
