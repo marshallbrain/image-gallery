@@ -1,6 +1,6 @@
 import {db} from "@electron/database/database";
 
-const currentDBVersion = 4
+const currentDBVersion = 2
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -32,29 +32,32 @@ const updateDB = db.transaction((version: number) => {
     createTables()
 
     switch(version) {
-        case 1: break
+        case 1: {
+            moveTable(tableDef.tags)
+            moveTable(tableDef.collections)
+        }
     }
 
     db.pragma(`user_version = ${currentDBVersion}`)
 
 })
 
-function moveTable(table: {name: string, def: string}, newColumns: string, oldColumns: string) {
+function moveTable(table: {name: string, def: string}, newColumns?: string, oldColumns?: string) {
     db.prepare("create table new_" + table.name + " (" +
         table.def
         + ");").run()
 
     db.prepare("" +
-        "INSERT INTO new_images(" +
-        newColumns
-        + ") SELECT " +
-        oldColumns
-        + " FROM table" +
+        "INSERT INTO new_" + table.name +
+        (newColumns? `(${newColumns})`: "")
+        + " SELECT " +
+        (oldColumns || "*")
+        + " FROM " + table.name +
         ";"
-    )
+    ).run()
 
     db.prepare("drop table " + table.name + ";").run()
-    db.prepare("alter table new_" + table.name + " to " + table.name + ";").run()
+    db.prepare("alter table new_" + table.name + " rename to " + table.name + ";").run()
 }
 
 const tableDef = {
@@ -74,7 +77,7 @@ const tableDef = {
         name: "tags",
         def: "" +
             "tag_id integer primary key," +
-            "name text not null unique"
+            "name text not null unique collate nocase"
     },
     imagesTags: {
         name: "images_tags",
@@ -95,7 +98,7 @@ const tableDef = {
         name: "collections",
         def: "" +
             "collection_id integer primary key," +
-            "name text not null unique"
+            "name text not null unique collate nocase"
     },
     imageCollection: {
         name: "images_collections",

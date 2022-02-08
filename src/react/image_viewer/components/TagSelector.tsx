@@ -63,7 +63,9 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
                 const { inputValue } = params;
 
                 if (freeSolo) {
-                    const isExisting = options.some((option) => inputValue === option.name);
+                    const isExisting = options.some((option) =>
+                        inputValue.toLowerCase() === option.name.toLowerCase()
+                    );
                     if (inputValue !== '' && !isExisting) {
                         return [...filtered, {
                             tag_id: 0,
