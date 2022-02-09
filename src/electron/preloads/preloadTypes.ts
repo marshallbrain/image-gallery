@@ -16,6 +16,11 @@ interface types {
         },
     }
     db: {
+        query: (
+            query: string,
+            callback: (data: any[]) => void,
+            args?: any[]|{[p: string]: any}
+        ) => void,
         getImages: (
             query: string,
             callback: (...data: any[]) => void,
