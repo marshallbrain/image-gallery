@@ -28,7 +28,6 @@ const MetadataEdit = (props: PropTypes) => {
     const {editOpen, drawerWidth, imageData} = props
 
     const [imageTags, setImageTags] = React.useState<ChipBase[]>([])
-    // const [tags, setTags] = React.useState<ChipBase[]>([])
     const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
     const [collections, setCollections] = React.useState<ChipBase[]>([])
 
@@ -49,12 +48,6 @@ const MetadataEdit = (props: PropTypes) => {
         updateImageTags()
         updateImageCollections()
     }, [imageData])
-
-    // const updateTags = () => {
-    //     window.api.db.getImages(sqlQueries.getTags, (data: ChipBase[]) => {
-    //         setTags(data)
-    //     })
-    // }
 
     const updateImageTags = () => {
         window.api.db.getImages(sqlQueries.getImageTags, (tags: ChipBase[]) => {

@@ -9,7 +9,6 @@ const TitleRename = (props: PropTypes) => {
         open,
         toggleTR,
         imageID,
-        updateData,
         title
     } = props
 
@@ -25,7 +24,6 @@ const TitleRename = (props: PropTypes) => {
 
     const saveTitle = () => {
         window.api.db.getImages(sqlQueries.setImageTitle, () => {
-            updateData()
             toggleTR()
             window.api.send(channels.setWindowTitle, editTitle)
         }, {imageID, title: editTitle})
@@ -64,7 +62,6 @@ interface PropTypes {
     toggleTR: () => void
     title: string|undefined
     imageID: number|undefined
-    updateData: () => void
 }
 
 export default TitleRename
