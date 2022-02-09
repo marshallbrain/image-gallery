@@ -5,9 +5,8 @@ export const databasePreload = (ipcRenderer) => {
     return {
         query: (query, callback, args) => {
             const channel = uuid()
-            ipcRenderer.once(channel, (event, ...data) => {
-                console.log(data)
-                callback(...data)
+            ipcRenderer.once(channel, (event, data) => {
+                callback(data)
             })
             ipcRenderer.send(sqlQueryChannel, {channel, query, args})
         },

@@ -21,7 +21,6 @@ export const useGetQuery = <T, >(
     const [value, setValue] = useState<T[]>([])
     const triggerUpdate = () => {
         window.api.db.query(fullQuery, (data) => {
-            console.log(value)
             setValue(data)
         }, args)
     }

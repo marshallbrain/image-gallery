@@ -28,7 +28,6 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
         reason: AutocompleteChangeReason,
         details: AutocompleteChangeDetails<T> | undefined
     ) => {
-        console.log()
         if (reason === "createOption" && onCreateTag)
             onCreateTag({name: "", value: details?.option as unknown as string})
         else if (reason === "selectOption" && onSelectTag)

@@ -12,6 +12,8 @@ import sqlQueries from "@utils/sqlQueries";
 import {Image} from "@components/App";
 import TitleRename from "./TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
+import {useGetQuery} from "@components/utilities";
+import getQueries from "../../queries/getQueries";
 
 const drawerWidth = 450;
 
@@ -34,7 +36,6 @@ function AppViewer(props: PropTypes) {
 
     useEffect(() => {
         setImage(imageList[index])
-        imageRef.current?.focus()
         window.api.send(channels.setWindowTitle, imageList[index].title)
         if(imageList[index] != undefined) {
             updateImageData()
@@ -121,7 +122,6 @@ function AppViewer(props: PropTypes) {
                 toggleTR={toggleTR}
                 title={imageData?.title}
                 imageID={imageData?.image_id}
-                updateData={updateImageData}
             />
         </View>
     );
