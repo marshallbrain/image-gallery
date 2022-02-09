@@ -20,15 +20,25 @@ import TagSearch from "./TagSearch";
 import TagList from "./TagList";
 import TagSelector, {ChipBase} from "./TagSelector";
 import {RunResult} from "better-sqlite3";
+import {useGetQuery} from "@components/utilities";
+import getQueries from "../../queries/getQueries";
 
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
 
     const [imageTags, setImageTags] = React.useState<ChipBase[]>([])
-    const [tags, setTags] = React.useState<ChipBase[]>([])
+    // const [tags, setTags] = React.useState<ChipBase[]>([])
     const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
     const [collections, setCollections] = React.useState<ChipBase[]>([])
+
+    const [tags, updateTags] = useGetQuery<ChipBase>(
+        getQueries.tag.getTags,
+        [],
+        []
+    )
+
+    console.log(tags)
 
     useEffect(() => {
         updateTags()
@@ -40,16 +50,15 @@ const MetadataEdit = (props: PropTypes) => {
         updateImageCollections()
     }, [imageData])
 
-    const updateTags = () => {
-        window.api.db.getImages(sqlQueries.getTags, (data: ChipBase[]) => {
-            setTags(data)
-        })
-    }
+    // const updateTags = () => {
+    //     window.api.db.getImages(sqlQueries.getTags, (data: ChipBase[]) => {
+    //         setTags(data)
+    //     })
+    // }
 
     const updateImageTags = () => {
         window.api.db.getImages(sqlQueries.getImageTags, (tags: ChipBase[]) => {
             setImageTags(tags)
-            console.log(tags)
         }, imageData?.image_id)
     }
 
