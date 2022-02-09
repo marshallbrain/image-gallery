@@ -22,6 +22,7 @@ import TagSelector, {ChipBase} from "./TagSelector";
 import {RunResult} from "better-sqlite3";
 import {useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
+import AsyncSelect from "./AsyncSelect";
 
 const MetadataEdit = (props: PropTypes) => {
 
@@ -36,8 +37,6 @@ const MetadataEdit = (props: PropTypes) => {
         [],
         []
     )
-
-    console.log(tags)
 
     useEffect(() => {
         updateTags()
@@ -161,17 +160,7 @@ const MetadataEdit = (props: PropTypes) => {
                     pt: 4,
                 }}
             >
-                <TagSelector
-                    label={"Tags"}
-                    chips={tags}
-                    selectedChips={imageTags}
-                    onChange={() => {}}
-                    onCreateTag={onModifyTags("select")}
-                    onSelectTag={onModifyTags("select")}
-                    onRemoveTag={onModifyTags("remove")}
-                    onClear={onModifyTags("clear")}
-                    freeSolo
-                />
+                <AsyncSelect/>
                 <TagSelector
                     label={"Collections"}
                     chips={collections}
