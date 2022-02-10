@@ -1,7 +1,9 @@
 import {tagGetQueries} from "./subQueries/tagQueries";
+import {collectionGetQueries} from "./subQueries/collectionQueries";
 
 const get = {
-    tag: tagGetQueries
+    tag: tagGetQueries,
+    collections: collectionGetQueries
 }
 
 export interface GetQuery {

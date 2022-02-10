@@ -154,6 +154,26 @@ const MetadataEdit = (props: PropTypes) => {
         }
     }
 
+    const updateImageCollection = (
+        reason: "create" | "select" | "remove" | "clear"
+    ) => (tag?: { collection_id?: string, value?: string }): Promise<any> => {
+        switch (reason) {
+            case "create":
+                return setQuery(getQueries.collections.createCollection,
+                    [tag?.value]).then((value) => {
+                    return setQuery(getQueries.collections.addImageCollection, [imageData?.image_id, value])
+                })
+            case "select":
+                return setQuery(getQueries.collections.addImageCollection,
+                    [imageData?.image_id, tag?.collection_id])
+            case "remove":
+                return setQuery(getQueries.collections.removeImageCollection,
+                    [imageData?.image_id, tag?.collection_id])
+            case "clear":
+                return setQuery(getQueries.collections.clearImageCollection, [imageData?.image_id])
+        }
+    }
+
     return (
         <Drawer
             sx={{
@@ -185,6 +205,16 @@ const MetadataEdit = (props: PropTypes) => {
                     onCreateTag={updateImageTags("create")}
                     onRemoveTag={updateImageTags("remove")}
                     onClear={updateImageTags("clear")}
+                />
+
+                <AsyncSelect
+                    optionsQuery={getQueries.collections.getCollections}
+                    valueQuery={getQueries.collections.getImageCollections}
+                    valueArgs={[imageData?.image_id]}
+                    onSelectTag={updateImageCollection("select")}
+                    onCreateTag={updateImageCollection("create")}
+                    onRemoveTag={updateImageCollection("remove")}
+                    onClear={updateImageCollection("clear")}
                 />
             </Stack>
         </Drawer>
