@@ -1,6 +1,7 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
 import {RunQuery} from "../queries/subQueries/runQueries";
+import {Channels} from "@utils/channels";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
     return (value) ? value as NonNullable<T> : base
@@ -8,6 +9,19 @@ export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
 
 export type toAny<T> = {
     [K in keyof T]: T[K] extends object ? toAny<T[K]> : any
+}
+
+export const useChannel = (
+    channel: Channels,
+    callback: (response: any[]) => {}
+) => {
+    useEffect(() => {
+        const listener = window.api.channel.trigger(channel, callback)
+
+        return function cleanup() {
+            window.api.channel.remove(channel, listener)
+        }
+    }, [])
 }
 
 export const useGetQuery = <T, >(
