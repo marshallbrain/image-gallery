@@ -1,9 +1,11 @@
 import {tagRunQueries} from "./tagQueries";
 import {collectionRunQueries} from "./collectionQueries";
+import {imageRunQueries} from "./imageQueries";
 
 const set = {
     tag: tagRunQueries,
-    collections: collectionRunQueries
+    collections: collectionRunQueries,
+    image: imageRunQueries,
 }
 
 export interface RunQuery {
