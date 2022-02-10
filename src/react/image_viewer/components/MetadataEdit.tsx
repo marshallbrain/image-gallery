@@ -20,7 +20,7 @@ import TagSearch from "./TagSearch";
 import TagList from "./TagList";
 import TagSelector, {ChipBase} from "./TagSelector";
 import {RunResult} from "better-sqlite3";
-import {useGetQuery} from "@components/utilities";
+import {setQuery, useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "./AsyncSelect";
 
@@ -32,7 +32,7 @@ const MetadataEdit = (props: PropTypes) => {
     const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
     const [collections, setCollections] = React.useState<ChipBase[]>([])
 
-    const [tags, updateTags] = useGetQuery<ChipBase>(
+    /*const [tags, updateTags] = useGetQuery<ChipBase>(
         getQueries.tag.getTags,
         [],
         []
@@ -63,7 +63,7 @@ const MetadataEdit = (props: PropTypes) => {
     const updateImageCollections = () => {
         window.api.db.getImages(sqlQueries.getImageCollections, (collections: ChipBase[]) => {
             setImageCollections(collections)
-        }, imageData?.image_id)
+        }, imageData?.image_id)*!/
     }
 
     const onModifyTags = (
@@ -135,6 +135,16 @@ const MetadataEdit = (props: PropTypes) => {
                 }, [imageData?.image_id])
                 break
         }
+    }*/
+
+    const updateImageTags = (
+        reason: "create" | "select" | "remove" | "clear"
+    ) => (tag?: { tag_id?: string, value?: string }) => {
+        switch (reason) {
+            case "select": {
+                setQuery(getQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
+            }
+        }
     }
 
     return (
@@ -160,17 +170,11 @@ const MetadataEdit = (props: PropTypes) => {
                     pt: 4,
                 }}
             >
-                <AsyncSelect/>
-                <TagSelector
-                    label={"Collections"}
-                    chips={collections}
-                    selectedChips={imageCollections}
-                    onChange={() => {}}
-                    onCreateTag={onModifyCollections("select")}
-                    onSelectTag={onModifyCollections("select")}
-                    onRemoveTag={onModifyCollections("remove")}
-                    onClear={onModifyCollections("clear")}
-                    freeSolo
+                <AsyncSelect
+                    optionsQuery={getQueries.tag.getTags}
+                    valueQuery={getQueries.tag.getImageTags}
+                    valueArgs={[imageData?.image_id]}
+                    onSelectTag={updateImageTags("select")}
                 />
             </Stack>
         </Drawer>
