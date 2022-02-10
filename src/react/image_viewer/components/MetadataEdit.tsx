@@ -139,11 +139,18 @@ const MetadataEdit = (props: PropTypes) => {
 
     const updateImageTags = (
         reason: "create" | "select" | "remove" | "clear"
-    ) => (tag?: { tag_id?: string, value?: string }) => {
+    ) => (tag?: { tag_id?: string, value?: string }): Promise<any> => {
         switch (reason) {
-            case "select": {
-                setQuery(getQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
-            }
+            case "create":
+                return setQuery(getQueries.tag.createTag, [tag?.value]).then((value) => {
+                    return setQuery(getQueries.tag.addImageTag, [imageData?.image_id, value])
+                })
+            case "select":
+                return setQuery(getQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
+            case "remove":
+                return setQuery(getQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
+            case "clear":
+                return setQuery(getQueries.tag.clearImageTag, [imageData?.image_id])
         }
     }
 
@@ -175,6 +182,9 @@ const MetadataEdit = (props: PropTypes) => {
                     valueQuery={getQueries.tag.getImageTags}
                     valueArgs={[imageData?.image_id]}
                     onSelectTag={updateImageTags("select")}
+                    onCreateTag={updateImageTags("create")}
+                    onRemoveTag={updateImageTags("remove")}
+                    onClear={updateImageTags("clear")}
                 />
             </Stack>
         </Drawer>
