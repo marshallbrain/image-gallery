@@ -42,19 +42,20 @@ const AsyncSelect = (props: PropTypes) => {
             }}
             filterOptions={(options, params) => {
                 const { inputValue } = params;
+                const filtered = props.exclude? _.without(options, ...props.exclude): options
 
-                const isExisting = options.some((option) =>
+                const isExisting = filtered.some((option) =>
                     inputValue.toLowerCase() === option.name.toLowerCase()
                 );
                 if (freeSolo && inputValue !== '' && !isExisting) {
-                    return [...options, {
+                    return [...filtered, {
                         tag_id: 0,
                         name: `Create "${inputValue}"`,
                         value: inputValue
                     }]
                 }
 
-                return options;
+                return filtered;
             }}
             renderOption={(props, option) => (
                 <li {...props}>
@@ -80,9 +81,12 @@ const AsyncSelect = (props: PropTypes) => {
 interface PropTypes {
     freeSolo?: boolean
     sx?: SxProps<Theme>
+    disabled?: boolean
 
     values: ChipBase[]
     optionsQuery: GetQuery
+    exclude?: ChipBase[]
+
     onChange: (
         event: React.SyntheticEvent,
         value: (string | ChipBase)[],

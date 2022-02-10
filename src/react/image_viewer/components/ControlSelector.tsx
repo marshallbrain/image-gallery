@@ -34,6 +34,8 @@ const ControlSelector = (props: PropTypes) => {
 
 interface PropTypes {
     sx?: SxProps<Theme>
+    exclude?: ChipBase[]
+    disabled?: boolean
 
     values: ChipBase[]|undefined
     optionsQuery: GetQuery
