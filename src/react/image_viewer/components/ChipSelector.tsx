@@ -1,25 +1,36 @@
 import React, {useEffect, useState} from 'react';
-import {Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Chip, TextField} from "@mui/material";
+import {
+    Autocomplete,
+    AutocompleteChangeDetails,
+    AutocompleteChangeReason,
+    Chip,
+    SxProps,
+    TextField, Theme
+} from "@mui/material";
 import {useGetQuery} from "@components/utilities";
 import getQueries, {GetQuery} from "../../queries/getQueries";
 import _ from "lodash";
 
 const AsyncSelect = (props: PropTypes) => {
 
-    const {values, optionsQuery, onChange} = props
+    const {
+        values,
+        optionsQuery,
+        onChange,
+        freeSolo,
+        ...other
+    } = props
 
     const [searchValue, setSearchValue] = useState("")
 
     const [options] = useGetQuery<ChipBase>(optionsQuery, [searchValue], {search: searchValue})
 
-
-
     return (
         <Autocomplete
+            {...other}
             multiple
             filterSelectedOptions
             disableCloseOnSelect
-            freeSolo
             autoHighlight
             value={values}
             options={options}
@@ -35,7 +46,7 @@ const AsyncSelect = (props: PropTypes) => {
                 const isExisting = options.some((option) =>
                     inputValue.toLowerCase() === option.name.toLowerCase()
                 );
-                if (inputValue !== '' && !isExisting) {
+                if (freeSolo && inputValue !== '' && !isExisting) {
                     return [...options, {
                         tag_id: 0,
                         name: `Create "${inputValue}"`,
@@ -67,6 +78,9 @@ const AsyncSelect = (props: PropTypes) => {
 }
 
 interface PropTypes {
+    freeSolo?: boolean
+    sx?: SxProps<Theme>
+
     values: ChipBase[]
     optionsQuery: GetQuery
     onChange: (

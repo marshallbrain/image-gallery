@@ -36,6 +36,7 @@ const AsyncSelect = (props: PropTypes) => {
 
     return (
         <ChipSelector
+            freeSolo
             values={values}
             optionsQuery={optionsQuery}
             onChange={onChangeValue}

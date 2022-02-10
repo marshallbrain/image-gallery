@@ -2,11 +2,11 @@ import React from 'react';
 import ChipSelector from "./ChipSelector";
 import {GetQuery} from "../../queries/getQueries";
 import {ChipBase} from "./TagSelector";
-import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@mui/material";
+import {AutocompleteChangeDetails, AutocompleteChangeReason, SxProps, Theme} from "@mui/material";
 
 const ControlSelector = (props: PropTypes) => {
 
-    const {values, optionsQuery} = props
+    const {values, optionsQuery, ...other} = props
 
     const onChangeValue = (
         event: React.SyntheticEvent,
@@ -19,12 +19,13 @@ const ControlSelector = (props: PropTypes) => {
         } = props
 
         if (onChange)
-            onChange(value as ChipBase[])
+            onChange((value.length > 0)? value as ChipBase[]: undefined)
     }
 
     return (
         <ChipSelector
-            values={values}
+            {...other}
+            values={values || []}
             optionsQuery={optionsQuery}
             onChange={onChangeValue}
         />
@@ -32,10 +33,12 @@ const ControlSelector = (props: PropTypes) => {
 }
 
 interface PropTypes {
-    values: ChipBase[]
+    sx?: SxProps<Theme>
+
+    values: ChipBase[]|undefined
     optionsQuery: GetQuery
 
-    onChange?: (chip: ChipBase[] | undefined) => void
+    onChange: (chip: ChipBase[]|undefined) => void
 }
 
 export default ControlSelector
