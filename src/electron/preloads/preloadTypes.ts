@@ -16,7 +16,12 @@ interface types {
         },
     }
     db: {
-        query: (
+        getQuery: (
+            query: string,
+            callback: (data: any[]) => void,
+            args?: any[]|{[p: string]: any}
+        ) => void,
+        runQuery: (
             query: string,
             callback: (data: any[]) => void,
             args?: any[]|{[p: string]: any}

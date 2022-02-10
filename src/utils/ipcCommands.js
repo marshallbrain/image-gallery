@@ -17,7 +17,8 @@ export const logFeedChannel = `${system}logFeed`
 
 export const sqlSelectChannel = `${namespaceSql}select`
 export const sqlSearchChannel = `${namespaceSql}search`
-export const sqlQueryChannel = `${namespaceSql}query`
+export const sqlGetQueryChannel = `${namespaceSql}get-query`
+export const sqlRunQueryChannel = `${namespaceSql}run-query`
 
 export const channels = {
     openImportDialog: "openImportDialog",
