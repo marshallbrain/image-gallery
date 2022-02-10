@@ -4,12 +4,12 @@ import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
 import {orDefault, toAny} from "@components/utilities";
 import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
+import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import getQueries from "../../../queries/getQueries";
 
 const AdvancedSearch = (props: PropTypes) => {
 
-    const {
-        tags,
-    } = props
+    const {} = props
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
@@ -41,28 +41,31 @@ const AdvancedSearch = (props: PropTypes) => {
                     />}
                     label="Show images with no tags" />
             </FormGroup>
-            <TagSelector
-                label={"Include Tags"}
-                chips={tags}
-                selectedChips={incTags}
-                excludeChips={excTags}
+            <ControlSelector
+                values={incTags}
+                exclude={excTags}
+                optionsQuery={getQueries.tag.getTags}
                 onChange={setIncTags}
                 disabled={tagLess}
+                sx={{
+                    flexGrow: 1
+                }}
             />
-            <TagSelector
-                label={"Exclude Tags"}
-                chips={tags}
-                selectedChips={excTags}
-                excludeChips={incTags}
+            <ControlSelector
+                values={excTags}
+                exclude={incTags}
+                optionsQuery={getQueries.tag.getTags}
                 onChange={setExcTags}
                 disabled={tagLess}
+                sx={{
+                    flexGrow: 1
+                }}
             />
         </React.Fragment>
     )
 }
 
 interface PropTypes {
-    tags: Tag[]
 }
 
 export interface TagSearchType {

@@ -4,12 +4,12 @@ import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import TagSelector from "../../../image_viewer/components/TagSelector";
 import {Col, SearchPropsType, Tag} from "@components/App";
 import {toAny} from "@components/utilities";
+import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import getQueries from "../../../queries/getQueries";
 
 const CollectionFilters = (props: PropTypes) => {
 
-    const {
-        cols,
-    } = props
+    const {} = props
 
     const {searchProp, setSearchProp} = useContext(SearchPropTemp)
 
@@ -42,7 +42,27 @@ const CollectionFilters = (props: PropTypes) => {
                     />}
                     label="Show images not in any collection" />
             </FormGroup>
-            <TagSelector
+            <ControlSelector
+                values={incCols}
+                exclude={excCols}
+                optionsQuery={getQueries.collections.getCollections}
+                onChange={setIncCols}
+                disabled={colLess}
+                sx={{
+                    flexGrow: 1
+                }}
+            />
+            <ControlSelector
+                values={excCols}
+                exclude={incCols}
+                optionsQuery={getQueries.collections.getCollections}
+                onChange={setExcCols}
+                disabled={colLess}
+                sx={{
+                    flexGrow: 1
+                }}
+            />
+{/*            <TagSelector
                 label={"Include collections"}
                 chips={cols}
                 selectedChips={incCols}
@@ -57,13 +77,12 @@ const CollectionFilters = (props: PropTypes) => {
                 excludeChips={incCols}
                 onChange={setExcCols}
                 disabled={colLess}
-            />
+            />*/}
         </React.Fragment>
     )
 }
 
 interface PropTypes {
-    cols: Col[]
 }
 
 export interface CollectionSearchType {

@@ -52,11 +52,11 @@ export const SearchPropsState = React.createContext<{
 )
 
 export interface Tag extends ChipBase {
-    tag_id: number
+    tag_id?: number
 }
 
 export interface Col extends ChipBase {
-    collection_id: number
+    collection_id?: number
 }
 
 export interface Image {

@@ -1,7 +1,7 @@
 import sqlite3, {Database, Statement} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
-import {channels, sqlSelectChannel} from "@utils/ipcCommands";
+import {channels, sqlGetQueryChannel, sqlRunQueryChannel, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
 import preparedStatements, {
     PreparedStatements,
@@ -42,6 +42,31 @@ const createChannelListeners = (
             event.reply(channel, e)
         }
     })
+
+    ipcMain.on(sqlGetQueryChannel, (event, {channel, query, args}) => {
+        try {
+            const response = db.transaction(() => {
+                return db.prepare(query).all(args)
+            })()
+            event.reply(channel, response)
+
+        } catch (e) {
+            event.reply(channel, e)
+        }
+    })
+
+    ipcMain.on(sqlRunQueryChannel, (event, {channel, query, args}) => {
+        try {
+            const response = db.transaction(() => {
+                return db.prepare(query).run(args)
+            })()
+            event.reply(channel, response)
+
+        } catch (e) {
+            event.reply(channel, e)
+        }
+    })
+
     searchQuery()
 }
 

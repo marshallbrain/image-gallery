@@ -20,15 +20,24 @@ import TagSearch from "./TagSearch";
 import TagList from "./TagList";
 import TagSelector, {ChipBase} from "./TagSelector";
 import {RunResult} from "better-sqlite3";
+import {setQuery, useGetQuery} from "@components/utilities";
+import getQueries from "../../queries/getQueries";
+import AsyncSelect from "./AsyncSelect";
+import runQueries from "../../queries/subQueries/runQueries";
 
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
 
     const [imageTags, setImageTags] = React.useState<ChipBase[]>([])
-    const [tags, setTags] = React.useState<ChipBase[]>([])
     const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
     const [collections, setCollections] = React.useState<ChipBase[]>([])
+
+    /*const [tags, updateTags] = useGetQuery<ChipBase>(
+        getQueries.tag.getTags,
+        [],
+        []
+    )
 
     useEffect(() => {
         updateTags()
@@ -40,16 +49,9 @@ const MetadataEdit = (props: PropTypes) => {
         updateImageCollections()
     }, [imageData])
 
-    const updateTags = () => {
-        window.api.db.getImages(sqlQueries.getTags, (data: ChipBase[]) => {
-            setTags(data)
-        })
-    }
-
     const updateImageTags = () => {
         window.api.db.getImages(sqlQueries.getImageTags, (tags: ChipBase[]) => {
             setImageTags(tags)
-            console.log(tags)
         }, imageData?.image_id)
     }
 
@@ -62,7 +64,7 @@ const MetadataEdit = (props: PropTypes) => {
     const updateImageCollections = () => {
         window.api.db.getImages(sqlQueries.getImageCollections, (collections: ChipBase[]) => {
             setImageCollections(collections)
-        }, imageData?.image_id)
+        }, imageData?.image_id)*!/
     }
 
     const onModifyTags = (
@@ -134,6 +136,43 @@ const MetadataEdit = (props: PropTypes) => {
                 }, [imageData?.image_id])
                 break
         }
+    }*/
+
+    const updateImageTags = (
+        reason: "create" | "select" | "remove" | "clear"
+    ) => (tag?: { tag_id?: string, value?: string }): Promise<any> => {
+        switch (reason) {
+            case "create":
+                return setQuery(runQueries.tag.createTag, [tag?.value]).then((value) => {
+                    return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, value])
+                })
+            case "select":
+                return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
+            case "remove":
+                return setQuery(runQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
+            case "clear":
+                return setQuery(runQueries.tag.clearImageTag, [imageData?.image_id])
+        }
+    }
+
+    const updateImageCollection = (
+        reason: "create" | "select" | "remove" | "clear"
+    ) => (tag?: { collection_id?: string, value?: string }): Promise<any> => {
+        switch (reason) {
+            case "create":
+                return setQuery(runQueries.collections.createCollection,
+                    [tag?.value]).then((value) => {
+                    return setQuery(runQueries.collections.addImageCollection, [imageData?.image_id, value])
+                })
+            case "select":
+                return setQuery(runQueries.collections.addImageCollection,
+                    [imageData?.image_id, tag?.collection_id])
+            case "remove":
+                return setQuery(runQueries.collections.removeImageCollection,
+                    [imageData?.image_id, tag?.collection_id])
+            case "clear":
+                return setQuery(runQueries.collections.clearImageCollection, [imageData?.image_id])
+        }
     }
 
     return (
@@ -159,27 +198,24 @@ const MetadataEdit = (props: PropTypes) => {
                     pt: 4,
                 }}
             >
-                <TagSelector
-                    label={"Tags"}
-                    chips={tags}
-                    selectedChips={imageTags}
-                    onChange={() => {}}
-                    onCreateTag={onModifyTags("select")}
-                    onSelectTag={onModifyTags("select")}
-                    onRemoveTag={onModifyTags("remove")}
-                    onClear={onModifyTags("clear")}
-                    freeSolo
+                <AsyncSelect
+                    optionsQuery={getQueries.tag.getTags}
+                    valueQuery={getQueries.tag.getImageTags}
+                    valueArgs={[imageData?.image_id]}
+                    onSelectTag={updateImageTags("select")}
+                    onCreateTag={updateImageTags("create")}
+                    onRemoveTag={updateImageTags("remove")}
+                    onClear={updateImageTags("clear")}
                 />
-                <TagSelector
-                    label={"Collections"}
-                    chips={collections}
-                    selectedChips={imageCollections}
-                    onChange={() => {}}
-                    onCreateTag={onModifyCollections("select")}
-                    onSelectTag={onModifyCollections("select")}
-                    onRemoveTag={onModifyCollections("remove")}
-                    onClear={onModifyCollections("clear")}
-                    freeSolo
+
+                <AsyncSelect
+                    optionsQuery={getQueries.collections.getCollections}
+                    valueQuery={getQueries.collections.getImageCollections}
+                    valueArgs={[imageData?.image_id]}
+                    onSelectTag={updateImageCollection("select")}
+                    onCreateTag={updateImageCollection("create")}
+                    onRemoveTag={updateImageCollection("remove")}
+                    onClear={updateImageCollection("clear")}
                 />
             </Stack>
         </Drawer>

@@ -5,24 +5,16 @@ import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
 import {Col, SearchPropsState, Tag} from "@components/App";
-import {orDefault} from "@components/utilities";
+import {orDefault, useGetQuery} from "@components/utilities";
+import getQueries from "../../queries/getQueries";
+import AsyncSelect from "../../image_viewer/components/AsyncSelect";
+import ControlSelector from "../../image_viewer/components/ControlSelector";
 
 function ImageSearch(props: PropTypes) {
 
     const {searchProp, setSearchProp} = useContext(SearchPropsState);
 
-    const [tags, setTags] = useState<Tag[]>([])
-    const [cols, setCols] = useState<Col[]>([])
     const [asOpen, setASOpen] = useState(false)
-
-    useEffect(() => {
-        window.api.db.getImages(sqlQueries.getTags, (data: Tag[]) => {
-            setTags(data)
-        })
-        window.api.db.getImages(sqlQueries.getCollections, (data: Col[]) => {
-            setCols(data)
-        })
-    }, [])
 
     const setTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchProp({
@@ -75,21 +67,17 @@ function ImageSearch(props: PropTypes) {
                     width: 256
                 }}
             />
-            <TagSelector
-                label={"Include Tags"}
-                chips={tags}
-                selectedChips={searchProp.tag?.incTags}
-                excludeChips={searchProp.tag?.excTags}
+            <ControlSelector
+                values={searchProp.tag?.incTags}
+                optionsQuery={getQueries.tag.getTags}
                 onChange={setIncTags}
                 sx={{
                     flexGrow: 1
                 }}
             />
-            <TagSelector
-                label={"Include Collections"}
-                chips={cols}
-                selectedChips={searchProp.collection?.incCols}
-                excludeChips={searchProp.collection?.excCols}
+            <ControlSelector
+                values={searchProp.collection?.incCols}
+                optionsQuery={getQueries.collections.getCollections}
                 onChange={setIncCols}
                 sx={{
                     flexGrow: 1
@@ -101,8 +89,6 @@ function ImageSearch(props: PropTypes) {
             <AdvancedSearch
                 open={asOpen}
                 toggleAS={toggleAS}
-                tags={tags}
-                cols={cols}
             />
         </Stack>
     );
