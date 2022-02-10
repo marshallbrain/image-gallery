@@ -25,8 +25,6 @@ const AdvancedSearch = (props: PropTypes) => {
     const {
         open,
         toggleAS,
-        tags,
-        cols,
     } = props
 
     const {searchProp, setSearchProp} = useContext(SearchPropsState);
@@ -107,8 +105,8 @@ const AdvancedSearch = (props: PropTypes) => {
                             spacing={2}
                         >
                             {group === "Generic" && <GenericFilters/>}
-                            {group === "Tag" && <TagFilters tags={tags}/>}
-                            {group === "Collection" && <CollectionFilters cols={cols}/>}
+                            {group === "Tag" && <TagFilters/>}
+                            {group === "Collection" && <CollectionFilters/>}
                         </Stack>
                     </Box>
                 </SearchPropTemp.Provider>
@@ -137,8 +135,6 @@ export const SearchPropTemp = React.createContext<SearchPropsOpp>(
 interface PropTypes {
     open: boolean
     toggleAS: () => void
-    tags: Tag[]
-    cols: Col[]
 }
 
 export default AdvancedSearch
