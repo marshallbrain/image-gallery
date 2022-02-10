@@ -1,5 +1,6 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
+import exp from "constants";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
     return (value) ? value as NonNullable<T> : base
@@ -11,27 +12,38 @@ export type toAny<T> = {
 
 export const useGetQuery = <T, >(
     query: GetQuery,
-    deps: DependencyList,
-    args: any[]|{[p: string]: any},
+    deps: DependencyList|undefined,
+    args: any[]|{[p: string]: any}|undefined,
     search?: string
 ): [T[], () => void] => {
-
     const fullQuery: string = query.query + "\n" + ((search)? search: query.order)
 
     const [value, setValue] = useState<T[]>([])
     const triggerUpdate = () => {
-        window.api.db.query(fullQuery, (data) => {
+        window.api.db.getQuery(fullQuery, (data) => {
             setValue(data)
-        }, args)
+        }, (args)? args: [])
     }
 
     useEffect(() => {
         triggerUpdate()
     }, [])
 
-    useEffect(() => {
-        triggerUpdate()
-    }, deps)
+    if (deps && deps.length > 0) {
+        useEffect(() => {
+            triggerUpdate()
+        }, deps)
+    }
 
     return [value, triggerUpdate]
+}
+
+export const setQuery = (
+    query: GetQuery,
+    args: any[]|{[p: string]: any}|undefined,
+) => {
+    const fullQuery: string = query.query + "\n" + query.order
+
+    window.api.db.runQuery(fullQuery, (response) => {
+    }, args)
 }
