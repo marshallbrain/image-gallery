@@ -28,17 +28,15 @@ const AsyncSelect = (props: PropTypes) => {
         } = props
 
         if (reason === "selectOption" && details?.option.value && onCreateTag)
-            onCreateTag(details?.option)
+            onCreateTag(details?.option).then(updateValues)
         else if (reason === "selectOption" && details && onSelectTag)
-            onSelectTag(details?.option)
+            onSelectTag(details?.option).then(updateValues)
         else if (reason === "removeOption" && details && onRemoveTag)
-            onRemoveTag(details?.option)
+            onRemoveTag(details?.option).then(updateValues)
         else if (reason === "clear" && onClear)
-            onClear()
+            onClear().then(updateValues)
         else if (onChange)
             onChange(value as ChipBase[])
-
-        updateValues()
     }
 
     return (
@@ -99,10 +97,10 @@ interface PropTypes {
     optionsQuery: GetQuery
 
     onChange?: (chip: ChipBase[] | undefined) => void
-    onCreateTag?: (chip: ChipBase) => void
-    onSelectTag?: (chip: ChipBase) => void
-    onRemoveTag?: (chip: ChipBase) => void
-    onClear?: () => void
+    onCreateTag?: (chip: ChipBase) => Promise<null>
+    onSelectTag?: (chip: ChipBase) => Promise<null>
+    onRemoveTag?: (chip: ChipBase) => Promise<null>
+    onClear?: () => Promise<null>
 }
 
 interface ChipBase {
