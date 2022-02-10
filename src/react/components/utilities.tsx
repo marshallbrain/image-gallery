@@ -1,6 +1,5 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
-import exp from "constants";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
     return (value) ? value as NonNullable<T> : base
@@ -41,9 +40,27 @@ export const useGetQuery = <T, >(
 export const setQuery = (
     query: GetQuery,
     args: any[]|{[p: string]: any}|undefined,
-) => {
+): Promise<number|bigint> => {
     const fullQuery: string = query.query + "\n" + query.order
 
-    window.api.db.runQuery(fullQuery, (response) => {
-    }, args)
+    return new Promise<number|bigint>((resolve, reject) =>
+        window.api.db.runQuery(fullQuery, (response) => {
+            if ("name" in response) {
+                reject(response)
+                return
+            }
+            resolve((response as RunResult).lastInsertRowid)
+        }, args)
+    )
+}
+
+export interface RunResult {
+    changes: number;
+    lastInsertRowid: number | bigint;
+}
+
+export interface SqliteError extends Error {
+    name: string
+    message: string
+    code: string
 }
