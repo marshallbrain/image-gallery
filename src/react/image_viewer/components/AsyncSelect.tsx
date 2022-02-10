@@ -1,29 +1,77 @@
 import React, {useEffect, useState} from 'react';
-import {Autocomplete, Chip, TextField} from "@mui/material";
+import {Autocomplete, AutocompleteChangeDetails, AutocompleteChangeReason, Chip, TextField} from "@mui/material";
 import {useGetQuery} from "@components/utilities";
-import getQueries from "../../queries/getQueries";
+import getQueries, {GetQuery} from "../../queries/getQueries";
+import _ from "lodash";
 
 const AsyncSelect = (props: PropTypes) => {
 
+    const {valueQuery, valueArgs, optionsQuery} = props
 
     const [searchValue, setSearchValue] = useState("")
-    const [options] = useGetQuery<ChipBase>(
-        getQueries.tag.getTags,
-        [searchValue],
-        {search: searchValue}
-    )
 
-    console.log(options)
+    const [values, updateValues] = useGetQuery<ChipBase>(valueQuery, valueArgs, valueArgs)
+    const [options] = useGetQuery<ChipBase>(optionsQuery, [searchValue], {search: searchValue})
+
+    const onChangeValue = (
+        event: React.SyntheticEvent,
+        value: (string|ChipBase)[],
+        reason: AutocompleteChangeReason,
+        details: AutocompleteChangeDetails<ChipBase> | undefined
+    ) => {
+        const {
+            onChange,
+            onCreateTag,
+            onSelectTag,
+            onRemoveTag,
+            onClear,
+        } = props
+
+        if (reason === "selectOption" && details?.option.value && onCreateTag)
+            onCreateTag(details?.option)
+        else if (reason === "selectOption" && details && onSelectTag)
+            onSelectTag(details?.option)
+        else if (reason === "removeOption" && details && onRemoveTag)
+            onRemoveTag(details?.option)
+        else if (reason === "clear" && onClear)
+            onClear()
+        else if (onChange)
+            onChange(value as ChipBase[])
+
+        updateValues()
+    }
 
     return (
         <Autocomplete
+            multiple
+            filterSelectedOptions
+            disableCloseOnSelect
+            freeSolo
+            autoHighlight
+            value={values}
             options={options}
+            onChange={onChangeValue}
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             onInputChange={(event, value, reason) => {
                 setSearchValue(value)
             }}
-            filterOptions={(x) => x}
+            filterOptions={(options, params) => {
+                const { inputValue } = params;
+
+                const isExisting = options.some((option) =>
+                    inputValue.toLowerCase() === option.name.toLowerCase()
+                );
+                if (inputValue !== '' && !isExisting) {
+                    return [...options, {
+                        tag_id: 0,
+                        name: `Create "${inputValue}"`,
+                        value: inputValue
+                    }]
+                }
+
+                return options;
+            }}
             renderOption={(props, option) => (
                 <li {...props}>
                     <Chip
@@ -46,6 +94,15 @@ const AsyncSelect = (props: PropTypes) => {
 }
 
 interface PropTypes {
+    valueQuery: GetQuery
+    valueArgs?: any[]
+    optionsQuery: GetQuery
+
+    onChange?: (chip: ChipBase[] | undefined) => void
+    onCreateTag?: (chip: ChipBase) => void
+    onSelectTag?: (chip: ChipBase) => void
+    onRemoveTag?: (chip: ChipBase) => void
+    onClear?: () => void
 }
 
 interface ChipBase {
