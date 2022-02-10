@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
+import {setQuery} from "@components/utilities";
+import runQueries from "../../queries/subQueries/runQueries";
 
 const TitleRename = (props: PropTypes) => {
 
@@ -23,10 +25,10 @@ const TitleRename = (props: PropTypes) => {
     }
 
     const saveTitle = () => {
-        window.api.db.getImages(sqlQueries.setImageTitle, () => {
+        setQuery(runQueries. image.setImageTitle, {imageID, title: editTitle}).then(() => {
             toggleTR()
             window.api.send(channels.setWindowTitle, editTitle)
-        }, {imageID, title: editTitle})
+        })
     }
 
     return (
