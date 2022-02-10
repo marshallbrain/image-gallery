@@ -22,31 +22,22 @@ function AppViewer(props: PropTypes) {
     const {index, imageList, onIndexChange, onClose} = props
 
     const [image, setImage] = React.useState<Image|null>(null)
-    const [imageData, setImageData] = React.useState<ImageData|null>(null)
     const [editOpen, setEditOpen] = useState(false)
     const [imageFull, setImageFull] = useState(false)
     const [drawerTR, setDrawerTR] = useState(false)
 
+    const [[imageData]] = useGetQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
+
     const imageRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        updateImageData()
         imageRef.current?.focus()
     }, [])
 
     useEffect(() => {
         setImage(imageList[index])
         window.api.send(channels.setWindowTitle, imageList[index].title)
-        if(imageList[index] != undefined) {
-            updateImageData()
-        }
     }, [index])
-
-    const updateImageData = () => {
-        window.api.db.getImages(sqlQueries.getImageData, ([data]: ImageData[]) => {
-            setImageData(data)
-        }, imageList[index].image_id)
-    }
 
     const keyPressEvent = (e: KeyboardEvent) => {
         if (e.key === "ArrowRight" && index+1 < imageList.length) {
