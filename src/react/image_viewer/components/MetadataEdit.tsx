@@ -23,6 +23,7 @@ import {RunResult} from "better-sqlite3";
 import {setQuery, useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "./AsyncSelect";
+import runQueries from "../../queries/subQueries/runQueries";
 
 const MetadataEdit = (props: PropTypes) => {
 
@@ -142,15 +143,15 @@ const MetadataEdit = (props: PropTypes) => {
     ) => (tag?: { tag_id?: string, value?: string }): Promise<any> => {
         switch (reason) {
             case "create":
-                return setQuery(getQueries.tag.createTag, [tag?.value]).then((value) => {
-                    return setQuery(getQueries.tag.addImageTag, [imageData?.image_id, value])
+                return setQuery(runQueries.tag.createTag, [tag?.value]).then((value) => {
+                    return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, value])
                 })
             case "select":
-                return setQuery(getQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
+                return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
             case "remove":
-                return setQuery(getQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
+                return setQuery(runQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
             case "clear":
-                return setQuery(getQueries.tag.clearImageTag, [imageData?.image_id])
+                return setQuery(runQueries.tag.clearImageTag, [imageData?.image_id])
         }
     }
 
@@ -159,18 +160,18 @@ const MetadataEdit = (props: PropTypes) => {
     ) => (tag?: { collection_id?: string, value?: string }): Promise<any> => {
         switch (reason) {
             case "create":
-                return setQuery(getQueries.collections.createCollection,
+                return setQuery(runQueries.collections.createCollection,
                     [tag?.value]).then((value) => {
-                    return setQuery(getQueries.collections.addImageCollection, [imageData?.image_id, value])
+                    return setQuery(runQueries.collections.addImageCollection, [imageData?.image_id, value])
                 })
             case "select":
-                return setQuery(getQueries.collections.addImageCollection,
+                return setQuery(runQueries.collections.addImageCollection,
                     [imageData?.image_id, tag?.collection_id])
             case "remove":
-                return setQuery(getQueries.collections.removeImageCollection,
+                return setQuery(runQueries.collections.removeImageCollection,
                     [imageData?.image_id, tag?.collection_id])
             case "clear":
-                return setQuery(getQueries.collections.clearImageCollection, [imageData?.image_id])
+                return setQuery(runQueries.collections.clearImageCollection, [imageData?.image_id])
         }
     }
 

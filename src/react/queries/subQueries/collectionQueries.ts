@@ -13,28 +13,27 @@ export const collectionGetQueries = {
             "where i.image_id = ?",
         order: "order by name",
     },
+}
+
+export const collectionRunQueries = {
     createCollection: {
         query: "" +
             "insert into collections (name)\n" +
             "values(?)",
-        order: "",
     },
     addImageCollection: {
         query: "" +
             "insert into images_collections\n" +
             "select ?, ?",
-        order: "",
     },
     removeImageCollection: {
         query: "" +
             "delete from images_collections\n" +
             "where image_id = ? and collection_id = ?",
-        order: "",
     },
     clearImageCollection: {
         query: "" +
             "delete from images_collections\n" +
             "where image_id = ?",
-        order: "",
     }
 }

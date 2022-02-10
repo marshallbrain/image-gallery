@@ -1,5 +1,6 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
+import {RunQuery} from "../queries/subQueries/runQueries";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
     return (value) ? value as NonNullable<T> : base
@@ -38,13 +39,12 @@ export const useGetQuery = <T, >(
 }
 
 export const setQuery = (
-    query: GetQuery,
+    query: RunQuery,
     args: any[]|{[p: string]: any}|undefined,
 ): Promise<number|bigint> => {
-    const fullQuery: string = query.query + "\n" + query.order
 
     return new Promise<number|bigint>((resolve, reject) =>
-        window.api.db.runQuery(fullQuery, (response) => {
+        window.api.db.runQuery(query.query, (response) => {
             if ("name" in response) {
                 reject(response)
                 return
