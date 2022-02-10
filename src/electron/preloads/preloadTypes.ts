@@ -1,3 +1,5 @@
+import {RunResult, SqliteError} from "@components/utilities";
+
 interface types {
     savedStore: {
         get: (key: string) => any
@@ -23,7 +25,7 @@ interface types {
         ) => void,
         runQuery: (
             query: string,
-            callback: (data: any[]) => void,
+            callback: (data: RunResult|SqliteError) => void,
             args?: any[]|{[p: string]: any}
         ) => void,
         getImages: (
