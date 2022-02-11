@@ -30,6 +30,10 @@ function ImageGallery(props: PropTypes) {
 
     const [images, updateSearch] = useSearch(searchMap(searchProp), [searchProp])
 
+    useChannel(channels.update.reloadSearch, () => {
+        updateSearch()
+    })
+
     useEffect(() => {
         window.api.send(ipcChannels.setWindowTitle, "Gallery")
     }, [])

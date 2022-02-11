@@ -3,14 +3,15 @@ let index = 0
 const channels = {
     dialogs: {
         importImages: i(),
-        startProgress: i()
+        startProgress: i(),
     },
     execute: {
-        importImages: i()
+        importImages: i(),
     },
     update: {
         progress: i(),
-        finishProgress: i()
+        finishProgress: i(),
+        reloadSearch: i(),
     },
 }
 

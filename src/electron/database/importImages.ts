@@ -120,6 +120,7 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
             .finally(() => {
                 if (importRemaining.size == 0) {
                     event.reply(channels.update.finishProgress, Array.of(errored))
+                    event.reply(channels.update.reloadSearch)
                 }
             })
     }
