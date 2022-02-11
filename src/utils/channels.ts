@@ -1,12 +1,16 @@
-let i = 0
+let index = 0
 
 const channels = {
     dialogs: {
-        importImages: i++
+        importImages: i()
     },
     execute: {
-        importImages: i++
+        importImages: i()
     }
+}
+
+function i() {
+    return `${index++}`
 }
 
 export default channels

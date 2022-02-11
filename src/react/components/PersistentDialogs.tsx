@@ -1,8 +1,10 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import ImportImages from "./dialogs/import_images/ImportImages";
-import {channels} from "@utils/ipcCommands";
+import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
 import {Dialog} from "@mui/material";
+import channels from "@utils/channels";
+import {useChannel} from "@components/utilities";
 
 function PersistentDialogs() {
 
@@ -10,39 +12,54 @@ function PersistentDialogs() {
     const [importProgress, setImportProgress] = React.useState(false);
     const [reimportImages, setReimportImages] = React.useState(false);
 
+    const [dialogState, setDialogState] = useState<Record<Dialogs, boolean>>(dialogsDefault)
+
+    const open = (dialog: Dialogs) => () => {
+        setDialogState({
+            ...dialogState,
+            [dialog]: true
+        })
+    }
+    const close = (dialog: Dialogs) => () => {
+        setDialogState({
+            ...dialogState,
+            [dialog]: false
+        })
+    }
+
+    useChannel(channels.dialogs.importImages, open(Dialogs.importImages))
+
     useEffect(() => {
-        const openImportKey = window.api.receive(channels.openImportDialog, open(Dialogs.importImages))
-        const openReimportKey = window.api.receive(channels.openReimportDialog, open(Dialogs.reimportImages))
+        const openReimportKey = window.api.receive(ipcChannels.openReimportDialog, openOld(D.reimportImages))
         return function cleanup() {
-            window.api.remove(channels.openImportDialog, openImportKey)
-            window.api.remove(channels.openReimportDialog, openReimportKey)
+            window.api.remove(ipcChannels.openReimportDialog, openReimportKey)
         };
     }, [])
 
     const dialogMap = {
-        [Dialogs.importImages]: setImportImages,
-        [Dialogs.importProgress]: setImportProgress,
-        [Dialogs.reimportImages]: setReimportImages
+        [D.importImages]: setImportImages,
+        [D.importProgress]: setImportProgress,
+        [D.reimportImages]: setReimportImages
     }
 
-    const open = (name: Dialogs) => () => {
+    const openOld = (name: D) => () => {
         dialogMap[name](true)
     }
 
-    const close = (name: Dialogs) => () => {
+    const closeOld = (name: D) => () => {
         dialogMap[name](false)
     }
 
-    const swap = (closeName: Dialogs, openName: Dialogs) => () => {
-        close(closeName)()
-        open(openName)()
+    const swap = (closeName: D, openName: D) => () => {
+        closeOld(closeName)()
+        openOld(openName)()
     }
 
     return (
         <React.Fragment>
-            <Dialog open={importImages} onClose={close(Dialogs.importImages)}>
+            <Dialog open={dialogState[Dialogs.importImages]} onClose={closeOld(D.importImages)}>
                 <ImportImages
-                    close={swap(Dialogs.importImages, Dialogs.importProgress)}
+                    close={swap(D.importImages, D.importProgress)}
                     reimport={false}
                 />
             </Dialog>
@@ -52,9 +69,9 @@ function PersistentDialogs() {
                 fullWidth
             >
                 <ImportProgressDialog
-                    onClose={close(Dialogs.importProgress)}
-                    updateChannel={channels.imageImported}
-                    completeChannel={channels.imageImportComplete}
+                    onClose={closeOld(D.importProgress)}
+                    updateChannel={ipcChannels.imageImported}
+                    completeChannel={ipcChannels.imageImportComplete}
                 />
             </Dialog>
         </React.Fragment>
@@ -62,6 +79,12 @@ function PersistentDialogs() {
 }
 
 enum Dialogs {
+    importImages
+}
+
+const dialogsDefault: Record<Dialogs, boolean> = {"0": false}
+
+enum D {
     importImages,
     importProgress,
     reimportImages

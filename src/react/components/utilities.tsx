@@ -12,8 +12,8 @@ export type toAny<T> = {
 }
 
 export const useChannel = (
-    channel: Channels,
-    callback: (response: any[]) => {}
+    channel: string,
+    callback: (response: any[]) => void
 ) => {
     useEffect(() => {
         const listener = window.api.channel.trigger(channel, callback)
