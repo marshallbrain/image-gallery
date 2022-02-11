@@ -24,6 +24,13 @@ export const useChannel = (
     }, [])
 }
 
+export const sendChannel = (
+    channel: string,
+    args: any[]
+) => {
+    window.api.channel.send(channel, args)
+}
+
 export const useGetQuery = <T, >(
     query: GetQuery,
     deps: DependencyList|undefined,

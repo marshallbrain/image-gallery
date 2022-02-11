@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld("api", {
             ipcRenderer.on(channel, listener)
             return listener
         },
+        send(channel, args) {
+            ipcRenderer.send(channel, args);
+        },
         remove: (channel, listener) => {
             ipcRenderer.removeListener(channel, listener)
         },

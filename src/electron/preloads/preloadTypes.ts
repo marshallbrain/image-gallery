@@ -43,6 +43,7 @@ interface types {
     channel: {
         trigger: (channel: string, callback: (response: any[]) => void) =>
             (event: IpcRendererEvent, response: any[]) => void
+        send: (channel: string, args: any[]) => void
         remove: (channel: string, listener: (event: IpcRendererEvent, response: any[]) => void) => void
     }
     request: (channel: string, callback: (data: any) => void, ...data: any[]) => void
