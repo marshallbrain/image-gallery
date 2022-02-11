@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import sqlQueries from "@utils/sqlQueries";
-import {channels} from "@utils/ipcCommands";
+import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImageGrid from "@components/gallery/ImageGrid";
 import ImageSearch from "@components/gallery/ImageSearch";
 import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
@@ -8,29 +8,30 @@ import {Image, SearchPropsState, SearchPropsType} from "@components/App";
 import {genericSearchMap, GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
 import {tagSearchMap, TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
 import {collectionSearchMap, CollectionSearchType} from "@components/gallery/advancedSearch/CollectionFilters";
-import {toAny} from "@components/utilities";
+import {toAny, useChannel, useSearch} from "@components/utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/gallery/advancedSearch/ExportDialog";
+import channels from "@utils/channels";
 
 function ImageGallery(props: PropTypes) {
 
     const {onImageSelected} = props
 
+    const searchMap = (search: SearchPropsType): toAny<SearchPropsType> => ({
+        generic: genericSearchMap(search["generic"]),
+        tag: tagSearchMap(search["tag"]),
+        collection: collectionSearchMap(search["collection"])
+    })
+
     const {searchProp} = useContext(SearchPropsState);
 
-    const [images, setImages] = React.useState<Image[]>([])
     const [selected, setSelected] = useState<Set<number>>(new Set())
     const [exportDialog, setExportDialog] = useState(false)
 
+    const [images, updateSearch] = useSearch(searchMap(searchProp), [searchProp])
+
     useEffect(() => {
-        getImages()
-        window.api.send(channels.setWindowTitle, "Gallery")
-        const imageImportCompleteKey = window.api.receive(channels.imageImportComplete, () => {
-            getImages()
-        })
-        return function cleanup() {
-            window.api.remove(channels.imageImportComplete, imageImportCompleteKey)
-        }
+        window.api.send(ipcChannels.setWindowTitle, "Gallery")
     }, [])
 
     const selectAll = () => {
@@ -44,22 +45,6 @@ function ImageGallery(props: PropTypes) {
     const toggleExportDialog = () => {
         setExportDialog((!exportDialog))
     }
-
-    useEffect(() => {
-        getImages()
-    }, [searchProp])
-
-    const getImages = () => {
-        window.api.db.search((data) => {
-            setImages(data)
-        }, searchMap(searchProp))
-    }
-
-    const searchMap = (search: SearchPropsType): toAny<SearchPropsType> => ({
-        generic: genericSearchMap(search["generic"]),
-        tag: tagSearchMap(search["tag"]),
-        collection: collectionSearchMap(search["collection"])
-    })
 
     return (
         <React.Fragment>

@@ -16,13 +16,19 @@ export const databasePreload = (ipcRenderer) => {
             })
             ipcRenderer.send(sqlGetQueryChannel, {channel, query, args})
         },
-        
         runQuery: (query, callback, args) => {
             const channel = uuid()
             ipcRenderer.once(channel, (event, data) => {
                 callback(data)
             })
             ipcRenderer.send(sqlRunQueryChannel, {channel, query, args})
+        },
+        search: (callback, args) => {
+            const channel = uuid()
+            ipcRenderer.once(channel, (event, ...data) => {
+                callback(...data)
+            })
+            ipcRenderer.send(sqlSearchChannel, {channel, args})
         },
         
         
@@ -34,12 +40,5 @@ export const databasePreload = (ipcRenderer) => {
             })
             ipcRenderer.send(sqlSelectChannel, {channel, query, args})
         },
-        search: (callback, args) => {
-            const channel = uuid()
-            ipcRenderer.once(channel, (event, ...data) => {
-                callback(...data)
-            })
-            ipcRenderer.send(sqlSearchChannel, {channel, args})
-        }
     }
 }
