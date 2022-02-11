@@ -68,10 +68,9 @@ const ImportProgressDialog = () => {
     console.log(errored)
 
     useChannel(channels.dialogs.startProgress, () => {setOpen(true)})
-    useChannel(channels.update.finishProgress, (errored) => {
-        console.log(errored)
-        if (errored) {
-            setErrored(errored)
+    useChannel(channels.update.finishProgress, ([errored]: Set<string>[]) => {
+        if (errored && errored.size > 0) {
+            setErrored([...errored].sort())
         } else {
             setOpen(false)
         }
@@ -84,7 +83,11 @@ const ImportProgressDialog = () => {
     )
 
     return (
-        <Dialog open={open}>
+        <Dialog
+            open={open}
+            maxWidth={"md"}
+            fullWidth
+        >
             <Dialog
                 open={errored && errored.length > 0}
                 maxWidth={"sm"}
