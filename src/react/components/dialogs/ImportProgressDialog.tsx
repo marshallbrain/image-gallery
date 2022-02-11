@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Button,
     Chip,
@@ -12,32 +12,70 @@ import {
     Typography
 } from "@mui/material";
 import {DialogPropType} from "@components/PersistentDialogs";
-import {channels} from "@utils/ipcCommands";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
+import ImportImages from "@components/dialogs/import_images/ImportImages";
+import {useChannel} from "@components/utilities";
+import channels from "@utils/channels";
 
-const ImportProgressDialog = (props: PropTypes) => {
+const ImportProgress = () => {
 
-    const {onClose, updateChannel, completeChannel} = props
+    const [progress, setProgress] = React.useState(0)
+    const [filename, setFilename] = React.useState("")
 
-    const [importCount, setImportCount] = React.useState(0)
-    const [lastFilename, setLastFilename] = React.useState("")
-    const [errored, setErrored] = React.useState([])
+    useChannel(channels.update.progress, (([value, filename]) => {
+        setProgress(value * 100)
+        setFilename(filename)
+    }))
 
-    useEffect(() => {
-        const imageImportedKey = window.api.receive(updateChannel, (presentDone, filename) => {
-            setImportCount(presentDone * 100)
-            setLastFilename(filename)
-        })
-        const imageImportCompleteKey = window.api.receive(completeChannel, (errored) => {
+    return (
+        <React.Fragment>
+            <DialogTitle>Import Progress</DialogTitle>
+            <DialogContent>
+                <Stack
+                    direction={"row"}
+                    justifyContent="center"
+                    alignItems="center"
+                    spacing={2}
+                >
+                    <LinearProgress
+                        variant={(progress <= 0 || progress >= 100)? "indeterminate": "determinate"}
+                        value={progress}
+                        sx={{
+                            flexGrow: 1,
+                            ".MuiLinearProgress-bar": {
+                                transition: "none"
+                            }
+                        }}
+                    />
+                    <Typography variant="body2" color="text.secondary">{`${Math.round(
+                        progress,
+                    )}%`}</Typography>
+                </Stack>
+                <Typography variant="body1" color="text.secondary">
+                    {filename}
+                </Typography>
+            </DialogContent>
+        </React.Fragment>
+    );
+};
+
+const ImportProgressDialog = () => {
+
+    const [open, setOpen] = useState(false)
+    const [errored, setErrored] = React.useState<any[]>([])
+
+    console.log(errored)
+
+    useChannel(channels.dialogs.startProgress, () => {setOpen(true)})
+    useChannel(channels.update.finishProgress, (errored) => {
+        console.log(errored)
+        if (errored) {
             setErrored(errored)
-            onClose()
-        })
-        return function cleanup() {
-            window.api.remove(updateChannel, imageImportedKey)
-            window.api.remove(completeChannel, imageImportCompleteKey)
+        } else {
+            setOpen(false)
         }
-    }, [])
+    })
 
     const renderError = ({ index, style }: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" className={"userSelectable"}>
@@ -46,7 +84,7 @@ const ImportProgressDialog = (props: PropTypes) => {
     )
 
     return (
-        <React.Fragment>
+        <Dialog open={open}>
             <Dialog
                 open={errored && errored.length > 0}
                 maxWidth={"sm"}
@@ -71,42 +109,16 @@ const ImportProgressDialog = (props: PropTypes) => {
                     </AutoSizer>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose}>Close</Button>
+                    <Button onClick={() => setOpen(false)}>Close</Button>
                 </DialogActions>
             </Dialog>
-            <DialogTitle>Import Progress</DialogTitle>
-            <DialogContent>
-                <Stack
-                    direction={"row"}
-                    justifyContent="center"
-                    alignItems="center"
-                    spacing={2}
-                >
-                    <LinearProgress
-                        variant={(importCount <= 0 || importCount >= 100)? "indeterminate": "determinate"}
-                        value={importCount}
-                        sx={{
-                            flexGrow: 1,
-                            ".MuiLinearProgress-bar": {
-                                transition: "none"
-                            }
-                        }}
-                    />
-                    <Typography variant="body2" color="text.secondary">{`${Math.round(
-                        importCount,
-                    )}%`}</Typography>
-                </Stack>
-                <Typography variant="body1" color="text.secondary">
-                    {lastFilename}
-                </Typography>
-            </DialogContent>
-        </React.Fragment>
-    );
-};
+            <ImportProgress/>
+        </Dialog>
+    )
+
+}
 
 interface PropTypes extends DialogPropType {
-    updateChannel: string
-    completeChannel: string
 }
 
 export default ImportProgressDialog;

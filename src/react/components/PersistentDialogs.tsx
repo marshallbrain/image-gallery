@@ -57,21 +57,11 @@ function PersistentDialogs() {
 
     return (
         <React.Fragment>
-            <Dialog open={dialogState[Dialogs.importImages]} onClose={closeOld(D.importImages)}>
+            <ImportProgressDialog/>
+            <Dialog open={dialogState[Dialogs.importImages]} onClose={close(Dialogs.importImages)}>
                 <ImportImages
-                    close={swap(D.importImages, D.importProgress)}
+                    close={close(Dialogs.importImages)}
                     reimport={false}
-                />
-            </Dialog>
-            <Dialog
-                open={importProgress}
-                maxWidth={"sm"}
-                fullWidth
-            >
-                <ImportProgressDialog
-                    onClose={closeOld(D.importProgress)}
-                    updateChannel={ipcChannels.imageImported}
-                    completeChannel={ipcChannels.imageImportComplete}
                 />
             </Dialog>
         </React.Fragment>

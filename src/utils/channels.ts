@@ -2,11 +2,16 @@ let index = 0
 
 const channels = {
     dialogs: {
-        importImages: i()
+        importImages: i(),
+        startProgress: i()
     },
     execute: {
         importImages: i()
-    }
+    },
+    update: {
+        progress: i(),
+        finishProgress: i()
+    },
 }
 
 function i() {
