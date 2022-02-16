@@ -9,7 +9,6 @@ import setupDatabase, {db} from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
 import fs from "fs";
 import pathModule from "path";
-import reimportImages from "@electron/database/reimportImages";
 import {appData, isDev} from "@utils/utilities";
 import sharp from "sharp";
 import channels from "@utils/channels";
@@ -63,12 +62,6 @@ const createChannelListeners = () => {
 
     ipcMain.on(channels.execute.importImages, (event, [files, mappers]) => {
         importImages(files, mappers, event)
-    })
-
-    ipcMain.on(ipcChannels.reimportImages, (event, [_files, mappers]) => {
-        reimportImages(mappers, () => {
-            event.reply(ipcChannels.reimportImagesComplete)
-        })
     })
 
     ipcMain.on(ipcChannels.getFolder, (event, {callBackChannel, data}) => {
