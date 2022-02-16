@@ -7,6 +7,7 @@ const channels = {
     },
     execute: {
         importImages: i(),
+        exportImages: i(),
     },
     update: {
         progress: i(),

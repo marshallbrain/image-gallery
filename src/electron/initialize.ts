@@ -74,7 +74,7 @@ const createChannelListeners = () => {
     ipcMain.on(ipcChannels.getFolder, (event, {callBackChannel, data}) => {
     })
 
-    ipcMain.on(ipcChannels.exportImages, (event, [{selected, title}]) => {
+    ipcMain.on(channels.execute.exportImages, (event, {selected, title}) => {
         const location = dialog.showOpenDialogSync({
             buttonLabel: "Select",
             message: "Select export folder",
@@ -93,6 +93,7 @@ const createChannelListeners = () => {
         const imagesLeft = new Set(selected)
         for (const id of selected) {
             new Promise((resolve, reject) => {
+
                 const image = db.transaction(() => {
                     return statement.get(id)
                 })() as { image_id: number, extension: string, [p: string]: any }
@@ -101,27 +102,29 @@ const createChannelListeners = () => {
                     image[title] +
                     ((title != "image_id")? `.${image.image_id}`: "") +
                     `.${image.extension}`
-                sharp(appData("images", "raw", `${image.image_id}.${image.extension}`))
-                    .toFile(
-                        pathModule.join(folder, filename.replace(/[/\\?%*:|"<>]/g, '_'))
-                    )
-                    .then(() => {
-                        resolve(filename)
-                    })
-                    .catch(() => {
-                        reject()
-                    })
+
+                fs.copyFile(
+                    appData("images", "raw", `${image.image_id}.${image.extension}`),
+                    pathModule.join(folder, filename.replace(/[/\\?%*:|"<>]/g, '_')),
+                    (error) => {
+                        if (error) {
+                            reject (filename)
+                        } else {
+                            resolve(filename)
+                        }
+                    }
+                )
 
             }).then((filename) => {
                 imagesLeft.delete(id)
                 event.reply(
-                    ipcChannels.imageExported,
+                    channels.update.progress,
                     (selected.size - imagesLeft.size) / selected.size,
                     filename
                 )
             }).finally(() => {
                 if (imagesLeft.size == 0) {
-                    event.reply(ipcChannels.imageExportComplete)
+                    event.reply(channels.update.finishProgress)
                 }
             })
         }

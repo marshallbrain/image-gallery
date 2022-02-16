@@ -11,9 +11,11 @@ import {
     TextField, Typography
 } from "@mui/material";
 import {ImageFile} from "@components/dialogs/import_images/ImportImages";
-import {channels, ipcChannels} from "@utils/ipcCommands";
+import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
 import {useEffect} from "react";
+import {sendChannel} from "@components/utilities";
+import channels from "@utils/channels";
 
 const ExportDialog = (props: PropTypes) => {
 
@@ -23,24 +25,13 @@ const ExportDialog = (props: PropTypes) => {
     } = props
 
     const [title, setTitle] = useState("title")
-    const [exporting, setExporting] = useState(false)
-
-    useEffect(() => {
-        window.api.once(channels.imageExported, () => {
-            setExporting(true)
-        })
-    }, [])
 
     const changeTitle = (event: SelectChangeEvent) => {
         setTitle(event.target.value)
     }
 
     const exportImages = () => {
-        window.api.send(channels.exportImages, {selected, title})
-    }
-
-    const exportDone = () => {
-        toggle()
+        sendChannel(channels.execute.exportImages, {selected, title})
     }
 
     return (
@@ -70,17 +61,6 @@ const ExportDialog = (props: PropTypes) => {
                 <Button onClick={toggle}>Cancel</Button>
                 <Button onClick={exportImages}>Export</Button>
             </DialogActions>
-            <Dialog
-                open={exporting}
-                maxWidth={"sm"}
-                fullWidth
-            >
-                <ImportProgressDialog
-                    updateChannel={channels.imageExported}
-                    completeChannel={channels.imageExportComplete}
-                    onClose={exportDone}
-                />
-            </Dialog>
         </React.Fragment>
     )
 }
