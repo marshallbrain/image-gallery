@@ -1,12 +1,13 @@
 import sqlite3, {Database, Statement} from "better-sqlite3";
 import pathModule from "path";
 import {app, ipcMain} from "electron";
-import {channels, sqlGetQueryChannel, sqlRunQueryChannel, sqlSelectChannel} from "@utils/ipcCommands";
+import {sqlGetQueryChannel, sqlRunQueryChannel, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
 import preparedStatements, {
     PreparedStatements,
 } from "@electron/database/preparedStatements/preparedStatements";
 import searchQuery from "@electron/database/searchQuery";
+import channels from "@utils/channels";
 
 export const db: Database = new sqlite3(appData("database.db"), { verbose: console.log })
 
@@ -36,14 +37,12 @@ const createChannelListeners = (
             })()
             event.reply(channel, response)
 
-            triggers[query](event)
-
         } catch (e) {
             event.reply(channel, e)
         }
     })
 
-    ipcMain.on(sqlGetQueryChannel, (event, {channel, query, args}) => {
+    ipcMain.on(channels.sql.get, (event, {channel, query, args}) => {
         try {
             const response = db.transaction(() => {
                 return db.prepare(query).all(args)
@@ -55,7 +54,7 @@ const createChannelListeners = (
         }
     })
 
-    ipcMain.on(sqlRunQueryChannel, (event, {channel, query, args}) => {
+    ipcMain.on(channels.sql.run, (event, {channel, query, args}) => {
         try {
             const response = db.transaction(() => {
                 return db.prepare(query).run(args)
@@ -68,10 +67,6 @@ const createChannelListeners = (
     })
 
     searchQuery()
-}
-
-const triggers: {[index: string]: (event: Electron.IpcMainEvent) => void} = {
-    createTag: (event) => event.reply(channels.updateTagLists),
 }
 
 /*

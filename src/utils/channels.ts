@@ -14,6 +14,11 @@ const channels = {
         finishProgress: i(),
         reloadSearch: i(),
     },
+    sql: {
+        run: i(),
+        get: i(),
+        search: i(),
+    }
 }
 
 function i() {
