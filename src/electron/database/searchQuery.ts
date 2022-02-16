@@ -1,5 +1,4 @@
 import {ipcMain} from "electron";
-import {sqlSearchChannel} from "@utils/ipcCommands";
 import _ from "lodash";
 import {db} from "@electron/database/database";
 import {SearchPropsType} from "@components/App";

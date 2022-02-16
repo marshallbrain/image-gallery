@@ -1,7 +1,5 @@
-import sqlite3, {Database, Statement} from "better-sqlite3";
-import pathModule from "path";
+import sqlite3, {Database} from "better-sqlite3";
 import {app, ipcMain} from "electron";
-import {sqlGetQueryChannel, sqlRunQueryChannel, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
 import searchQuery from "@electron/database/searchQuery";
 import channels from "@utils/channels";

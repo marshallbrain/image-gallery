@@ -1,10 +1,3 @@
-import {
-    sqlGetQueryChannel,
-    sqlQueryChannel,
-    sqlRunQueryChannel,
-    sqlSearchChannel,
-    sqlSelectChannel
-} from "@utils/ipcCommands";
 import {v4 as uuid} from "uuid"
 import channels from "@utils/channels";
 
@@ -30,16 +23,6 @@ export const databasePreload = (ipcRenderer) => {
                 callback(...data)
             })
             ipcRenderer.send(channels.sql.search, {channel, args})
-        },
-        
-        
-        
-        getImages: (query, callback, args) => {
-            const channel = uuid()
-            ipcRenderer.once(channel, (event, ...data) => {
-                callback(...data)
-            })
-            ipcRenderer.send(sqlSelectChannel, {channel, query, args})
         },
     }
 }
