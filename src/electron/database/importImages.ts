@@ -100,7 +100,7 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                         })
                 })
         }))
-            .then(({filename, imageId}) => {
+            .then(({filename}) => {
                 return new Promise<void>(resolve => {
                     setTimeout(() => {
                         importRemaining.delete(filename)

@@ -8,14 +8,13 @@ export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
     if (userVersion == currentDBVersion) return
     else if (userVersion == 0) createDB()
-    else if (userVersion < currentDBVersion){
+    else if (userVersion < currentDBVersion) {
         db.backup(appData(`database-${moment().format("YY-MM-DD_HH-mm-ss")}.db.bak`)).then(() => {
             db.pragma("foreign_keys = off")
             updateDB(userVersion)
             db.pragma("foreign_keys = on")
         })
-    }
-    else throw "Unknown database version"
+    } else throw "Unknown database version"
 }
 
 const createDB = db.transaction(() => {
@@ -25,11 +24,9 @@ const createDB = db.transaction(() => {
 
 function createTables() {
 
-    for (const table in tableDef) {
-        // @ts-ignore
-        db.prepare("create table if not exists " + tableDef[table].name + " (" +
-            // @ts-ignore
-            tableDef[table].def
+    for (const table of Object.values(tableDef)) {
+        db.prepare("create table if not exists " + table.name + " (" +
+            table.def
             + ");"
         ).run()
     }
@@ -39,7 +36,7 @@ function createTables() {
 const updateDB = db.transaction((version: number) => {
     createTables()
 
-    switch(version) {
+    switch (version) {
         case 1: {
             moveTable(tableDef.tags)
             moveTable(tableDef.collections)
@@ -49,14 +46,14 @@ const updateDB = db.transaction((version: number) => {
     db.pragma(`user_version = ${currentDBVersion}`)
 })
 
-function moveTable(table: {name: string, def: string}, newColumns?: string, oldColumns?: string) {
+function moveTable(table: { name: string, def: string }, newColumns?: string, oldColumns?: string) {
     db.prepare("create table new_" + table.name + " (" +
         table.def
         + ");").run()
 
     db.prepare("" +
         "INSERT INTO new_" + table.name +
-        (newColumns? `(${newColumns})`: "")
+        (newColumns ? `(${newColumns})` : "")
         + " SELECT " +
         (oldColumns || "*")
         + " FROM " + table.name +

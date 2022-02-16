@@ -39,10 +39,10 @@ export default () => {
 
 const getGenericQuery = (query: toAny<SearchPropsType>["generic"]) => ({
     genericQuery: [
-            header,
-            imageHeader,
-            query.title && titleSlice
-        ],
+        header,
+        imageHeader,
+        query.title && titleSlice
+    ],
     genericParam: {
         title: query.title,
     }
@@ -149,11 +149,11 @@ const colLessSlice = "" +
 
 //---------------
 
-function join<T>(array: T[], sep=" ") {
+function join<T>(array: T[], sep = " ") {
     return _.compact(array).join(sep)
 }
 
-function suffix(array: (string|undefined|false)[], s: string) {
+function suffix(array: (string | undefined | false)[], s: string) {
     return _.compact(array).map((value, index, pact) =>
-        value + ((index < pact.length-1)? s: ""))
+        value + ((index < pact.length - 1) ? s : ""))
 }
