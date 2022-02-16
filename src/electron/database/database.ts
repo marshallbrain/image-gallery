@@ -3,9 +3,6 @@ import pathModule from "path";
 import {app, ipcMain} from "electron";
 import {sqlGetQueryChannel, sqlRunQueryChannel, sqlSelectChannel} from "@utils/ipcCommands";
 import {appData} from "@utils/utilities";
-import preparedStatements, {
-    PreparedStatements,
-} from "@electron/database/preparedStatements/preparedStatements";
 import searchQuery from "@electron/database/searchQuery";
 import channels from "@utils/channels";
 
@@ -16,32 +13,12 @@ export default () => {
         db.close()
     })
 
-    const {getStatements, runStatements} = preparedStatements()
-    createChannelListeners(getStatements, runStatements)
+    createChannelListeners()
 
 }
 
 const createChannelListeners = (
-    getStatements: PreparedStatements,
-    runStatements: PreparedStatements
 ) => {
-
-    ipcMain.on(sqlSelectChannel, (event, {channel, query, args}) => {
-        try {
-            const response = db.transaction(() => {
-                if (query in getStatements) {
-                    return args? getStatements[query].all(args): getStatements[query].all()
-                } else {
-                    return args? runStatements[query].run(args): runStatements[query].run()
-                }
-            })()
-            event.reply(channel, response)
-
-        } catch (e) {
-            event.reply(channel, e)
-        }
-    })
-
     ipcMain.on(channels.sql.get, (event, {channel, query, args}) => {
         try {
             const response = db.transaction(() => {
