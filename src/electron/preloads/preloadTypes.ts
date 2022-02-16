@@ -1,4 +1,6 @@
 import {RunResult, SqliteError} from "@components/utilities";
+import {IpcRendererEvent} from "electron"
+import channels, {Channels} from "@utils/channels";
 
 interface types {
     savedStore: {
@@ -37,6 +39,12 @@ interface types {
             callback: (...data: any[]) => void,
             args: any
         ) => void
+    }
+    channel: {
+        trigger: (channel: string, callback: (response: any[]) => void) =>
+            (event: IpcRendererEvent, response: any[]) => void
+        send: (channel: string, args: any[]|{[p: string]: any}) => void
+        remove: (channel: string, listener: (event: IpcRendererEvent, response: any[]) => void) => void
     }
     request: (channel: string, callback: (data: any) => void, ...data: any[]) => void
     send: (channel: string, ...data: any[]) => void

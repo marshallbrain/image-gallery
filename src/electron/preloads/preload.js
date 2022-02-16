@@ -25,6 +25,19 @@ contextBridge.exposeInMainWorld("api", {
             console.log(`Invalid send channel: "${channel}"`);
         }
     },
+    channel: {
+        trigger: (channel, callback) => {
+            const listener = (event, response) => callback(response)
+            ipcRenderer.on(channel, listener)
+            return listener
+        },
+        send(channel, args) {
+            ipcRenderer.send(channel, args);
+        },
+        remove: (channel, listener) => {
+            ipcRenderer.removeListener(channel, listener)
+        },
+    },
     send: (channel, ...data) => {
         if (ipcChannels.has(channel)) {
             ipcRenderer.send(channel, data);

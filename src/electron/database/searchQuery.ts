@@ -4,9 +4,10 @@ import _ from "lodash";
 import {db} from "@electron/database/database";
 import {SearchPropsType} from "@components/App";
 import {toAny} from "@components/utilities";
+import channels from "@utils/channels";
 
 export default () => {
-    ipcMain.on(sqlSearchChannel, (
+    ipcMain.on(channels.sql.search, (
         event,
         {channel, args}
     ) => {

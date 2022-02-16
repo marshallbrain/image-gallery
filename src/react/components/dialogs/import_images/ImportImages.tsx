@@ -18,7 +18,8 @@ import {
 } from "@mui/material";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {channels} from "@utils/ipcCommands";
+import channels from "@utils/channels";
+import {sendChannel} from "@components/utilities";
 
 function ImportImages(props: PropTypes) {
 
@@ -114,7 +115,7 @@ function ImportImages(props: PropTypes) {
         setFiles(files)
     }
     const importImages = () => {
-        window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
+        sendChannel(channels.execute.importImages, [files, mappers])
         console.log("close")
         close()
     }

@@ -9,7 +9,7 @@ import * as exifReader from "exifreader"
 import {db} from "@electron/database/database";
 import {appData} from "@utils/utilities";
 import {IpcMainEvent} from "electron";
-import {channels} from "@utils/ipcCommands";
+import channels from "@utils/channels";
 
 const rawFolder = appData("images", "raw")
 const prevFolder = appData("images", "prev")
@@ -24,6 +24,7 @@ const columnsFull: string[] = [
 ]
 
 export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
+    event.reply(channels.dialogs.startProgress)
     if (files.length == 0) return
     const imagesData = retrieveMetadata(files, mappers)
     new Promise(() => {
@@ -34,7 +35,6 @@ export default (files: ImageFile[], mappers: Mapper[], event: IpcMainEvent) => {
 const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     let totalImages = imageData.length
     const importRemaining = new Set(imageData.map(({file}) => file.base))
-    const thumbnailsRemaining = new Set(importRemaining)
     const errored = new Set<string>()
 
     const importStatement = db.prepare("" +
@@ -50,8 +50,8 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     )
 
     for (const image of imageData) {
-        new Promise<string>((resolve, reject) => {
-            const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
+        const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
+        new Promise<{filename: string, imageId: number|bigint}>(((resolve, reject) => {
             sharpImage
                 .withMetadata()
                 .toBuffer()
@@ -63,22 +63,28 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                             return importStatement.run(entry).lastInsertRowid
                         })()
                     } catch (e) {
-                        throw image.file.base
+                        throw -1
                     }
                 })
-                .then((imageID) => {
-                    sharpImage
-                        .toFile(pathModule.join(rawFolder, imageID+image.file.ext))
-                        .then(() => {
-                            resolve(image.file.base)
-                        })
-                        .catch(() => {
-                            throw [image.file.base, imageID]
-                        })
-                    return imageID
-                })
                 .then((imageId) => {
-                    return sharpImage
+                    return new Promise<{filename: string, imageId: number|bigint}>((
+                        (resolveCopy, rejectCopy) => {
+                            fs.copyFile(
+                                pathModule.join(image.file.dir, image.file.base),
+                                pathModule.join(rawFolder, imageId+image.file.ext),
+                                (error) => {
+                                    if (error) {
+                                        rejectCopy(image.file.base)
+                                    } else {
+                                        resolveCopy({filename: image.file.base, imageId})
+                                    }
+                                }
+                            )
+                        }
+                    ))
+                })
+                .then(({filename, imageId}) => {
+                    sharpImage
                         .resize(256, 256, {fit: sharp.fit.inside})
                         .toFormat("jpeg")
                         .jpeg({
@@ -86,40 +92,35 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
                             mozjpeg: true
                         })
                         .toFile(pathModule.join(prevFolder, `${imageId}.jpeg`))
+                        .then(() => {
+                            resolve({filename, imageId})
+                        })
                         .catch(() => {
-                            thumbnailsRemaining.delete(image.file.base)
-                            errored.add(image.file.base)
-                            deleteStatement.run(imageId)
+                            reject({filename, imageId})
                         })
                 })
-                .then(() => {
-                    thumbnailsRemaining.delete(image.file.base)
-                    if (importRemaining.size == 0) event.reply(
-                        channels.imageImported,
-                        (totalImages - thumbnailsRemaining.size) / totalImages,
-                        "Creating thumbnails"
-                    )
+        }))
+            .then(({filename, imageId}) => {
+                return new Promise<void>(resolve => {
+                    setTimeout(() => {
+                        importRemaining.delete(filename)
+                        event.reply(
+                            channels.update.progress,
+                            [(totalImages - importRemaining.size) / totalImages, filename]
+                        )
+                        resolve()
+                    }, Math.floor(Math.random() * 1000)+100)
                 })
-                .finally(() => {
-                    if (importRemaining.size == 0 && thumbnailsRemaining.size == 0) {
-                        event.reply(channels.imageImportComplete, Array.of(errored))
-                    }
-                })
-        })
-            .then((filename) => {
-                importRemaining.delete(filename)
-                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
-            .catch(([filename, imageId]) => {
+            .catch(({filename, imageId}) => {
                 importRemaining.delete(filename)
-                thumbnailsRemaining.delete(filename)
                 errored.add(filename)
                 deleteStatement.run(imageId)
-                event.reply(channels.imageImported, (totalImages - importRemaining.size) / totalImages, filename)
             })
             .finally(() => {
-                if (importRemaining.size == 0 && thumbnailsRemaining.size == 0) {
-                    event.reply(channels.imageImportComplete, Array.of(errored))
+                if (importRemaining.size == 0) {
+                    event.reply(channels.update.finishProgress, Array.of(errored))
+                    event.reply(channels.update.reloadSearch)
                 }
             })
     }
