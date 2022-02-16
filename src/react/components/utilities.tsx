@@ -27,7 +27,7 @@ export const useChannel = (
 
 export const sendChannel = (
     channel: string,
-    args: any[]
+    args: any[]|{[p: string]: any}
 ) => {
     window.api.channel.send(channel, args)
 }
