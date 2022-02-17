@@ -3,7 +3,7 @@ import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFiel
 import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import runQueries from "../queries/runQueries";
-import {setQuery} from "@components/hooks/sqlHooks";
+import {runQuery} from "@components/hooks/sqlHooks";
 
 const TitleRename = (props: PropTypes) => {
 
@@ -25,7 +25,7 @@ const TitleRename = (props: PropTypes) => {
     }
 
     const saveTitle = () => {
-        setQuery(runQueries. image.setImageTitle, {imageID, title: editTitle}).then(() => {
+        runQuery(runQueries. image.setImageTitle, {imageID, title: editTitle}).then(() => {
             toggleTR()
             window.api.send(channels.setWindowTitle, editTitle)
         })

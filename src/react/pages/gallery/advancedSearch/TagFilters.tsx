@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
 import {SearchPropsState, SearchPropsType, Tag} from "../../App";
-import {orDefault, toAny} from "../../../utilities";
+import {useDefault, toAny} from "../../../utilities";
 import {SearchPropsOpp, SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import ControlSelector from "@components/selectors/ControlSelector";
@@ -15,7 +15,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const [incTags, setIncTags] = useState(searchProp.tag?.incTags)
     const [excTags, setExcTags] = useState(searchProp.tag?.excTags)
-    const [tagLess, setTagLess] = useState(orDefault(searchProp.tag?.tagLess, false))
+    const [tagLess, setTagLess] = useState(useDefault(searchProp.tag?.tagLess, false))
 
     useEffect(() => {
         setSearchProp({

@@ -5,11 +5,11 @@ import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "./advancedSearch/AdvancedSearch";
 import {Col, SearchPropsState, Tag} from "../App";
-import {orDefault} from "../../utilities";
+import {useDefault} from "../../utilities";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "@components/selectors/AsyncSelect";
 import ControlSelector from "@components/selectors/ControlSelector";
-import {useGetQuery} from "@components/hooks/sqlHooks";
+import {useQuery} from "@components/hooks/sqlHooks";
 
 function ImageSearch(props: PropTypes) {
 
@@ -60,7 +60,7 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={orDefault(searchProp.generic?.title, "")}
+                value={useDefault(searchProp.generic?.title, "")}
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}

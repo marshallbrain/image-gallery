@@ -13,7 +13,7 @@ import {Image} from "../App";
 import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
 import getQueries from "../../queries/getQueries";
-import {useGetQuery} from "@components/hooks/sqlHooks";
+import {useQuery} from "@components/hooks/sqlHooks";
 
 const drawerWidth = 450;
 
@@ -26,7 +26,7 @@ function ImageViewer(props: PropTypes) {
     const [imageFull, setImageFull] = useState(false)
     const [drawerTR, setDrawerTR] = useState(false)
 
-    const [[imageData]] = useGetQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
+    const [[imageData]] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
 
     const imageRef = useRef<HTMLDivElement>(null)
 

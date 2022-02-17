@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import {TextField} from "@mui/material";
 import {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {orDefault, toAny} from "../../../utilities";
+import {useDefault, toAny} from "../../../utilities";
 import {SearchPropsState, SearchPropsType} from "../../App";
 import {SearchPropTemp} from "./AdvancedSearch";
 
@@ -9,7 +9,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {searchProp, setSearchProp } = useContext(SearchPropTemp)
 
-    const [title, setTitle] = useState(orDefault(searchProp.generic?.title, ""))
+    const [title, setTitle] = useState(useDefault(searchProp.generic?.title, ""))
 
     useEffect(() => {
         setSearchProp({

@@ -3,13 +3,13 @@ import ChipSelector from "./ChipSelector";
 import {GetQuery} from "../../queries/getQueries";
 import {ChipBase} from "../../image_viewer/components/TagSelector";
 import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@mui/material";
-import {useGetQuery} from "@components/hooks/sqlHooks";
+import {useQuery} from "@components/hooks/sqlHooks";
 
 const AsyncSelect = (props: PropTypes) => {
 
     const {valueQuery, valueArgs, optionsQuery} = props
 
-    const [values, updateValues] = useGetQuery<ChipBase>(valueQuery, valueArgs, valueArgs)
+    const [values, updateValues] = useQuery<ChipBase>(valueQuery, valueArgs, valueArgs)
 
     const onChangeValue = (
         event: React.SyntheticEvent,

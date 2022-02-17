@@ -7,7 +7,7 @@ import {
     createFilterOptions, SxProps,
     TextField, Theme
 } from "@mui/material";
-import {orDefault} from "../../utilities";
+import {useDefault} from "../../utilities";
 import _ from "lodash";
 
 const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
@@ -45,7 +45,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
     return (
         <Autocomplete
             {...{freeSolo, sx, disabled}}
-            value={orDefault(props.selectedChips, [])}
+            value={useDefault(props.selectedChips, [])}
             options={props.chips}
             onChange={onChangeValue}
             limitTags={props.limitTags}

@@ -4,7 +4,7 @@ import {GetQuery} from "../../queries/getQueries";
 import {RunQuery} from "../../queries/runQueries";
 import {toAny} from "../../utilities";
 
-export const useGetQuery = <T, >(
+export const useQuery = <T, >(
     query: GetQuery,
     deps: DependencyList | undefined,
     args: any[] | { [p: string]: any } | undefined,
@@ -31,6 +31,21 @@ export const useGetQuery = <T, >(
 
     return [value, triggerUpdate]
 }
+export const runQuery = (
+    query: RunQuery,
+    args: any[] | { [p: string]: any } | undefined,
+): Promise<number | bigint> => {
+
+    return new Promise<number | bigint>((resolve, reject) =>
+        window.api.db.runQuery(query.query, (response) => {
+            if ("name" in response) {
+                reject(response)
+                return
+            }
+            resolve((response as RunResult).lastInsertRowid)
+        }, args)
+    )
+}
 export const useSearch = (
     query: toAny<SearchPropsType>,
     deps: DependencyList | undefined,
@@ -53,21 +68,6 @@ export const useSearch = (
     }
 
     return [value, triggerUpdate]
-}
-export const setQuery = (
-    query: RunQuery,
-    args: any[] | { [p: string]: any } | undefined,
-): Promise<number | bigint> => {
-
-    return new Promise<number | bigint>((resolve, reject) =>
-        window.api.db.runQuery(query.query, (response) => {
-            if ("name" in response) {
-                reject(response)
-                return
-            }
-            resolve((response as RunResult).lastInsertRowid)
-        }, args)
-    )
 }
 
 export interface RunResult {

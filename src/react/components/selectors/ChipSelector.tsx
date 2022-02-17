@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import getQueries, {GetQuery} from "../../queries/getQueries";
 import _ from "lodash";
-import {useGetQuery} from "@components/hooks/sqlHooks";
+import {useQuery} from "@components/hooks/sqlHooks";
 
 const AsyncSelect = (props: PropTypes) => {
 
@@ -23,7 +23,7 @@ const AsyncSelect = (props: PropTypes) => {
 
     const [searchValue, setSearchValue] = useState("")
 
-    const [options] = useGetQuery<ChipBase>(optionsQuery, [searchValue], {search: searchValue})
+    const [options] = useQuery<ChipBase>(optionsQuery, [searchValue], {search: searchValue})
 
     return (
         <Autocomplete
