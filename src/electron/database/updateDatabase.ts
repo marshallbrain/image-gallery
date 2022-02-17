@@ -1,6 +1,6 @@
 import {db} from "@electron/database/database";
 import {appData} from "@utils/utilities";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const currentDBVersion = 2
 
@@ -9,7 +9,7 @@ export default () => {
     if (userVersion == currentDBVersion) return
     else if (userVersion == 0) createDB()
     else if (userVersion < currentDBVersion) {
-        db.backup(appData(`database-${moment().format("YY-MM-DD_HH-mm-ss")}.db.bak`)).then(() => {
+        db.backup(appData(`database-${dayjs().format("YY-MM-DD_HH-mm-ss")}.db.bak`)).then(() => {
             db.pragma("foreign_keys = off")
             updateDB(userVersion)
             db.pragma("foreign_keys = on")
