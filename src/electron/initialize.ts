@@ -1,16 +1,12 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
-import {app, BrowserWindow, ipcMain, dialog} from "electron";
+import {BrowserWindow, ipcMain} from "electron";
 import {channels as ipcChannels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
 import importImages from "./actions/importImages";
-import setupDatabase, {db} from "@electron/database/database";
+import setupDatabase from "@electron/database/database";
 import updateDatabase from "@electron/database/updateDatabase";
-import fs from "fs";
-import pathModule from "path";
-import {appData, isDev} from "@utils/utilities";
-import sharp from "sharp";
 import channels from "@utils/channels";
 import exportImages from "@electron/actions/exportImages";
 
@@ -29,21 +25,21 @@ export default (createWindow: WindowSetupFunction) => {
 
         createChannelListeners(window)
 
-        let imageViewerWindow = false
-        ipcMain.on(ipcChannels.openImageViewer, (_event, [images, index]) => {
-            if (!imageViewerWindow) {
-                imageViewerWindow = true
-                createWindow("index_viewer.html").then((window: BrowserWindow) => {
-                    window.on("close", () => {
-                        imageViewerWindow = false
-                    })
-                    //TODO Change to once
-                    ipcMain.on(ipcChannels.onImageViewerOpen, (event) => {
-                        event.reply(ipcChannels.updateImageViewerList, images, index)
-                    })
-                })
-            }
-        })
+        // let imageViewerWindow = false
+        // ipcMain.on(ipcChannels.openImageViewer, (_event, [images, index]) => {
+        //     if (!imageViewerWindow) {
+        //         imageViewerWindow = true
+        //         createWindow("index_viewer.html").then((window: BrowserWindow) => {
+        //             window.on("close", () => {
+        //                 imageViewerWindow = false
+        //             })
+        //             //TODO Change to once
+        //             ipcMain.on(ipcChannels.onImageViewerOpen, (event) => {
+        //                 event.reply(ipcChannels.updateImageViewerList, images, index)
+        //             })
+        //         })
+        //     }
+        // })
 
         console.log = (...data) => {
             system.log(...data)
