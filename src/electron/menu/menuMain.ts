@@ -1,4 +1,4 @@
-import {handleMenuItemClick} from "./menuActions";
+import {handleMenuItemClick} from "../actions/menuActions";
 import {isDev} from "@utils/utilities";
 
 export default [
