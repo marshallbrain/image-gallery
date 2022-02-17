@@ -1,7 +1,7 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
-import {RunQuery} from "../queries/subQueries/runQueries";
-import {Image, SearchPropsType} from "@components/App";
+import {RunQuery} from "../queries/runQueries";
+import {Image, SearchPropsType} from "../pages/App";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
     return (value) ? value as NonNullable<T> : base

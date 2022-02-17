@@ -1,6 +1,6 @@
 import React from 'react';
 import {Chip, Paper} from "@mui/material";
-import {ImageData} from "./AppViewer";
+import {ImageData} from "@components/../../pages/viewer/AppViewer";
 
 const TagList = (props: PropTypes) => {
 

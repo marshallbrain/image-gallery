@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
+import React, {useContext, useEffect, useState} from 'react/index';
+import {SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import TagSelector from "../../../image_viewer/components/TagSelector";
-import {Col, SearchPropsType, Tag} from "@components/App";
+import {Col, SearchPropsType, Tag} from "../../App";
 import {toAny} from "@components/utilities";
-import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
 
 const CollectionFilters = (props: PropTypes) => {

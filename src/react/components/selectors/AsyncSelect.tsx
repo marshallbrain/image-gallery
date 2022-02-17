@@ -1,7 +1,7 @@
-import React from 'react';
+import React from 'react/index';
 import ChipSelector from "./ChipSelector";
 import {GetQuery} from "../../queries/getQueries";
-import {ChipBase} from "./TagSelector";
+import {ChipBase} from "../../image_viewer/components/TagSelector";
 import {useGetQuery} from "@components/utilities";
 import {AutocompleteChangeDetails, AutocompleteChangeReason} from "@mui/material";
 

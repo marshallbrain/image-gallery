@@ -1,6 +1,6 @@
 import React from "react";
 import {ThemeProvider} from "@emotion/react";
-import App from "@components/App";
+import App from "../pages/App";
 import "./root.css"
 import preloadTypes from "@electron/preloads/preloadTypes";
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";

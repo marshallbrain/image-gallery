@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import ImportImages from "./dialogs/import_images/ImportImages";
+import React, {useEffect, useState} from 'react/index';
+import ImportImages from "./import_images/ImportImages";
 import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
 import {Dialog} from "@mui/material";

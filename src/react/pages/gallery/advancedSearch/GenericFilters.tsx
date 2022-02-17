@@ -1,9 +1,9 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import {TextField} from "@mui/material";
 import {ChipBase} from "../../../image_viewer/components/TagSelector";
 import {orDefault, toAny} from "@components/utilities";
-import {SearchPropsState, SearchPropsType} from "@components/App";
-import {SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
+import {SearchPropsState, SearchPropsType} from "../../App";
+import {SearchPropTemp} from "./AdvancedSearch";
 
 const AdvancedSearch = (props: PropTypes) => {
 

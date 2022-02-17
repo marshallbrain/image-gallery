@@ -1,14 +1,14 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react/index';
 import {IconButton, Stack, TextField} from "@mui/material";
 import Settings from '@mui/icons-material/Settings';
 import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
-import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
-import {Col, SearchPropsState, Tag} from "@components/App";
+import AdvancedSearch from "./advancedSearch/AdvancedSearch";
+import {Col, SearchPropsState, Tag} from "../App";
 import {orDefault, useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
-import AsyncSelect from "../../image_viewer/components/AsyncSelect";
-import ControlSelector from "../../image_viewer/components/ControlSelector";
+import AsyncSelect from "@components/selectors/AsyncSelect";
+import ControlSelector from "@components/selectors/ControlSelector";
 
 function ImageSearch(props: PropTypes) {
 

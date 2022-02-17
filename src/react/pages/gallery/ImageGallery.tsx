@@ -1,16 +1,16 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react/index';
 import sqlQueries from "@utils/sqlQueries";
 import {channels as ipcChannels} from "@utils/ipcCommands";
-import ImageGrid from "@components/gallery/ImageGrid";
-import ImageSearch from "@components/gallery/ImageSearch";
+import ImageGrid from "./ImageGrid";
+import ImageSearch from "./ImageSearch";
 import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
-import {Image, SearchPropsState, SearchPropsType} from "@components/App";
-import {genericSearchMap, GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
-import {tagSearchMap, TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
-import {collectionSearchMap, CollectionSearchType} from "@components/gallery/advancedSearch/CollectionFilters";
+import {Image, SearchPropsState, SearchPropsType} from "../App";
+import {genericSearchMap, GenericSearchType} from "./advancedSearch/GenericFilters";
+import {tagSearchMap, TagSearchType} from "./advancedSearch/TagFilters";
+import {collectionSearchMap, CollectionSearchType} from "./advancedSearch/CollectionFilters";
 import {toAny, useChannel, useSearch} from "@components/utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
-import ExportDialog from "@components/gallery/advancedSearch/ExportDialog";
+import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
 
 function ImageGallery(props: PropTypes) {

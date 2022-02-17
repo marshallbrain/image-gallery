@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react/index';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
 import sqlQueries from "@utils/sqlQueries";
 import {channels} from "@utils/ipcCommands";
 import {setQuery} from "@components/utilities";
-import runQueries from "../../queries/subQueries/runQueries";
+import runQueries from "../queries/runQueries";
 
 const TitleRename = (props: PropTypes) => {
 

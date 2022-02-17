@@ -8,17 +8,17 @@ import {
     ToggleButton,
     ToggleButtonGroup, Typography
 } from '@mui/material';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react/index';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import GenericFilters, {GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
-import TagFilters, {TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
-import {Col, SearchPropsState, SearchPropsType, Tag} from "@components/App";
+import GenericFilters, {GenericSearchType} from "./GenericFilters";
+import TagFilters, {TagSearchType} from "./TagFilters";
+import {Col, SearchPropsState, SearchPropsType, Tag} from "../../App";
 import {orDefault} from "@components/utilities";
 import _ from "lodash";
-import CollectionFilters from "@components/gallery/advancedSearch/CollectionFilters";
+import CollectionFilters from "./CollectionFilters";
 
 const AdvancedSearch = (props: PropTypes) => {
 

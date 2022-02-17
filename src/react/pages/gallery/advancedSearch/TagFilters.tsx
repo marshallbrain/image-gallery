@@ -1,10 +1,10 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
+import {SearchPropsState, SearchPropsType, Tag} from "../../App";
 import {orDefault, toAny} from "@components/utilities";
-import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
+import {SearchPropsOpp, SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
-import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
 
 const AdvancedSearch = (props: PropTypes) => {

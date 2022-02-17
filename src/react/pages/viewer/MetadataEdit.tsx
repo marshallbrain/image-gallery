@@ -10,20 +10,20 @@ import {
     styled,
     TextField
 } from '@mui/material';
-import React, {KeyboardEvent, useEffect} from 'react';
+import React, {KeyboardEvent, useEffect} from 'react/index';
 import {ImageData} from "./AppViewer";
 import {channels} from "@utils/ipcCommands";
 import sqlQueries from "@utils/sqlQueries";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import TagSearch from "./TagSearch";
-import TagList from "./TagList";
-import TagSelector, {ChipBase} from "./TagSelector";
+import TagSearch from "../../image_viewer/components/TagSearch";
+import TagList from "../../image_viewer/components/TagList";
+import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import {RunResult} from "better-sqlite3";
 import {setQuery, useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
-import AsyncSelect from "./AsyncSelect";
-import runQueries from "../../queries/subQueries/runQueries";
+import AsyncSelect from "@components/selectors/AsyncSelect";
+import runQueries from "../../queries/runQueries";
 
 const MetadataEdit = (props: PropTypes) => {
 

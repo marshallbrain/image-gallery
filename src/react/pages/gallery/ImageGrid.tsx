@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react/index';
 import {Box, Button, Checkbox, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import {channels} from "@utils/ipcCommands";
-import {Image} from "@components/App";
+import {Image} from "../App";
 import CheckBoxFilled from "@components/icons/CheckBoxFilled";
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import PersistentDialogs from "./PersistentDialogs";
-import ImageGallery from "@components/gallery/ImageGallery";
-import AppViewer from "../image_viewer/components/AppViewer";
+import React, {useEffect, useState} from 'react/index';
+import PersistentDialogs from "@components/dialogs/PersistentDialogs";
+import ImageGallery from "./gallery/ImageGallery";
+import AppViewer from "./viewer/AppViewer";
 import {ChipBase} from "../image_viewer/components/TagSelector";
 
 function App() {

@@ -13,7 +13,7 @@ import {
 import {ImageFile} from "@components/dialogs/import_images/ImportImages";
 import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
-import {useEffect} from "react";
+import {useEffect} from "react/index";
 import {sendChannel} from "@components/utilities";
 import channels from "@utils/channels";
 

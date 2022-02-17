@@ -1,7 +1,7 @@
 import {ipcMain} from "electron";
 import _ from "lodash";
 import {db} from "@electron/database/database";
-import {SearchPropsType} from "@components/App";
+import {SearchPropsType} from "../../react/pages/App";
 import {toAny} from "@components/utilities";
 import channels from "@utils/channels";
 
