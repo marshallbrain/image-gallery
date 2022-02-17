@@ -1,67 +1,7 @@
-import {handleMenuItemClick} from "../actions/menuActions";
-import {isDev} from "@utils/utilities";
+import fileMenu from "@electron/menu/fileMenu";
+import viewMenu from "@electron/menu/viewMenu";
 
 export default [
-    {
-        label: "File",
-        submenu: [
-            {
-                label: "Import Images",
-                click: handleMenuItemClick
-            },
-            {
-                label: "Reimport Images",
-                click: handleMenuItemClick
-            },
-            {
-                type: "separator"
-            },
-            {
-                role: "quit",
-                label: "Exit"
-            }
-        ]
-    },
-    {
-        label: "View",
-        submenu: [
-            {
-                role: "reload",
-                label: "Reload",
-                visible: isDev
-            },
-            {
-                role: "forcereload",
-                label: "Force Reload",
-                visible: isDev
-            },
-            {
-                role: "toggledevtools",
-                label: "Toggle Developer Tools",
-                visible: isDev
-            },
-            {
-                type: "separator"
-            },
-            {
-                role: "resetzoom",
-                label: "Reset Zoom"
-            },
-            {
-                role: "zoomin",
-                label: "Zoom In"
-            },
-            {
-                role: "zoomout",
-                label: "Zoom Out"
-            },
-            {
-                type: "separator"
-            },
-            {
-                role: "togglefullscreen",
-                label: "Toggle Fullscreen"
-            }
-        ]
-    },
+    fileMenu,
+    viewMenu
 ]
