@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react/index';
 import PersistentDialogs from "@components/dialogs/PersistentDialogs";
 import ImageGallery from "./gallery/ImageGallery";
-import AppViewer from "./viewer/AppViewer";
+import ImageViewer from "./viewer/ImageViewer";
 import {ChipBase} from "../image_viewer/components/TagSelector";
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
         <React.Fragment>
             <PersistentDialogs />
             {(imageList.length > 0 && imageIndex > -1)?
-                <AppViewer
+                <ImageViewer
                     index={imageIndex}
                     imageList={imageList}
                     onIndexChange={setImageIndex}

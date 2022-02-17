@@ -17,7 +17,7 @@ import getQueries from "../../queries/getQueries";
 
 const drawerWidth = 450;
 
-function AppViewer(props: PropTypes) {
+function ImageViewer(props: PropTypes) {
 
     const {index, imageList, onIndexChange, onClose} = props
 
@@ -223,4 +223,4 @@ export interface ImageData {
     image_height: number,
 }
 
-export default AppViewer;
+export default ImageViewer;

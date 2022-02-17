@@ -11,7 +11,7 @@ import {
     TextField
 } from '@mui/material';
 import React, {KeyboardEvent, useEffect} from 'react/index';
-import {ImageData} from "./AppViewer";
+import {ImageData} from "./ImageViewer";
 import {channels} from "@utils/ipcCommands";
 import sqlQueries from "@utils/sqlQueries";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
