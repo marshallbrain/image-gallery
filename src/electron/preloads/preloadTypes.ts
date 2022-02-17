@@ -1,6 +1,5 @@
 import {RunResult, SqliteError} from "@components/utilities";
 import {IpcRendererEvent} from "electron"
-import channels, {Channels} from "@utils/channels";
 
 interface types {
     savedStore: {

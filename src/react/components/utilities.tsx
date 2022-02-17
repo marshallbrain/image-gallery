@@ -1,7 +1,6 @@
 import {GetQuery} from "../queries/getQueries";
 import {DependencyList, useEffect, useState} from "react";
 import {RunQuery} from "../queries/subQueries/runQueries";
-import {Channels} from "@utils/channels";
 import {Image, SearchPropsType} from "@components/App";
 
 export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {

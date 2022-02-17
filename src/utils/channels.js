@@ -26,5 +26,3 @@ function i() {
 }
 
 export default channels
-
-export type Channels = typeof channels
