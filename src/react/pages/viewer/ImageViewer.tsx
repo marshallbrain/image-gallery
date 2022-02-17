@@ -12,8 +12,8 @@ import sqlQueries from "@utils/sqlQueries";
 import {Image} from "../App";
 import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
-import {useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
+import {useGetQuery} from "@components/hooks/sqlHooks";
 
 const drawerWidth = 450;
 

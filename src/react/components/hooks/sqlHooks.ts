@@ -1,49 +1,22 @@
-import {GetQuery} from "../queries/getQueries";
+import {Image, SearchPropsType} from "../../pages/App";
 import {DependencyList, useEffect, useState} from "react";
-import {RunQuery} from "../queries/runQueries";
-import {Image, SearchPropsType} from "../pages/App";
-
-export function orDefault<T>(value: T, base: NonNullable<T>): NonNullable<T> {
-    return (value) ? value as NonNullable<T> : base
-}
-
-export type toAny<T> = {
-    [K in keyof T]: T[K] extends object ? toAny<T[K]> : any
-}
-
-export const useChannel = (
-    channel: string,
-    callback: (response: any[]) => void
-) => {
-    useEffect(() => {
-        const listener = window.api.channel.trigger(channel, callback)
-
-        return function cleanup() {
-            window.api.channel.remove(channel, listener)
-        }
-    }, [])
-}
-
-export const sendChannel = (
-    channel: string,
-    args: any[]|{[p: string]: any}
-) => {
-    window.api.channel.send(channel, args)
-}
+import {GetQuery} from "../../queries/getQueries";
+import {RunQuery} from "../../queries/runQueries";
+import {toAny} from "../../utilities";
 
 export const useGetQuery = <T, >(
     query: GetQuery,
-    deps: DependencyList|undefined,
-    args: any[]|{[p: string]: any}|undefined,
+    deps: DependencyList | undefined,
+    args: any[] | { [p: string]: any } | undefined,
     search?: string
 ): [T[], () => void] => {
-    const fullQuery: string = query.query + "\n" + ((search)? search: query.order)
+    const fullQuery: string = query.query + "\n" + ((search) ? search : query.order)
 
     const [value, setValue] = useState<T[]>([])
     const triggerUpdate = () => {
         window.api.db.getQuery(fullQuery, (data) => {
             setValue(data)
-        }, (args)? args: [])
+        }, (args) ? args : [])
     }
 
     useEffect(() => {
@@ -58,10 +31,9 @@ export const useGetQuery = <T, >(
 
     return [value, triggerUpdate]
 }
-
 export const useSearch = (
-    query:  toAny<SearchPropsType>,
-    deps: DependencyList|undefined,
+    query: toAny<SearchPropsType>,
+    deps: DependencyList | undefined,
 ): [Image[], () => void] => {
     const [value, setValue] = useState<Image[]>([])
     const triggerUpdate = () => {
@@ -82,13 +54,12 @@ export const useSearch = (
 
     return [value, triggerUpdate]
 }
-
 export const setQuery = (
     query: RunQuery,
-    args: any[]|{[p: string]: any}|undefined,
-): Promise<number|bigint> => {
+    args: any[] | { [p: string]: any } | undefined,
+): Promise<number | bigint> => {
 
-    return new Promise<number|bigint>((resolve, reject) =>
+    return new Promise<number | bigint>((resolve, reject) =>
         window.api.db.runQuery(query.query, (response) => {
             if ("name" in response) {
                 reject(response)

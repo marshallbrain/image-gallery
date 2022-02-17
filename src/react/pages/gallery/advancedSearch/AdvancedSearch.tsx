@@ -16,7 +16,7 @@ import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelecto
 import GenericFilters, {GenericSearchType} from "./GenericFilters";
 import TagFilters, {TagSearchType} from "./TagFilters";
 import {Col, SearchPropsState, SearchPropsType, Tag} from "../../App";
-import {orDefault} from "@components/utilities";
+import {orDefault} from "../../../utilities";
 import _ from "lodash";
 import CollectionFilters from "./CollectionFilters";
 

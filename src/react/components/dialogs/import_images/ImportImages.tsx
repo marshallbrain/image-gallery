@@ -19,7 +19,7 @@ import {
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
 import channels from "@utils/channels";
-import {sendChannel} from "@components/utilities";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 function ImportImages(props: PropTypes) {
 

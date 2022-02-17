@@ -4,7 +4,7 @@ import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
 import {Dialog} from "@mui/material";
 import channels from "@utils/channels";
-import {useChannel} from "@components/utilities";
+import {useChannel} from "@components/hooks/channelHooks";
 
 function PersistentDialogs() {
 

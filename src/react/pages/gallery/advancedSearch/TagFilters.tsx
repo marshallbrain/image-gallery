@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
 import {SearchPropsState, SearchPropsType, Tag} from "../../App";
-import {orDefault, toAny} from "@components/utilities";
+import {orDefault, toAny} from "../../../utilities";
 import {SearchPropsOpp, SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import ControlSelector from "@components/selectors/ControlSelector";

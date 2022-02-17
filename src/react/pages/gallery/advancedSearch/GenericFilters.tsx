@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react/index';
 import {TextField} from "@mui/material";
 import {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {orDefault, toAny} from "@components/utilities";
+import {orDefault, toAny} from "../../../utilities";
 import {SearchPropsState, SearchPropsType} from "../../App";
 import {SearchPropTemp} from "./AdvancedSearch";
 

@@ -5,10 +5,11 @@ import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
 import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "./advancedSearch/AdvancedSearch";
 import {Col, SearchPropsState, Tag} from "../App";
-import {orDefault, useGetQuery} from "@components/utilities";
+import {orDefault} from "../../utilities";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "@components/selectors/AsyncSelect";
 import ControlSelector from "@components/selectors/ControlSelector";
+import {useGetQuery} from "@components/hooks/sqlHooks";
 
 function ImageSearch(props: PropTypes) {
 

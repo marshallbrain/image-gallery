@@ -3,7 +3,7 @@ import {SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import TagSelector from "../../../image_viewer/components/TagSelector";
 import {Col, SearchPropsType, Tag} from "../../App";
-import {toAny} from "@components/utilities";
+import {toAny} from "../../../utilities";
 import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
 

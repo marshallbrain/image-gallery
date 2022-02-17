@@ -15,8 +15,8 @@ import {DialogPropType} from "@components/dialogs/PersistentDialogs";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import ImportImages from "@components/dialogs/import_images/ImportImages";
-import {useChannel} from "@components/utilities";
 import channels from "@utils/channels";
+import {useChannel} from "@components/hooks/channelHooks";
 
 const ImportProgress = () => {
 

@@ -7,7 +7,7 @@ import {
     createFilterOptions, SxProps,
     TextField, Theme
 } from "@mui/material";
-import {orDefault} from "@components/utilities";
+import {orDefault} from "../../utilities";
 import _ from "lodash";
 
 const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {

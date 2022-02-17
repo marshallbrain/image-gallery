@@ -8,10 +8,12 @@ import {Image, SearchPropsState, SearchPropsType} from "../App";
 import {genericSearchMap, GenericSearchType} from "./advancedSearch/GenericFilters";
 import {tagSearchMap, TagSearchType} from "./advancedSearch/TagFilters";
 import {collectionSearchMap, CollectionSearchType} from "./advancedSearch/CollectionFilters";
-import {toAny, useChannel, useSearch} from "@components/utilities";
+import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
+import {useSearch} from "@components/hooks/sqlHooks";
+import {useChannel} from "@components/hooks/channelHooks";
 
 function ImageGallery(props: PropTypes) {
 

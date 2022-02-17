@@ -7,9 +7,9 @@ import {
     SxProps,
     TextField, Theme
 } from "@mui/material";
-import {useGetQuery} from "@components/utilities";
 import getQueries, {GetQuery} from "../../queries/getQueries";
 import _ from "lodash";
+import {useGetQuery} from "@components/hooks/sqlHooks";
 
 const AsyncSelect = (props: PropTypes) => {
 
