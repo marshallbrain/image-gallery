@@ -13,7 +13,7 @@ const AsyncSelect = (props: PropTypes) => {
 
     const onChangeValue = (
         event: React.SyntheticEvent,
-        value: (string|ChipBase)[],
+        value: (string | ChipBase)[],
         reason: AutocompleteChangeReason,
         details: AutocompleteChangeDetails<ChipBase> | undefined
     ) => {

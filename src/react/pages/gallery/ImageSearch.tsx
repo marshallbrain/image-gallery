@@ -1,15 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react/index';
+import React, {useContext, useState} from 'react/index';
 import {IconButton, Stack, TextField} from "@mui/material";
 import Settings from '@mui/icons-material/Settings';
-import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
-import sqlQueries from "@utils/sqlQueries";
 import AdvancedSearch from "./advancedSearch/AdvancedSearch";
 import {Col, SearchPropsState, Tag} from "../App";
 import {useDefault} from "../../utilities";
 import getQueries from "../../queries/getQueries";
-import AsyncSelect from "@components/selectors/AsyncSelect";
 import ControlSelector from "@components/selectors/ControlSelector";
-import {useQuery} from "@components/hooks/sqlHooks";
 
 function ImageSearch(props: PropTypes) {
 
@@ -27,7 +23,7 @@ function ImageSearch(props: PropTypes) {
         })
     }
 
-    const setIncTags = (incTags: Tag[]|undefined) => {
+    const setIncTags = (incTags: Tag[] | undefined) => {
         setSearchProp({
             ...searchProp,
             tag: {
@@ -37,7 +33,7 @@ function ImageSearch(props: PropTypes) {
         })
     }
 
-    const setIncCols = (incCols: Col[]|undefined) => {
+    const setIncCols = (incCols: Col[] | undefined) => {
         setSearchProp({
             ...searchProp,
             collection: {
@@ -84,7 +80,7 @@ function ImageSearch(props: PropTypes) {
                     flexGrow: 1
                 }}
             />
-            <IconButton size="large" onClick={toggleAS} >
+            <IconButton size="large" onClick={toggleAS}>
                 <Settings fontSize="inherit"/>
             </IconButton>
             <AdvancedSearch

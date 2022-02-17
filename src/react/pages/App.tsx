@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react/index';
+import React, {useState} from 'react/index';
 import PersistentDialogs from "@components/dialogs/PersistentDialogs";
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
@@ -9,7 +9,7 @@ function App() {
     const [imageIndex, setImageIndex] = React.useState(-1)
     const [imageList, setImageList] = React.useState<Image[]>([])
     const [searchProp, setSearchProp] = useState<SearchPropsType>({
-        generic: {}, tag:{}, collection: {}
+        generic: {}, tag: {}, collection: {}
     })
 
     const selectImage = (index: number, list: Image[]) => {
@@ -25,14 +25,14 @@ function App() {
 
     return (
         <React.Fragment>
-            <PersistentDialogs />
-            {(imageList.length > 0 && imageIndex > -1)?
+            <PersistentDialogs/>
+            {(imageList.length > 0 && imageIndex > -1) ?
                 <ImageViewer
                     index={imageIndex}
                     imageList={imageList}
                     onIndexChange={setImageIndex}
                     onClose={closeImage}
-                />:
+                /> :
                 <SearchPropsState.Provider value={{searchProp, setSearchProp}}>
                     <ImageGallery onImageSelected={selectImage}/>
                 </SearchPropsState.Provider>
@@ -47,7 +47,8 @@ export const SearchPropsState = React.createContext<{
 }>(
     {
         searchProp: {},
-        setSearchProp: (v) => {}
+        setSearchProp: (v) => {
+        }
     }
 )
 

@@ -1,13 +1,12 @@
-import React, {useContext, useEffect, useRef, useState} from 'react/index';
+import React, {useContext, useEffect, useState} from 'react/index';
 import {TextField} from "@mui/material";
-import {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {useDefault, toAny} from "../../../utilities";
-import {SearchPropsState, SearchPropsType} from "../../App";
+import {toAny, useDefault} from "../../../utilities";
+import {SearchPropsType} from "../../App";
 import {SearchPropTemp} from "./AdvancedSearch";
 
 const AdvancedSearch = (props: PropTypes) => {
 
-    const {searchProp, setSearchProp } = useContext(SearchPropTemp)
+    const {searchProp, setSearchProp} = useContext(SearchPropTemp)
 
     const [title, setTitle] = useState(useDefault(searchProp.generic?.title, ""))
 

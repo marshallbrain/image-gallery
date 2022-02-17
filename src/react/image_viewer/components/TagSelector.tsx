@@ -4,8 +4,10 @@ import {
     AutocompleteChangeDetails,
     AutocompleteChangeReason,
     Chip,
-    createFilterOptions, SxProps,
-    TextField, Theme
+    createFilterOptions,
+    SxProps,
+    TextField,
+    Theme
 } from "@mui/material";
 import {useDefault} from "../../utilities";
 import _ from "lodash";
@@ -37,7 +39,7 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
         else if (reason === "clear" && onClear)
             onClear()
         else {
-            props.onChange((newValue.length > 0)? newValue as T[]: undefined)
+            props.onChange((newValue.length > 0) ? newValue as T[] : undefined)
         }
 
     }
@@ -59,9 +61,9 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
             getOptionLabel={option => option.name}
             isOptionEqualToValue={(option, value) => option.name === value.name}
             filterOptions={(options, params) => {
-                const without = props.excludeChips? _.without(options, ...props.excludeChips): options
+                const without = props.excludeChips ? _.without(options, ...props.excludeChips) : options
                 const filtered = filter(without, params);
-                const { inputValue } = params;
+                const {inputValue} = params;
 
                 if (freeSolo) {
                     const isExisting = options.some((option) =>
@@ -82,17 +84,17 @@ const TagSelector = <T extends ChipBase>(props: PropTypes<T>) => {
                 <li {...props}>
                     <Chip
                         label={option.name}
-                        color={(option.value)? "success": "default"}
+                        color={(option.value) ? "success" : "default"}
                         clickable
                     />
                 </li>
             )}
             renderInput={(params) => (
-                <TextField {...params} label={props.label} />
+                <TextField {...params} label={props.label}/>
             )}
             renderTags={(value, getTagProps) => {
                 return value.map((option, index) => (
-                    <Chip {...getTagProps({ index })} label={option.name} />
+                    <Chip {...getTagProps({index})} label={option.name}/>
                 ));
             }}
         />

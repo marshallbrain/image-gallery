@@ -6,11 +6,14 @@ import preloadTypes from "@electron/preloads/preloadTypes";
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 
 declare global {
-    interface Window { api: preloadTypes }
+    interface Window {
+        api: preloadTypes
+    }
 }
 
 export const ChangeThemeContext = React.createContext({
-    toggleColorMode: () => {},
+    toggleColorMode: () => {
+    },
 })
 
 window.api.system.registerListener.log((...data: any[]) => {
@@ -27,11 +30,9 @@ function Root() {
             components: {
                 MuiCssBaseline: {
                     styleOverrides: {
-                        "::-webkit-scrollbar-track": {
-                        },
+                        "::-webkit-scrollbar-track": {},
 
-                        "::-webkit-scrollbar-thumb": {
-                        }
+                        "::-webkit-scrollbar-thumb": {}
                     },
                 },
             },
@@ -63,7 +64,7 @@ function Root() {
     return (
         <ChangeThemeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
-                <CssBaseline enableColorScheme />
+                <CssBaseline enableColorScheme/>
                 <App/>
             </ThemeProvider>
         </ChangeThemeContext.Provider>
@@ -72,7 +73,7 @@ function Root() {
 
 export default Root;
 
-interface Theme{
+interface Theme {
     palette: {
         mode: string,
     }

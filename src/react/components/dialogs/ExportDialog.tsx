@@ -1,19 +1,17 @@
 import React, {useState} from 'react/index';
 import {
-    Autocomplete,
-    Box,
     Button,
-    Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle, FormControl, InputLabel, MenuItem,
-    Select, SelectChangeEvent, Stack, styled,
-    TextField, Typography
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    Stack,
+    styled
 } from "@mui/material";
-import {ImageFile} from "@components/dialogs/import_images/ImportImages";
-import {channels as ipcChannels} from "@utils/ipcCommands";
-import ImportProgressDialog from "@components/dialogs/ImportProgressDialog";
-import {useEffect} from "react/index";
 import channels from "@utils/channels";
 import {sendChannel} from "@components/hooks/channelHooks";
 

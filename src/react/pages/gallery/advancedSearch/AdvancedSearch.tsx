@@ -4,19 +4,20 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogTitle, Divider, Stack, TextField,
+    DialogTitle,
+    Divider,
+    Stack,
     ToggleButton,
-    ToggleButtonGroup, Typography
+    ToggleButtonGroup,
+    Typography
 } from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react/index';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import GenericFilters, {GenericSearchType} from "./GenericFilters";
-import TagFilters, {TagSearchType} from "./TagFilters";
-import {Col, SearchPropsState, SearchPropsType, Tag} from "../../App";
-import {useDefault} from "../../../utilities";
+import GenericFilters from "./GenericFilters";
+import TagFilters from "./TagFilters";
+import {SearchPropsState, SearchPropsType, Tag} from "../../App";
 import _ from "lodash";
 import CollectionFilters from "./CollectionFilters";
 
@@ -79,16 +80,16 @@ const AdvancedSearch = (props: PropTypes) => {
                     }}
                 >
                     <ToggleButton value="Generic">
-                        <FilterAltIcon fontSize={"large"} />
+                        <FilterAltIcon fontSize={"large"}/>
                     </ToggleButton>
                     <ToggleButton value="Tag">
-                        <LocalOfferIcon fontSize={"large"} />
+                        <LocalOfferIcon fontSize={"large"}/>
                     </ToggleButton>
                     <ToggleButton value="Collection">
-                        <CollectionsIcon fontSize={"large"} />
+                        <CollectionsIcon fontSize={"large"}/>
                     </ToggleButton>
                 </ToggleButtonGroup>
-                <Typography variant="h5" gutterBottom >
+                <Typography variant="h5" gutterBottom>
                     {group} Filters
                 </Typography>
                 <Divider/>
@@ -128,7 +129,8 @@ export interface SearchPropsOpp {
 export const SearchPropTemp = React.createContext<SearchPropsOpp>(
     {
         searchProp: {},
-        setSearchProp: (v) => {}
+        setSearchProp: (v) => {
+        }
     }
 )
 

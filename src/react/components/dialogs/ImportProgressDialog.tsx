@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
     Button,
-    Chip,
-    Dialog, DialogActions,
+    Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
-    Divider,
     LinearProgress,
     ListItem,
     Stack,
@@ -14,7 +13,6 @@ import {
 import {DialogPropType} from "@components/dialogs/PersistentDialogs";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import ImportImages from "@components/dialogs/import_images/ImportImages";
 import channels from "@utils/channels";
 import {useChannel} from "@components/hooks/channelHooks";
 
@@ -39,7 +37,7 @@ const ImportProgress = () => {
                     spacing={2}
                 >
                     <LinearProgress
-                        variant={(progress <= 0 || progress >= 100)? "indeterminate": "determinate"}
+                        variant={(progress <= 0 || progress >= 100) ? "indeterminate" : "determinate"}
                         value={progress}
                         sx={{
                             flexGrow: 1,
@@ -67,7 +65,9 @@ const ImportProgressDialog = () => {
 
     console.log(errored)
 
-    useChannel(channels.dialogs.startProgress, () => {setOpen(true)})
+    useChannel(channels.dialogs.startProgress, () => {
+        setOpen(true)
+    })
     useChannel(channels.update.finishProgress, ([errored]: Set<string>[]) => {
         if (errored && errored.size > 0) {
             setErrored([...errored].sort())
@@ -76,7 +76,7 @@ const ImportProgressDialog = () => {
         }
     })
 
-    const renderError = ({ index, style }: ListChildComponentProps) => (
+    const renderError = ({index, style}: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" className={"userSelectable"}>
             {errored[index]}
         </ListItem>
@@ -103,8 +103,7 @@ const ImportProgressDialog = () => {
                                 itemSize={42}
                                 itemCount={errored.length}
                                 overscanCount={5}
-                                style={{
-                                }}
+                                style={{}}
                             >
                                 {renderError}
                             </FixedSizeList>

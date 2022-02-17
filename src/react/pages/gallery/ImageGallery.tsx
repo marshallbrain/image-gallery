@@ -1,13 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react/index';
-import sqlQueries from "@utils/sqlQueries";
 import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImageGrid from "./ImageGrid";
 import ImageSearch from "./ImageSearch";
 import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import {Image, SearchPropsState, SearchPropsType} from "../App";
-import {genericSearchMap, GenericSearchType} from "./advancedSearch/GenericFilters";
-import {tagSearchMap, TagSearchType} from "./advancedSearch/TagFilters";
-import {collectionSearchMap, CollectionSearchType} from "./advancedSearch/CollectionFilters";
+import {genericSearchMap} from "./advancedSearch/GenericFilters";
+import {tagSearchMap} from "./advancedSearch/TagFilters";
+import {collectionSearchMap} from "./advancedSearch/CollectionFilters";
 import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/dialogs/ExportDialog";
@@ -54,7 +53,7 @@ function ImageGallery(props: PropTypes) {
 
     return (
         <React.Fragment>
-            <Grid container direction="column" sx={{height: "100vh"}} >
+            <Grid container direction="column" sx={{height: "100vh"}}>
                 <Grid item xs={1}>
                     <ImageSearch/>
                 </Grid>

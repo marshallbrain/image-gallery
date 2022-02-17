@@ -1,13 +1,14 @@
-import React, {useEffect, useState} from 'react/index';
+import React, {useState} from 'react/index';
 import {
     Autocomplete,
     AutocompleteChangeDetails,
     AutocompleteChangeReason,
     Chip,
     SxProps,
-    TextField, Theme
+    TextField,
+    Theme
 } from "@mui/material";
-import getQueries, {GetQuery} from "../../queries/getQueries";
+import {GetQuery} from "../../queries/getQueries";
 import _ from "lodash";
 import {useQuery} from "@components/hooks/sqlHooks";
 
@@ -41,8 +42,8 @@ const AsyncSelect = (props: PropTypes) => {
                 setSearchValue(value)
             }}
             filterOptions={(options, params) => {
-                const { inputValue } = params;
-                const filtered = props.exclude? _.without(options, ...props.exclude): options
+                const {inputValue} = params;
+                const filtered = props.exclude ? _.without(options, ...props.exclude) : options
 
                 const isExisting = filtered.some((option) =>
                     inputValue.toLowerCase() === option.name.toLowerCase()
@@ -61,17 +62,17 @@ const AsyncSelect = (props: PropTypes) => {
                 <li {...props}>
                     <Chip
                         label={option.name}
-                        color={(option.value)? "success": "default"}
+                        color={(option.value) ? "success" : "default"}
                         clickable
                     />
                 </li>
             )}
             renderInput={(params) => (
-                <TextField {...params} label={"Input"} />
+                <TextField {...params} label={"Input"}/>
             )}
             renderTags={(value, getTagProps) => {
                 return value.map((option, index) => (
-                    <Chip {...getTagProps({ index })} label={option.name} />
+                    <Chip {...getTagProps({index})} label={option.name}/>
                 ));
             }}
         />

@@ -3,6 +3,6 @@ import ReactDOM from "react-dom";
 import RootViewer from "./RootViewer";
 
 ReactDOM.render(
-    <RootViewer />,
+    <RootViewer/>,
     document.getElementById("target")
 );

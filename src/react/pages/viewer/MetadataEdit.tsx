@@ -1,29 +1,11 @@
-import {
-    Autocomplete,
-    Chip,
-    createFilterOptions,
-    Divider,
-    Drawer,
-    ListItem,
-    Paper,
-    Stack,
-    styled,
-    TextField
-} from '@mui/material';
-import React, {KeyboardEvent, useEffect} from 'react/index';
+import {Drawer, Stack} from '@mui/material';
+import React from 'react/index';
 import {ImageData} from "./ImageViewer";
-import {channels} from "@utils/ipcCommands";
-import sqlQueries from "@utils/sqlQueries";
-import {FixedSizeList, ListChildComponentProps} from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
-import TagSearch from "../../image_viewer/components/TagSearch";
-import TagList from "../../image_viewer/components/TagList";
-import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
-import {RunResult} from "better-sqlite3";
+import {ChipBase} from "../../image_viewer/components/TagSelector";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "@components/selectors/AsyncSelect";
 import runQueries from "../../queries/runQueries";
-import {runQuery, useQuery} from "@components/hooks/sqlHooks";
+import {runQuery} from "@components/hooks/sqlHooks";
 
 const MetadataEdit = (props: PropTypes) => {
 

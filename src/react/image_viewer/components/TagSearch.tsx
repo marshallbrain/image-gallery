@@ -2,9 +2,6 @@ import React, {KeyboardEvent, useEffect} from 'react';
 import {Chip, ListItem, Paper, styled, TextField} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeList, ListChildComponentProps} from "react-window";
-import {channels} from "@utils/ipcCommands";
-import sqlQueries from "@utils/sqlQueries";
-import {RunResult} from "better-sqlite3";
 
 const TagSearch = (props: PropTypes) => {
 
@@ -20,7 +17,7 @@ const TagSearch = (props: PropTypes) => {
 
     useEffect(() => {
         setFilterTags(
-            ((search == "" || (tags.length && search === tags[0]))? []: [""]).concat(
+            ((search == "" || (tags.length && search === tags[0])) ? [] : [""]).concat(
                 tags.filter(value => !selectedTags.has(value))
             )
         )
@@ -36,13 +33,13 @@ const TagSearch = (props: PropTypes) => {
         onTagSelected(tag)
     }
 
-    const renderTags = ({ index, style }: ListChildComponentProps) => (
+    const renderTags = ({index, style}: ListChildComponentProps) => (
         <ListItem style={style} key={index} component="div" disablePadding>
-            {(filterTags[index] === "")?
+            {(filterTags[index] === "") ?
                 <Chip
                     label={search}
                     color={"success"}
-                    onClick={selectTag(search)}/>:
+                    onClick={selectTag(search)}/> :
                 <Chip
                     label={filterTags[index]}
                     onClick={selectTag(filterTags[index])}
@@ -80,8 +77,7 @@ const TagSearch = (props: PropTypes) => {
                                 itemSize={42}
                                 itemCount={filterTags.length}
                                 overscanCount={5}
-                                style={{
-                                }}
+                                style={{}}
                             >
                                 {renderTags}
                             </FixedSizeList>

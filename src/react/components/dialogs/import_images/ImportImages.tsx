@@ -10,7 +10,8 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select, SelectChangeEvent,
+    Select,
+    SelectChangeEvent,
     Stack,
     styled,
     TextField,
@@ -159,22 +160,22 @@ function ImportImages(props: PropTypes) {
                     </Stack>
                 </div>
                 {!reimport &&
-                <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
-                    <label htmlFor="contained-button-file">
-                        <Input
-                            accept="image/*"
-                            id="contained-button-file"
-                            multiple type="file"
-                            onChange={handleFiles}
-                        />
-                        <Button variant="contained" component="span">
-                            Upload
-                        </Button>
-                    </label>
-                    <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
-                        Images selected: {files ? files.length : 0}
-                    </Typography>
-                </Stack>}
+                    <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
+                        <label htmlFor="contained-button-file">
+                            <Input
+                                accept="image/*"
+                                id="contained-button-file"
+                                multiple type="file"
+                                onChange={handleFiles}
+                            />
+                            <Button variant="contained" component="span">
+                                Upload
+                            </Button>
+                        </label>
+                        <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
+                            Images selected: {files ? files.length : 0}
+                        </Typography>
+                    </Stack>}
                 <Divider sx={{marginTop: 2, marginBottom: 2}}/>
                 <Button variant="contained" color={"error"} onClick={handleOpenDelete}>
                     Delete Mapping
@@ -223,15 +224,18 @@ export interface ImageFile {
     path: string
     type: string
 }
+
 export interface Mapper {
     name: string
     filters: Filter[]
     transforms: Transform[]
 }
+
 export interface Filter {
     path: string
     value: string
 }
+
 export interface Transform {
     prop: string
     metadata: string

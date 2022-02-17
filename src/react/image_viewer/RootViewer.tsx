@@ -1,7 +1,6 @@
 import React from 'react';
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
 import {ThemeProvider} from "@emotion/react";
-import ImageViewer from "../pages/viewer/ImageViewer";
 
 function RootViewer() {
 
@@ -22,7 +21,7 @@ function RootViewer() {
 
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline enableColorScheme />
+            <CssBaseline enableColorScheme/>
             {/*<ImageViewer/>*/}
         </ThemeProvider>
     );

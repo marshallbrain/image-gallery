@@ -1,6 +1,5 @@
 import React from 'react';
 import {Chip, Paper} from "@mui/material";
-import {ImageData} from "@components/../../pages/viewer/ImageViewer";
 
 const TagList = (props: PropTypes) => {
 
@@ -20,15 +19,15 @@ const TagList = (props: PropTypes) => {
                 component="ul"
             >
                 {tags.map((data) => (
-                        <Chip
-                            key={data}
-                            label={data}
-                            onDelete={removeTag(data)}
-                            sx={{
-                                m: 0.5
-                            }}
-                        />
-                    ))}
+                    <Chip
+                        key={data}
+                        label={data}
+                        onDelete={removeTag(data)}
+                        sx={{
+                            m: 0.5
+                        }}
+                    />
+                ))}
             </Paper>
         </React.Fragment>
     );

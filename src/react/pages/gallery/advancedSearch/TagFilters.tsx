@@ -1,8 +1,7 @@
-import React, {useContext, useEffect, useRef, useState} from 'react/index';
-import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {SearchPropsState, SearchPropsType, Tag} from "../../App";
-import {useDefault, toAny} from "../../../utilities";
-import {SearchPropsOpp, SearchPropTemp} from "./AdvancedSearch";
+import React, {useContext, useEffect, useState} from 'react/index';
+import {SearchPropsType} from "../../App";
+import {toAny, useDefault} from "../../../utilities";
+import {SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
 import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
@@ -11,7 +10,7 @@ const AdvancedSearch = (props: PropTypes) => {
 
     const {} = props
 
-    const {searchProp, setSearchProp } = useContext(SearchPropTemp)
+    const {searchProp, setSearchProp} = useContext(SearchPropTemp)
 
     const [incTags, setIncTags] = useState(searchProp.tag?.incTags)
     const [excTags, setExcTags] = useState(searchProp.tag?.excTags)
@@ -39,7 +38,7 @@ const AdvancedSearch = (props: PropTypes) => {
                         checked={tagLess}
                         onChange={toggleTagLess}
                     />}
-                    label="Show images with no tags" />
+                    label="Show images with no tags"/>
             </FormGroup>
             <ControlSelector
                 values={incTags}
