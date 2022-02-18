@@ -4,7 +4,7 @@ import {GetQuery} from "../../queries/getQueries";
 import {RunQuery} from "../../queries/runQueries";
 import {toAny} from "../../utilities";
 
-export const useQuery = <T, >(
+export const useQuery = <T>(
     query: GetQuery,
     deps: DependencyList | undefined,
     args: any[] | { [p: string]: any } | undefined,
@@ -31,21 +31,20 @@ export const useQuery = <T, >(
 
     return [value, triggerUpdate]
 }
+
 export const runQuery = (
     query: RunQuery,
     args: any[] | { [p: string]: any } | undefined,
-): Promise<number | bigint> => {
+): Promise<number | bigint> => new Promise<number | bigint>((resolve, reject) =>
+    window.api.db.runQuery(query.query, (response) => {
+        if ("name" in response) {
+            reject(response)
+            return
+        }
+        resolve((response as RunResult).lastInsertRowid)
+    }, args)
+)
 
-    return new Promise<number | bigint>((resolve, reject) =>
-        window.api.db.runQuery(query.query, (response) => {
-            if ("name" in response) {
-                reject(response)
-                return
-            }
-            resolve((response as RunResult).lastInsertRowid)
-        }, args)
-    )
-}
 export const useSearch = (
     query: toAny<SearchPropsType>,
     deps: DependencyList | undefined,

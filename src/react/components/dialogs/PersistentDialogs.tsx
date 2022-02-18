@@ -8,10 +8,6 @@ import {useChannel} from "@components/hooks/channelHooks";
 
 function PersistentDialogs() {
 
-    const [importImages, setImportImages] = React.useState(false);
-    const [importProgress, setImportProgress] = React.useState(false);
-    const [reimportImages, setReimportImages] = React.useState(false);
-
     const [dialogState, setDialogState] = useState<Record<Dialogs, boolean>>(dialogsDefault)
 
     const open = (dialog: Dialogs) => () => {
@@ -28,32 +24,6 @@ function PersistentDialogs() {
     }
 
     useChannel(channels.dialogs.importImages, open(Dialogs.importImages))
-
-    useEffect(() => {
-        const openReimportKey = window.api.receive(ipcChannels.openReimportDialog, openOld(D.reimportImages))
-        return function cleanup() {
-            window.api.remove(ipcChannels.openReimportDialog, openReimportKey)
-        };
-    }, [])
-
-    const dialogMap = {
-        [D.importImages]: setImportImages,
-        [D.importProgress]: setImportProgress,
-        [D.reimportImages]: setReimportImages
-    }
-
-    const openOld = (name: D) => () => {
-        dialogMap[name](true)
-    }
-
-    const closeOld = (name: D) => () => {
-        dialogMap[name](false)
-    }
-
-    const swap = (closeName: D, openName: D) => () => {
-        closeOld(closeName)()
-        openOld(openName)()
-    }
 
     return (
         <React.Fragment>
@@ -72,12 +42,8 @@ enum Dialogs {
     importImages
 }
 
-const dialogsDefault: Record<Dialogs, boolean> = {"0": false}
-
-enum D {
-    importImages,
-    importProgress,
-    reimportImages
+const dialogsDefault: Record<Dialogs, boolean> = {
+    "0": false
 }
 
 export interface DialogPropType {
