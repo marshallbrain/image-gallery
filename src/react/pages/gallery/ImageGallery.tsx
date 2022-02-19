@@ -1,5 +1,4 @@
 import React, {useContext, useEffect, useState} from 'react/index';
-import {channels as ipcChannels} from "@utils/ipcCommands";
 import ImageGrid from "./ImageGrid";
 import ImageSearch from "./ImageSearch";
 import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
@@ -12,7 +11,7 @@ import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox
 import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
 import {useSearch} from "@components/hooks/sqlHooks";
-import {useChannel} from "@components/hooks/channelHooks";
+import {sendChannel, useChannel} from "@components/hooks/channelHooks";
 
 function ImageGallery(props: PropTypes) {
 
@@ -36,7 +35,7 @@ function ImageGallery(props: PropTypes) {
     })
 
     useEffect(() => {
-        window.api.send(ipcChannels.setWindowTitle, "Gallery")
+        sendChannel(channels.update.windowTitle, ["Gallery"])
     }, [])
 
     const selectAll = () => {

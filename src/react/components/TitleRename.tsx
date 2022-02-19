@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react/index';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
-import {channels} from "@utils/ipcCommands";
+import channels from "@utils/channels";
 import runQueries from "../queries/runQueries";
 import {runQuery} from "@components/hooks/sqlHooks";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 const TitleRename = (props: PropTypes) => {
 
@@ -26,7 +27,7 @@ const TitleRename = (props: PropTypes) => {
     const saveTitle = () => {
         runQuery(runQueries.image.setImageTitle, {imageID, title: editTitle}).then(() => {
             toggleTR()
-            window.api.send(channels.setWindowTitle, editTitle)
+            sendChannel(channels.update.windowTitle, [editTitle])
         })
     }
 

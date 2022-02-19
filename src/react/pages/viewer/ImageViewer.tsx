@@ -1,5 +1,5 @@
 import React, {KeyboardEvent, useEffect, useRef, useState} from 'react/index';
-import {channels} from "@utils/ipcCommands";
+import channels from "@utils/channels";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -11,6 +11,7 @@ import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
 import getQueries from "../../queries/getQueries";
 import {useQuery} from "@components/hooks/sqlHooks";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 const drawerWidth = 450;
 
@@ -33,7 +34,7 @@ function ImageViewer(props: PropTypes) {
 
     useEffect(() => {
         setImage(imageList[index])
-        window.api.send(channels.setWindowTitle, imageList[index].title)
+        sendChannel(channels.update.windowTitle, [imageList[index].title])
     }, [index])
 
     const keyPressEvent = (e: KeyboardEvent) => {
