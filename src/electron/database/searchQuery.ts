@@ -1,12 +1,12 @@
 import {ipcMain} from "electron";
-import {sqlSearchChannel} from "@utils/ipcCommands";
 import _ from "lodash";
 import {db} from "@electron/database/database";
-import {SearchPropsType} from "@components/App";
-import {toAny} from "@components/utilities";
+import {SearchPropsType} from "../../react/pages/App";
+import {toAny} from "../../react/utilities";
+import channels from "@utils/channels";
 
 export default () => {
-    ipcMain.on(sqlSearchChannel, (
+    ipcMain.on(channels.sql.search, (
         event,
         {channel, args}
     ) => {
@@ -39,10 +39,10 @@ export default () => {
 
 const getGenericQuery = (query: toAny<SearchPropsType>["generic"]) => ({
     genericQuery: [
-            header,
-            imageHeader,
-            query.title && titleSlice
-        ],
+        header,
+        imageHeader,
+        query.title && titleSlice
+    ],
     genericParam: {
         title: query.title,
     }
@@ -149,11 +149,11 @@ const colLessSlice = "" +
 
 //---------------
 
-function join<T>(array: T[], sep=" ") {
+function join<T>(array: T[], sep = " ") {
     return _.compact(array).join(sep)
 }
 
-function suffix(array: (string|undefined|false)[], s: string) {
+function suffix(array: (string | undefined | false)[], s: string) {
     return _.compact(array).map((value, index, pact) =>
-        value + ((index < pact.length-1)? s: ""))
+        value + ((index < pact.length - 1) ? s : ""))
 }

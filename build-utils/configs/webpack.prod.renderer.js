@@ -12,7 +12,7 @@ module.exports = merge(base, {
     target: "electron-renderer",
     entry: {
         index: ["./src/react/index.js"],
-        indexView: ["./src/react/image_viewer/index_viewer.js"]
+        indexView: ["./src/react/windows/index_viewer.js"]
     },
     devtool: false,
     output: {
@@ -61,7 +61,7 @@ module.exports = merge(base, {
             chunks: ['index']
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "../../src/react/image_viewer/index_viewer.html"),
+            template: path.resolve(__dirname, "../../src/react/windows/index_viewer.html"),
             filename: "index_viewer.html",
             base: "app://rse",
             chunks: ['indexView']

@@ -41,7 +41,7 @@
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
     "sharp": "^0.29.3",
-    "moment": "^2.29.1"
+    "dayjs": "^1.10.7"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",

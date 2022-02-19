@@ -2,10 +2,6 @@ import pathModule from "path";
 import {app} from "electron";
 import fs from "fs";
 
-const exception = ():string => {
-    throw "Not Dev Environment"
-}
-
 export const isDev = process.env.NODE_ENV === "development";
 
 const above = (isDev)? "../": "../../../"
@@ -20,10 +16,6 @@ export function appData(...path: string[]): string {
         fs.mkdirSync(fullPath, {recursive: true})
     }
 
-    if (isDev) {
-        return fullPath
-    } else {
-        return fullPath
-    }
+    return fullPath
 }
 

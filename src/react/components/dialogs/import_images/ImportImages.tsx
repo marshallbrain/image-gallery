@@ -10,7 +10,8 @@ import {
     FormControl,
     InputLabel,
     MenuItem,
-    Select, SelectChangeEvent,
+    Select,
+    SelectChangeEvent,
     Stack,
     styled,
     TextField,
@@ -18,7 +19,8 @@ import {
 } from "@mui/material";
 import {Filters} from "./Filters";
 import {Transforms} from "./Transforms";
-import {channels} from "@utils/ipcCommands";
+import channels from "@utils/channels";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 function ImportImages(props: PropTypes) {
 
@@ -114,7 +116,7 @@ function ImportImages(props: PropTypes) {
         setFiles(files)
     }
     const importImages = () => {
-        window.api.send((reimport)? channels.reimportImages: channels.importImages, files, mappers)
+        sendChannel(channels.execute.importImages, [files, mappers])
         console.log("close")
         close()
     }
@@ -158,22 +160,22 @@ function ImportImages(props: PropTypes) {
                     </Stack>
                 </div>
                 {!reimport &&
-                <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
-                    <label htmlFor="contained-button-file">
-                        <Input
-                            accept="image/*"
-                            id="contained-button-file"
-                            multiple type="file"
-                            onChange={handleFiles}
-                        />
-                        <Button variant="contained" component="span">
-                            Upload
-                        </Button>
-                    </label>
-                    <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
-                        Images selected: {files ? files.length : 0}
-                    </Typography>
-                </Stack>}
+                    <Stack direction={"row"} spacing={2} sx={{mt: 2}} alignItems={"center"}>
+                        <label htmlFor="contained-button-file">
+                            <Input
+                                accept="image/*"
+                                id="contained-button-file"
+                                multiple type="file"
+                                onChange={handleFiles}
+                            />
+                            <Button variant="contained" component="span">
+                                Upload
+                            </Button>
+                        </label>
+                        <Typography sx={{textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap"}}>
+                            Images selected: {files ? files.length : 0}
+                        </Typography>
+                    </Stack>}
                 <Divider sx={{marginTop: 2, marginBottom: 2}}/>
                 <Button variant="contained" color={"error"} onClick={handleOpenDelete}>
                     Delete Mapping
@@ -222,15 +224,18 @@ export interface ImageFile {
     path: string
     type: string
 }
+
 export interface Mapper {
     name: string
     filters: Filter[]
     transforms: Transform[]
 }
+
 export interface Filter {
     path: string
     value: string
 }
+
 export interface Transform {
     prop: string
     metadata: string
