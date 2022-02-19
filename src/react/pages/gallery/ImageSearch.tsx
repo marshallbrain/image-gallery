@@ -1,14 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react/index';
 import {IconButton, Stack, TextField} from "@mui/material";
 import Settings from '@mui/icons-material/Settings';
-import TagSelector, {ChipBase} from "../../image_viewer/components/TagSelector";
-import sqlQueries from "@utils/sqlQueries";
-import AdvancedSearch from "@components/gallery/advancedSearch/AdvancedSearch";
-import {Col, SearchPropsState, Tag} from "@components/App";
-import {orDefault, useGetQuery} from "@components/utilities";
+import AdvancedSearch from "./advancedSearch/AdvancedSearch";
+import {Col, SearchPropsState, Tag} from "../App";
+import {useDefault} from "../../utilities";
 import getQueries from "../../queries/getQueries";
-import AsyncSelect from "../../image_viewer/components/AsyncSelect";
-import ControlSelector from "../../image_viewer/components/ControlSelector";
+import ControlSelector from "@components/selectors/ControlSelector";
 
 function ImageSearch(props: PropTypes) {
 
@@ -26,7 +23,7 @@ function ImageSearch(props: PropTypes) {
         })
     }
 
-    const setIncTags = (incTags: Tag[]|undefined) => {
+    const setIncTags = (incTags: Tag[] | undefined) => {
         setSearchProp({
             ...searchProp,
             tag: {
@@ -36,7 +33,7 @@ function ImageSearch(props: PropTypes) {
         })
     }
 
-    const setIncCols = (incCols: Col[]|undefined) => {
+    const setIncCols = (incCols: Col[] | undefined) => {
         setSearchProp({
             ...searchProp,
             collection: {
@@ -59,7 +56,7 @@ function ImageSearch(props: PropTypes) {
             }}
         >
             <TextField
-                value={orDefault(searchProp.generic?.title, "")}
+                value={useDefault(searchProp.generic?.title, "")}
                 label="Search Title"
                 variant="outlined"
                 onChange={setTitle}
@@ -83,7 +80,7 @@ function ImageSearch(props: PropTypes) {
                     flexGrow: 1
                 }}
             />
-            <IconButton size="large" onClick={toggleAS} >
+            <IconButton size="large" onClick={toggleAS}>
                 <Settings fontSize="inherit"/>
             </IconButton>
             <AdvancedSearch

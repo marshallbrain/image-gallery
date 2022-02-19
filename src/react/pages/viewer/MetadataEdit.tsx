@@ -1,29 +1,11 @@
-import {
-    Autocomplete,
-    Chip,
-    createFilterOptions,
-    Divider,
-    Drawer,
-    ListItem,
-    Paper,
-    Stack,
-    styled,
-    TextField
-} from '@mui/material';
-import React, {KeyboardEvent, useEffect} from 'react';
-import {ImageData} from "./AppViewer";
-import {channels} from "@utils/ipcCommands";
-import sqlQueries from "@utils/sqlQueries";
-import {FixedSizeList, ListChildComponentProps} from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
-import TagSearch from "./TagSearch";
-import TagList from "./TagList";
-import TagSelector, {ChipBase} from "./TagSelector";
-import {RunResult} from "better-sqlite3";
-import {setQuery, useGetQuery} from "@components/utilities";
+import {Drawer, Stack} from '@mui/material';
+import React from 'react/index';
+import {ImageData} from "./ImageViewer";
+import {ChipBase} from "../../image_viewer/components/TagSelector";
 import getQueries from "../../queries/getQueries";
-import AsyncSelect from "./AsyncSelect";
-import runQueries from "../../queries/subQueries/runQueries";
+import AsyncSelect from "@components/selectors/AsyncSelect";
+import runQueries from "../../queries/runQueries";
+import {runQuery} from "@components/hooks/sqlHooks";
 
 const MetadataEdit = (props: PropTypes) => {
 
@@ -143,15 +125,15 @@ const MetadataEdit = (props: PropTypes) => {
     ) => (tag?: { tag_id?: string, value?: string }): Promise<any> => {
         switch (reason) {
             case "create":
-                return setQuery(runQueries.tag.createTag, [tag?.value]).then((value) => {
-                    return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, value])
+                return runQuery(runQueries.tag.createTag, [tag?.value]).then((value) => {
+                    return runQuery(runQueries.tag.addImageTag, [imageData?.image_id, value])
                 })
             case "select":
-                return setQuery(runQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
+                return runQuery(runQueries.tag.addImageTag, [imageData?.image_id, tag?.tag_id])
             case "remove":
-                return setQuery(runQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
+                return runQuery(runQueries.tag.removeImageTag, [imageData?.image_id, tag?.tag_id])
             case "clear":
-                return setQuery(runQueries.tag.clearImageTag, [imageData?.image_id])
+                return runQuery(runQueries.tag.clearImageTag, [imageData?.image_id])
         }
     }
 
@@ -160,18 +142,18 @@ const MetadataEdit = (props: PropTypes) => {
     ) => (tag?: { collection_id?: string, value?: string }): Promise<any> => {
         switch (reason) {
             case "create":
-                return setQuery(runQueries.collections.createCollection,
+                return runQuery(runQueries.collections.createCollection,
                     [tag?.value]).then((value) => {
-                    return setQuery(runQueries.collections.addImageCollection, [imageData?.image_id, value])
+                    return runQuery(runQueries.collections.addImageCollection, [imageData?.image_id, value])
                 })
             case "select":
-                return setQuery(runQueries.collections.addImageCollection,
+                return runQuery(runQueries.collections.addImageCollection,
                     [imageData?.image_id, tag?.collection_id])
             case "remove":
-                return setQuery(runQueries.collections.removeImageCollection,
+                return runQuery(runQueries.collections.removeImageCollection,
                     [imageData?.image_id, tag?.collection_id])
             case "clear":
-                return setQuery(runQueries.collections.clearImageCollection, [imageData?.image_id])
+                return runQuery(runQueries.collections.clearImageCollection, [imageData?.image_id])
         }
     }
 

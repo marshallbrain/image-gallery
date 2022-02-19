@@ -1,17 +1,17 @@
-import React, {useContext, useEffect, useState} from 'react';
-import sqlQueries from "@utils/sqlQueries";
-import {channels as ipcChannels} from "@utils/ipcCommands";
-import ImageGrid from "@components/gallery/ImageGrid";
-import ImageSearch from "@components/gallery/ImageSearch";
+import React, {useContext, useEffect, useState} from 'react/index';
+import ImageGrid from "./ImageGrid";
+import ImageSearch from "./ImageSearch";
 import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
-import {Image, SearchPropsState, SearchPropsType} from "@components/App";
-import {genericSearchMap, GenericSearchType} from "@components/gallery/advancedSearch/GenericFilters";
-import {tagSearchMap, TagSearchType} from "@components/gallery/advancedSearch/TagFilters";
-import {collectionSearchMap, CollectionSearchType} from "@components/gallery/advancedSearch/CollectionFilters";
-import {toAny, useChannel, useSearch} from "@components/utilities";
+import {Image, SearchPropsState, SearchPropsType} from "../App";
+import {genericSearchMap} from "./advancedSearch/GenericFilters";
+import {tagSearchMap} from "./advancedSearch/TagFilters";
+import {collectionSearchMap} from "./advancedSearch/CollectionFilters";
+import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
-import ExportDialog from "@components/gallery/advancedSearch/ExportDialog";
+import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
+import {useSearch} from "@components/hooks/sqlHooks";
+import {sendChannel, useChannel} from "@components/hooks/channelHooks";
 
 function ImageGallery(props: PropTypes) {
 
@@ -35,7 +35,7 @@ function ImageGallery(props: PropTypes) {
     })
 
     useEffect(() => {
-        window.api.send(ipcChannels.setWindowTitle, "Gallery")
+        sendChannel(channels.update.windowTitle, ["Gallery"])
     }, [])
 
     const selectAll = () => {
@@ -52,7 +52,7 @@ function ImageGallery(props: PropTypes) {
 
     return (
         <React.Fragment>
-            <Grid container direction="column" sx={{height: "100vh"}} >
+            <Grid container direction="column" sx={{height: "100vh"}}>
                 <Grid item xs={1}>
                     <ImageSearch/>
                 </Grid>

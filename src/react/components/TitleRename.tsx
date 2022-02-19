@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react/index';
 import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@mui/material";
-import sqlQueries from "@utils/sqlQueries";
-import {channels} from "@utils/ipcCommands";
-import {setQuery} from "@components/utilities";
-import runQueries from "../../queries/subQueries/runQueries";
+import channels from "@utils/channels";
+import runQueries from "../queries/runQueries";
+import {runQuery} from "@components/hooks/sqlHooks";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 const TitleRename = (props: PropTypes) => {
 
@@ -14,7 +14,7 @@ const TitleRename = (props: PropTypes) => {
         title
     } = props
 
-    const [editTitle, setEditTitle] = useState<string|undefined>("")
+    const [editTitle, setEditTitle] = useState<string | undefined>("")
 
     useEffect(() => {
         setEditTitle(title)
@@ -25,9 +25,9 @@ const TitleRename = (props: PropTypes) => {
     }
 
     const saveTitle = () => {
-        setQuery(runQueries. image.setImageTitle, {imageID, title: editTitle}).then(() => {
+        runQuery(runQueries.image.setImageTitle, {imageID, title: editTitle}).then(() => {
             toggleTR()
-            window.api.send(channels.setWindowTitle, editTitle)
+            sendChannel(channels.update.windowTitle, [editTitle])
         })
     }
 
@@ -52,7 +52,7 @@ const TitleRename = (props: PropTypes) => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={toggleTR} >Cancel</Button>
+                <Button onClick={toggleTR}>Cancel</Button>
                 <Button onClick={saveTitle}>Update</Button>
             </DialogActions>
         </Dialog>
@@ -62,8 +62,8 @@ const TitleRename = (props: PropTypes) => {
 interface PropTypes {
     open: boolean
     toggleTR: () => void
-    title: string|undefined
-    imageID: number|undefined
+    title: string | undefined
+    imageID: number | undefined
 }
 
 export default TitleRename

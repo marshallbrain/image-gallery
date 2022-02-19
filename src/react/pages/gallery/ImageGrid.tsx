@@ -1,11 +1,9 @@
-import React, {useState} from 'react';
-import {Box, Button, Checkbox, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
+import React from 'react/index';
+import {Box, Checkbox, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
-import {channels} from "@utils/ipcCommands";
-import {Image} from "@components/App";
+import {Image} from "../App";
 import CheckBoxFilled from "@components/icons/CheckBoxFilled";
-import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 
 const headerOffset = 0
 
@@ -20,7 +18,7 @@ function ImageGrid(props: PropTypes) {
 
     const Cell = (column: number) => (cell: any) => {
 
-        const id = cell.rowIndex*column+cell.columnIndex
+        const id = cell.rowIndex * column + cell.columnIndex
 
         if (images.length > id) {
             const {image_id, title} = images[id]
@@ -42,8 +40,8 @@ function ImageGrid(props: PropTypes) {
                             top: 0,
                             width: "inherit",
                             height: "inherit",
-                            opacity: (selected.has(image_id))? 1: 0,
-                            "&:hover":{
+                            opacity: (selected.has(image_id)) ? 1 : 0,
+                            "&:hover": {
                                 opacity: 1
                             },
                         }}
@@ -53,7 +51,9 @@ function ImageGrid(props: PropTypes) {
                             checked={selected.has(image_id)}
                             color={"info"}
                             checkedIcon={<CheckBoxFilled/>}
-                            onClick={(event) => {event.stopPropagation()}}
+                            onClick={(event) => {
+                                event.stopPropagation()
+                            }}
                             onChange={() => {
                                 if (selected.has(image_id)) {
                                     selected.delete(image_id)
@@ -66,7 +66,7 @@ function ImageGrid(props: PropTypes) {
                                 position: "absolute",
                                 left: 0,
                                 top: 0,
-                                "& .MuiSvgIcon-root": { fontSize: 32 }
+                                "& .MuiSvgIcon-root": {fontSize: 32}
                             }}
                         />
                     </Box>
@@ -77,7 +77,7 @@ function ImageGrid(props: PropTypes) {
                     />
                 </ImageCell>
             )
-        } else return (<div style={cell.style} />)
+        } else return (<div style={cell.style}/>)
 
     }
 
@@ -87,8 +87,8 @@ function ImageGrid(props: PropTypes) {
                 {({height, width}) => {
                     const columnCount = 5
                     const rowCount = Math.ceil(images.length / columnCount)
-                    const widthOffset = (Math.floor(width / columnCount) * rowCount > height)? 16: 0
-                    const colWidth = Math.floor((width-widthOffset) / columnCount)
+                    const widthOffset = (Math.floor(width / columnCount) * rowCount > height) ? 16 : 0
+                    const colWidth = Math.floor((width - widthOffset) / columnCount)
                     return (
                         <WindowGrid
                             columnCount={columnCount}

@@ -1,7 +1,6 @@
 import MainMenu from "./menu/menuMain";
 import savedStore from "../utils/savedStore";
 import {BrowserWindow, ipcMain} from "electron";
-import {channels as ipcChannels} from "@utils/ipcCommands";
 import system from "./system";
 import {WindowSetupFunction} from "../main";
 import importImages from "./actions/importImages";
@@ -51,7 +50,7 @@ export default (createWindow: WindowSetupFunction) => {
 
 const createChannelListeners = (window: BrowserWindow) => {
 
-    ipcMain.on(ipcChannels.setWindowTitle, (event, [title]) => {
+    ipcMain.on(channels.update.windowTitle, (event, [title]) => {
         if (event.frameId == window.id){
             window.setTitle(title)
         }

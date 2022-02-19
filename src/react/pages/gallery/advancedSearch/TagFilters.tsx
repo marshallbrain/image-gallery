@@ -1,21 +1,20 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import TagSelector, {ChipBase} from "../../../image_viewer/components/TagSelector";
-import {SearchPropsState, SearchPropsType, Tag} from "@components/App";
-import {orDefault, toAny} from "@components/utilities";
-import {SearchPropsOpp, SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
+import React, {useContext, useEffect, useState} from 'react/index';
+import {SearchPropsType} from "../../App";
+import {toAny, useDefault} from "../../../utilities";
+import {SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
-import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
 
 const AdvancedSearch = (props: PropTypes) => {
 
     const {} = props
 
-    const {searchProp, setSearchProp } = useContext(SearchPropTemp)
+    const {searchProp, setSearchProp} = useContext(SearchPropTemp)
 
     const [incTags, setIncTags] = useState(searchProp.tag?.incTags)
     const [excTags, setExcTags] = useState(searchProp.tag?.excTags)
-    const [tagLess, setTagLess] = useState(orDefault(searchProp.tag?.tagLess, false))
+    const [tagLess, setTagLess] = useState(useDefault(searchProp.tag?.tagLess, false))
 
     useEffect(() => {
         setSearchProp({
@@ -39,7 +38,7 @@ const AdvancedSearch = (props: PropTypes) => {
                         checked={tagLess}
                         onChange={toggleTagLess}
                     />}
-                    label="Show images with no tags" />
+                    label="Show images with no tags"/>
             </FormGroup>
             <ControlSelector
                 values={incTags}

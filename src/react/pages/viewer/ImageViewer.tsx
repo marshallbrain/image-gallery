@@ -1,32 +1,30 @@
-import React, {useEffect, useRef} from 'react';
-import {channels} from "@utils/ipcCommands";
+import React, {KeyboardEvent, useEffect, useRef, useState} from 'react/index';
+import channels from "@utils/channels";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
-import SettingsIcon from '@mui/icons-material/Settings';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import CloseIcon from '@mui/icons-material/Close';
-import {KeyboardEvent, useState} from "react";
 import MetadataEdit from "./MetadataEdit";
-import sqlQueries from "@utils/sqlQueries";
-import {Image} from "@components/App";
-import TitleRename from "./TitleRename";
+import {Image} from "../App";
+import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
-import {useGetQuery} from "@components/utilities";
 import getQueries from "../../queries/getQueries";
+import {useQuery} from "@components/hooks/sqlHooks";
+import {sendChannel} from "@components/hooks/channelHooks";
 
 const drawerWidth = 450;
 
-function AppViewer(props: PropTypes) {
+function ImageViewer(props: PropTypes) {
 
     const {index, imageList, onIndexChange, onClose} = props
 
-    const [image, setImage] = React.useState<Image|null>(null)
+    const [image, setImage] = React.useState<Image | null>(null)
     const [editOpen, setEditOpen] = useState(false)
     const [imageFull, setImageFull] = useState(false)
     const [drawerTR, setDrawerTR] = useState(false)
 
-    const [[imageData]] = useGetQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
+    const [[imageData]] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
 
     const imageRef = useRef<HTMLDivElement>(null)
 
@@ -36,17 +34,17 @@ function AppViewer(props: PropTypes) {
 
     useEffect(() => {
         setImage(imageList[index])
-        window.api.send(channels.setWindowTitle, imageList[index].title)
+        sendChannel(channels.update.windowTitle, [imageList[index].title])
     }, [index])
 
     const keyPressEvent = (e: KeyboardEvent) => {
-        if (e.key === "ArrowRight" && index+1 < imageList.length) {
+        if (e.key === "ArrowRight" && index + 1 < imageList.length) {
             e.preventDefault()
-            onIndexChange(index+1)
+            onIndexChange(index + 1)
         }
         if (e.key === "ArrowLeft" && index > 0) {
             e.preventDefault()
-            onIndexChange(index-1)
+            onIndexChange(index - 1)
         }
     }
 
@@ -69,37 +67,37 @@ function AppViewer(props: PropTypes) {
                 ref={imageRef}
                 onKeyDown={keyPressEvent}
                 open={editOpen}
-                landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
+                landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
             >
                 {(image) && <ImageDisplay
                     key={image.image_id}
                     src={`image://${image.image_id}.${image.extension}`}
-                    landscape={(imageData)? (imageData.image_width > imageData.image_height): false}
+                    landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
                     fullscreen={imageFull}
                     onClick={toggleImageFull}
                 />}
                 <Options
                     ariaLabel="speed-dial"
-                    sx={{ position: 'fixed', bottom: 16, right: 16 }}
-                    icon={<SpeedDialIcon icon={<MoreHorizIcon />} openIcon={<BookmarkBorderIcon />}/>}
+                    sx={{position: 'fixed', bottom: 16, right: 16}}
+                    icon={<SpeedDialIcon icon={<MoreHorizIcon/>} openIcon={<BookmarkBorderIcon/>}/>}
                     open={editOpen}
                     FabProps={{tabIndex: -1}}
                 >
                     <SpeedDialAction
                         key={"editMetadata"}
-                        icon={<EditAttributesIcon />}
+                        icon={<EditAttributesIcon/>}
                         tooltipTitle={"Edit metadata"}
                         onClick={toggleEditMetadata}
                     />
                     <SpeedDialAction
                         key={"editTitle"}
-                        icon={<EditIcon />}
+                        icon={<EditIcon/>}
                         tooltipTitle={"Edit title"}
                         onClick={toggleTR}
                     />
                     <SpeedDialAction
                         key={"close"}
-                        icon={<CloseIcon />}
+                        icon={<CloseIcon/>}
                         tooltipTitle={"Close"}
                         onClick={onClose}
                     />
@@ -127,13 +125,13 @@ const ImageDisplay = styled("img", {
     fullscreen: boolean
 }>(
     ({theme, landscape, fullscreen}) => (
-        (fullscreen)? {
-            height: (landscape)? "100vh": "100%",
-            width: (landscape)? "auto": "100%",
-            padding: (landscape)? "inherit": "0",
+        (fullscreen) ? {
+            height: (landscape) ? "100vh" : "100%",
+            width: (landscape) ? "auto" : "100%",
+            padding: 0,
             alignSelf: "flex-start",
             margin: "auto",
-        }: {
+        } : {
             maxHeight: "100vh",
             maxWidth: "100%",
         }
@@ -154,7 +152,7 @@ const ImageContainer = styled("div", {
         minWidth: "100%",
         overflowY: "auto",
         display: "flex",
-        flexDirection: (landscape)? "column": "row",
+        flexDirection: (landscape) ? "column" : "row",
         justifyContent: "center",
         alignItems: "center",
         transition: theme.transitions.create('padding', {
@@ -223,4 +221,4 @@ export interface ImageData {
     image_height: number,
 }
 
-export default AppViewer;
+export default ImageViewer;

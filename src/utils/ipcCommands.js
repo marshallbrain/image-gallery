@@ -14,31 +14,3 @@ export const deleteEntryAsyncResponse = `${namespaceStore}del-res-`
 
 export const logChannel = `${system}log`
 export const logFeedChannel = `${system}logFeed`
-
-export const channels = {
-    openImportDialog: "openImportDialog",
-    importImages: "importImages",
-    
-    openReimportDialog: "openReimportDialog",
-    reimportImages: "reimportImages",
-    
-    imageImported: "imageImported",
-    imageImportComplete: "imageImportComplete",
-    
-    reimportImagesComplete: "reimportImagesComplete",
-    openImageViewer: "openImageViewer",
-    onImageViewerOpen: "onImageViewerOpen",
-    updateImageViewerList: "updateImageViewerList",
-    updateTagLists: "updateTags",
-    
-    getFolder: "getFolder",
-    exportImages: "exportImages",
-    
-    imageExported: "imageExported",
-    imageExportComplete: "imageExportComplete",
-    
-    setWindowTitle: "setWindowTitle"
-    
-}
-
-export const ipcChannels = new Set(Object.values(channels))

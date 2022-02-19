@@ -1,10 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {SearchPropTemp} from "@components/gallery/advancedSearch/AdvancedSearch";
+import React, {useContext, useEffect, useState} from 'react/index';
+import {SearchPropTemp} from "./AdvancedSearch";
 import {FormControlLabel, FormGroup, Switch} from "@mui/material";
-import TagSelector from "../../../image_viewer/components/TagSelector";
-import {Col, SearchPropsType, Tag} from "@components/App";
-import {toAny} from "@components/utilities";
-import ControlSelector from "../../../image_viewer/components/ControlSelector";
+import {SearchPropsType} from "../../App";
+import {toAny} from "../../../utilities";
+import ControlSelector from "@components/selectors/ControlSelector";
 import getQueries from "../../../queries/getQueries";
 
 const CollectionFilters = (props: PropTypes) => {
@@ -40,7 +39,7 @@ const CollectionFilters = (props: PropTypes) => {
                         checked={colLess}
                         onChange={toggleTagLess}
                     />}
-                    label="Show images not in any collection" />
+                    label="Show images not in any collection"/>
             </FormGroup>
             <ControlSelector
                 values={incCols}
@@ -62,7 +61,7 @@ const CollectionFilters = (props: PropTypes) => {
                     flexGrow: 1
                 }}
             />
-{/*            <TagSelector
+            {/*            <TagSelector
                 label={"Include collections"}
                 chips={cols}
                 selectedChips={incCols}
