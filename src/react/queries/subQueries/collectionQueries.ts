@@ -1,9 +1,9 @@
 export const collectionGetQueries = {
     getCollections: {
-        query:"" +
+        query: "" +
             "select collection_id, name\n" +
             "from collections",
-        order:"order by name = @search desc, name like @search || '%' desc, name",
+        order: "order by name = @search desc, name like @search || '%' desc, name",
     },
     getImageCollections: {
         query: "" +

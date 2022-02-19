@@ -13,6 +13,7 @@ const channels = {
         progress: i(),
         finishProgress: i(),
         reloadSearch: i(),
+        windowTitle: i(),
     },
     sql: {
         run: i(),

@@ -1,5 +1,5 @@
-import {RunResult, SqliteError} from "@components/utilities";
 import {IpcRendererEvent} from "electron"
+import {RunResult, SqliteError} from "@components/hooks/sqlHooks";
 
 interface types {
     savedStore: {
