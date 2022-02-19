@@ -1,7 +1,10 @@
 {
   "name": "image-gallery",
   "version": "0.1.3",
+  "author": "Marshall Brain",
+  "repository": "https://github.com/marshallbrain/image-gallery",
   "description": "Image collection management application",
+  "license": "MIT",
   "private": true,
   "homepage": "./",
   "main": "build/prod.main.js",
