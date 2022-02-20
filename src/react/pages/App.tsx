@@ -2,7 +2,7 @@ import React, {useState} from 'react/index';
 import PersistentDialogs from "@components/dialogs/PersistentDialogs";
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
-import {ChipBase} from "../image_viewer/components/TagSelector";
+import {ChipBase} from "@components/selectors/ChipSelector";
 
 function App() {
 
@@ -13,7 +13,6 @@ function App() {
     })
 
     const selectImage = (index: number, list: Image[]) => {
-        console.log((imageList.length > 0 && imageIndex > -1))
         setImageIndex(index)
         setImageList(list)
     }

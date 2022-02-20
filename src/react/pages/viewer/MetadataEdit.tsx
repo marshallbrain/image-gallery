@@ -1,7 +1,6 @@
 import {Drawer, Stack} from '@mui/material';
 import React from 'react/index';
 import {ImageData} from "./ImageViewer";
-import {ChipBase} from "../../image_viewer/components/TagSelector";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "@components/selectors/AsyncSelect";
 import runQueries from "../../queries/runQueries";
@@ -10,115 +9,6 @@ import {runQuery} from "@components/hooks/sqlHooks";
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
-
-    const [imageTags, setImageTags] = React.useState<ChipBase[]>([])
-    const [imageCollections, setImageCollections] = React.useState<ChipBase[]>([])
-    const [collections, setCollections] = React.useState<ChipBase[]>([])
-
-    /*const [tags, updateTags] = useGetQuery<ChipBase>(
-        getQueries.tag.getTags,
-        [],
-        []
-    )
-
-    useEffect(() => {
-        updateTags()
-        updateCollections()
-    }, [])
-
-    useEffect(() => {
-        updateImageTags()
-        updateImageCollections()
-    }, [imageData])
-
-    const updateImageTags = () => {
-        window.api.db.getImages(sqlQueries.getImageTags, (tags: ChipBase[]) => {
-            setImageTags(tags)
-        }, imageData?.image_id)
-    }
-
-    const updateCollections = () => {
-        window.api.db.getImages(sqlQueries.getCollections, (data: ChipBase[]) => {
-            setCollections(data)
-        })
-    }
-
-    const updateImageCollections = () => {
-        window.api.db.getImages(sqlQueries.getImageCollections, (collections: ChipBase[]) => {
-            setImageCollections(collections)
-        }, imageData?.image_id)*!/
-    }
-
-    const onModifyTags = (
-        reason: "select" | "remove" | "clear"
-    ) => (tag?: { tag_id?: string, value?: string }) => {
-        switch (reason) {
-            case "select":
-                if (tag?.value) {
-                    window.api.db.getImages(sqlQueries.createTag, ({lastInsertRowid}: RunResult) => {
-                        if (lastInsertRowid) {
-                            window.api.db.getImages(
-                                sqlQueries.addImageTag, () => {
-                                    updateImageTags()
-                                }, [imageData?.image_id, lastInsertRowid])
-                            updateTags()
-                        } else {
-                            window.api.db.getImages(
-                                sqlQueries.addImageTagName, () => {
-                                    updateImageTags()
-                                }, [imageData?.image_id, tag.value])
-                        }
-                    }, tag?.value)
-                } else {
-                    window.api.db.getImages(sqlQueries.addImageTag, () => {
-                        updateImageTags()
-                    }, [imageData?.image_id, tag?.tag_id])
-                }
-                break
-            case "remove":
-                window.api.db.getImages(sqlQueries.removeImageTag, () => {
-                    updateImageTags()
-                }, [imageData?.image_id, tag?.tag_id])
-                break
-            case "clear":
-                window.api.db.getImages(sqlQueries.clearImageTag, () => {
-                    updateImageTags()
-                }, [imageData?.image_id])
-                break
-        }
-    }
-
-    const onModifyCollections = (
-        reason: "create" | "select" | "remove" | "clear"
-    ) => (collection?: { collection_id?: string, value?: string }) => {
-        switch (reason) {
-            case "select":
-                if (collection?.value) {
-                    window.api.db.getImages(sqlQueries.createCollection, ({lastInsertRowid}: RunResult) => {
-                        window.api.db.getImages(
-                            sqlQueries.addImageCollection, () => {
-                                updateImageCollections()
-                            }, [imageData?.image_id, lastInsertRowid])
-                        updateCollections()
-                    }, collection?.value)
-                } else {
-                    window.api.db.getImages(sqlQueries.addImageCollection, () => {
-                        updateImageCollections()
-                    }, [imageData?.image_id, collection?.collection_id])
-                }
-                break
-            case "remove":
-                window.api.db.getImages(sqlQueries.removeImageCollection, () => {
-                    updateImageCollections()
-                }, [imageData?.image_id, collection?.collection_id])
-                break
-            case "clear":
-                window.api.db.getImages(sqlQueries.clearImageCollection, () => {
-                    updateImageCollections()
-                }, [imageData?.image_id])
-                break
-        }
-    }*/
 
     const updateImageTags = (
         reason: "create" | "select" | "remove" | "clear"
