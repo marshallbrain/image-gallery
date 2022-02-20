@@ -61,7 +61,7 @@ function ImageSearch(props: PropTypes) {
                 variant="outlined"
                 onChange={setTitle}
                 sx={{
-                    width: 256
+                    flexBasis: "25%"
                 }}
             />
             <ControlSelector
@@ -69,7 +69,7 @@ function ImageSearch(props: PropTypes) {
                 optionsQuery={getQueries.tag.getTags}
                 onChange={setIncTags}
                 sx={{
-                    flexGrow: 1
+                    flexBasis: "35%"
                 }}
             />
             <ControlSelector
@@ -77,7 +77,7 @@ function ImageSearch(props: PropTypes) {
                 optionsQuery={getQueries.collections.getCollections}
                 onChange={setIncCols}
                 sx={{
-                    flexGrow: 1
+                    flexBasis: "35%"
                 }}
             />
             <IconButton size="large" onClick={toggleAS}>
