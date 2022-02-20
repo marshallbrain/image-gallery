@@ -50,72 +50,70 @@ const importImageData = (imageData: ImageData[], event: IpcMainEvent) => {
     )
 
     for (const image of imageData) {
-        const sharpImage = sharp(pathModule.join(image.file.dir, image.file.base))
-        new Promise<{filename: string, imageId: number|bigint}>(((resolve, reject) => {
-            sharpImage
-                .withMetadata()
-                .toBuffer()
-                .then((buffer) => {
+        sharp(pathModule.join(image.file.dir, image.file.base))
+            .withMetadata()
+            .toBuffer()
+            .then((buffer) => {
+                try {
                     const exif = exifReader.load(buffer)
                     const entry = formatMetadata(image.file, image.jsonData, image.jsonMapper, exif)
-                    try {
-                        return db.transaction(() => {
-                            return importStatement.run(entry).lastInsertRowid
-                        })()
-                    } catch (e) {
-                        throw -1
-                    }
-                })
-                .then((imageId) => {
-                    return new Promise<{filename: string, imageId: number|bigint}>((
-                        (resolveCopy, rejectCopy) => {
-                            fs.copyFile(
-                                pathModule.join(image.file.dir, image.file.base),
-                                pathModule.join(rawFolder, imageId+image.file.ext),
-                                (error) => {
-                                    if (error) {
-                                        rejectCopy(image.file.base)
-                                    } else {
-                                        resolveCopy({filename: image.file.base, imageId})
-                                    }
-                                }
-                            )
-                        }
-                    ))
-                })
-                .then(({filename, imageId}) => {
-                    sharpImage
-                        .resize(256, 256, {fit: sharp.fit.inside})
-                        .toFormat("jpeg")
-                        .jpeg({
-                            quality: 80,
-                            mozjpeg: true
-                        })
-                        .toFile(pathModule.join(prevFolder, `${imageId}.jpeg`))
-                        .then(() => {
-                            resolve({filename, imageId})
-                        })
-                        .catch(() => {
-                            reject({filename, imageId})
-                        })
-                })
-        }))
-            .then(({filename}) => {
-                return new Promise<void>(resolve => {
-                    setTimeout(() => {
-                        importRemaining.delete(filename)
-                        event.reply(
-                            channels.update.progress,
-                            [(totalImages - importRemaining.size) / totalImages, filename]
-                        )
-                        resolve()
-                    }, Math.floor(Math.random() * 1000)+100)
-                })
+                    return db.transaction(() => {
+                        return importStatement.run(entry).lastInsertRowid
+                    })
+                } catch (e) {
+                    throw 0
+                }
             })
-            .catch(({filename, imageId}) => {
-                importRemaining.delete(filename)
-                errored.add(filename)
-                deleteStatement.run(imageId)
+            .then((transaction) => {
+                try {
+                    return transaction()
+                } catch (e) {
+                    throw 0
+                }
+            })
+            .then((imageId) => {
+                return new Promise<number|bigint>(
+                    (resolveCopy) => {
+                        fs.copyFile(
+                            pathModule.join(image.file.dir, image.file.base),
+                            pathModule.join(rawFolder, imageId+image.file.ext),
+                            (error) => {
+                                if (error) {
+                                    throw imageId
+                                } else {
+                                    resolveCopy(imageId)
+                                }
+                            }
+                        )
+                    }
+                )
+            })
+            .then((imageId) => {
+                return sharp(pathModule.join(image.file.dir, image.file.base))
+                    .resize(256, 256, {fit: sharp.fit.inside})
+                    .toFormat("jpeg")
+                    .jpeg({
+                        quality: 80,
+                        mozjpeg: true
+                    })
+                    .toFile(pathModule.join(prevFolder, `${imageId}.jpeg`))
+                    .catch(() => {
+                        throw imageId
+                    })
+            })
+            .then(() => {
+                importRemaining.delete(image.file.base)
+                event.reply(
+                    channels.update.progress,
+                    [(totalImages - importRemaining.size) / totalImages, image.file.base]
+                )
+            })
+            .catch((imageId) => {
+                importRemaining.delete(image.file.base)
+                errored.add(image.file.base)
+                if (imageId) {
+                    deleteStatement.run(imageId)
+                }
             })
             .finally(() => {
                 if (importRemaining.size == 0) {
