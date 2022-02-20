@@ -17,7 +17,7 @@ module.exports = merge(base, {
     target: "web",
     entry: {
         index: ["./src/react/index.js"],
-        indexView: ["./src/react/image_viewer/index_viewer.js"]
+        indexView: ["./src/react/windows/index_viewer.js"]
     },
     output: {
         publicPath: `http://localhost:${port}${publicPath}`,
@@ -104,7 +104,7 @@ module.exports = merge(base, {
             chunks: ['index']
         }),
         new HtmlWebpackPlugin({
-            template: path.resolve(__dirname, "../../src/react/image_viewer/index_viewer.html"),
+            template: path.resolve(__dirname, "../../src/react/windows/index_viewer.html"),
             filename: "index_viewer.html",
             chunks: ['indexView']
         }),
