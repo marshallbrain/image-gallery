@@ -104,7 +104,7 @@ const tableDef = {
         name: "tags",
         def: "" +
             "tag_id integer primary key,\n" +
-            "name text not null unique collate nocase\n"
+            "name text not null unique collate nocase"
     },
     imagesTags: {
         name: "images_tags",
@@ -119,13 +119,13 @@ const tableDef = {
             "foreign key (tag_id)\n" +
             "references tags (tag_id)\n" +
             "on update cascade\n" +
-            "on delete cascade\n"
+            "on delete cascade"
     },
     collections: {
         name: "collections",
         def: "" +
             "collection_id integer primary key,\n" +
-            "name text not null unique collate nocase\n"
+            "name text not null unique collate nocase"
     },
     imageCollection: {
         name: "images_collections",
@@ -140,7 +140,7 @@ const tableDef = {
             "foreign key (collection_id)\n" +
             "references collections (collection_id)\n" +
             "on update cascade\n" +
-            "on delete cascade\n"
+            "on delete cascade"
     },
 }
 
@@ -148,8 +148,15 @@ const tempTableDef = {
     search: {
         name: "search",
         def: "" +
+            "id integer primary key,\n" +
             "image_id integer not null unique,\n" +
             "title text not null,\n" +
-            "extension text not null\n"
+            "extension text not null"
+    },
+    select: {
+        name: "selected",
+        def: "" +
+            "id integer primary key,\n" +
+            "image_id integer not null unique"
     }
 }
