@@ -22,13 +22,15 @@ function ImageViewer(props: PropTypes) {
     const {index, imageList, onIndexChange, onClose} = props
 
     const [image, setImage] = React.useState<Image | null>(null)
-    const [editOpen, setEditOpen] = useState(false)
-    const [imageFull, setImageFull] = useState(false)
-    const [drawerTR, setDrawerTR] = useState(false)
+    const [open, dispatch] = useReducer(toggleReducer, toggleBase)
 
     const [[imageData], updateData] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
 
     const imageRef = useRef<HTMLDivElement>(null)
+
+    const toggle = (type: ToggleKey) => () => {
+        dispatch(type)
+    }
 
     useEffect(() => {
         imageRef.current?.focus()
@@ -61,33 +63,21 @@ function ImageViewer(props: PropTypes) {
         }
     }
 
-    const toggleEditMetadata = () => {
-        setEditOpen(!editOpen)
-    }
-
-    const toggleImageFull = () => {
-        setImageFull(!imageFull)
-    }
-
-    const toggleTR = () => {
-        setDrawerTR(!drawerTR)
-    }
-
     return (
         <View>
             <ImageContainer
                 tabIndex={1}
                 ref={imageRef}
                 onKeyDown={keyPressEvent}
-                open={editOpen}
+                open={open.metadata}
                 landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
             >
                 {(image) && <ImageDisplay
                     key={image.image_id}
                     src={`image://${image.image_id}.${image.extension}`}
                     landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
-                    fullscreen={imageFull}
-                    onClick={toggleImageFull}
+                    fullscreen={open.full}
+                    onClick={toggle("full")}
                 />}
                 <Options
                     ariaLabel="speed-dial"
@@ -104,20 +94,20 @@ function ImageViewer(props: PropTypes) {
                     onClose={((event, reason) => {
                         if (reason === "toggle") toggleBookmark()
                     })}
-                    open={editOpen}
+                    open={open.metadata}
                     FabProps={{tabIndex: -1}}
                 >
                     <SpeedDialAction
                         key={"editMetadata"}
                         icon={<EditAttributesIcon/>}
                         tooltipTitle={"Edit metadata"}
-                        onClick={toggleEditMetadata}
+                        onClick={toggle("metadata")}
                     />
                     <SpeedDialAction
                         key={"editTitle"}
                         icon={<EditIcon/>}
                         tooltipTitle={"Edit title"}
-                        onClick={toggleTR}
+                        onClick={toggle("titleRename")}
                     />
                     <SpeedDialAction
                         key={"close"}
@@ -128,11 +118,11 @@ function ImageViewer(props: PropTypes) {
                 </Options>
             </ImageContainer>
             {imageData &&
-                <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
+                <MetadataEdit editOpen={open.metadata} drawerWidth={drawerWidth} imageData={imageData}/>
             }
             <TitleRename
-                open={drawerTR}
-                toggleTR={toggleTR}
+                open={open.titleRename}
+                toggleTR={toggle("titleRename")}
                 title={imageData?.title}
                 imageId={imageData?.image_id}
             />
@@ -230,6 +220,23 @@ const View = styled("div")({
         display: "none"
     },
 })
+
+const toggleBase = {
+    metadata: false,
+    full: false,
+    titleRename: false
+}
+
+type Toggle = typeof toggleBase
+type ToggleKey = keyof Toggle
+
+function toggleReducer(state: Toggle, action: ToggleKey): Toggle {
+    switch (action) {
+        case "metadata": return {...state, metadata: !state.metadata}
+        case "full": return {...state, full: !state.full}
+        case "titleRename": return {...state, titleRename: !state.titleRename}
+    }
+}
 
 interface PropTypes {
     index: number
