@@ -6,17 +6,17 @@ import {toAny} from "../../utilities";
 
 export const useQuery = <T>(
     query: GetQuery,
-    deps: DependencyList | undefined,
-    args: any[] | { [p: string]: any } | undefined,
+    deps?: DependencyList | undefined,
+    args?: any[] | { [p: string]: any } | undefined,
     search?: string
 ): [T[], () => void] => {
-    const fullQuery: string = query.query + "\n" + ((search) ? search : query.order)
+    const fullQuery: string = query.query + "\n" + ((search) ? search : (query.order || ""))
 
     const [value, setValue] = useState<T[]>([])
     const triggerUpdate = () => {
         window.api.db.getQuery(fullQuery, (data) => {
             setValue(data)
-        }, (args) ? args : [])
+        }, (args) ? args : [], !!(query.pluck))
     }
 
     useEffect(() => {
