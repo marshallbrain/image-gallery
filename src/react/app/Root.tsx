@@ -4,6 +4,8 @@ import App from "../pages/App";
 import "./root.css"
 import preloadTypes from "@electron/preloads/preloadTypes";
 import {createTheme, CssBaseline, ThemeOptions} from "@mui/material";
+import PersistentDialogs from "@components/dialogs/PersistentDialogs";
+import {SnackBarProvider} from "@components/snackbar/Snackbar";
 
 declare global {
     interface Window {
@@ -65,7 +67,10 @@ function Root() {
         <ChangeThemeContext.Provider value={colorMode}>
             <ThemeProvider theme={theme}>
                 <CssBaseline enableColorScheme/>
-                <App/>
+                <SnackBarProvider>
+                    <PersistentDialogs/>
+                    <App/>
+                </SnackBarProvider>
             </ThemeProvider>
         </ChangeThemeContext.Provider>
     );

@@ -1,5 +1,4 @@
 import React, {useState} from 'react/index';
-import PersistentDialogs from "@components/dialogs/PersistentDialogs";
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
 import {ChipBase} from "@components/selectors/ChipSelector";
@@ -24,7 +23,6 @@ function App() {
 
     return (
         <React.Fragment>
-            <PersistentDialogs/>
             {(imageList.length > 0 && imageIndex > -1) ?
                 <ImageViewer
                     index={imageIndex}
