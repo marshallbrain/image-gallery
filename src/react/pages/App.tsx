@@ -66,6 +66,7 @@ export interface Image {
 export interface SearchPropsType {
     generic?: {
         title?: string
+        bookmark?: boolean
     }
     tag?: {
         incTags?: Tag[]

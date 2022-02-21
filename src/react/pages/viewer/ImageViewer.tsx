@@ -1,7 +1,8 @@
-import React, {KeyboardEvent, useEffect, useRef, useState} from 'react/index';
+import React, {KeyboardEvent, useEffect, useReducer, useRef, useState} from 'react/index';
 import channels from "@utils/channels";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import CloseIcon from '@mui/icons-material/Close';
@@ -10,8 +11,9 @@ import {Image} from "../App";
 import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
 import getQueries from "../../queries/getQueries";
-import {useQuery} from "@components/hooks/sqlHooks";
+import {runQuery, useQuery} from "@components/hooks/sqlHooks";
 import {sendChannel} from "@components/hooks/channelHooks";
+import runQueries from "../../queries/runQueries";
 
 const drawerWidth = 450;
 
@@ -24,7 +26,7 @@ function ImageViewer(props: PropTypes) {
     const [imageFull, setImageFull] = useState(false)
     const [drawerTR, setDrawerTR] = useState(false)
 
-    const [[imageData]] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
+    const [[imageData], updateData] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
 
     const imageRef = useRef<HTMLDivElement>(null)
 
@@ -45,6 +47,17 @@ function ImageViewer(props: PropTypes) {
         if (e.key === "ArrowLeft" && index > 0) {
             e.preventDefault()
             onIndexChange(index - 1)
+        }
+        if (e.key === " ") {
+            toggleBookmark()
+        }
+    }
+
+    const toggleBookmark = () => {
+        if (imageData.bookmark) {
+            runQuery(runQueries.image.unBookmark, {imageId: imageData.image_id}).then(updateData)
+        } else {
+            runQuery(runQueries.image.bookmark, {imageId: imageData.image_id}).then(updateData)
         }
     }
 
@@ -79,7 +92,18 @@ function ImageViewer(props: PropTypes) {
                 <Options
                     ariaLabel="speed-dial"
                     sx={{position: 'fixed', bottom: 16, right: 16}}
-                    icon={<SpeedDialIcon icon={<MoreHorizIcon/>} openIcon={<BookmarkBorderIcon/>}/>}
+                    icon={
+                        <SpeedDialIcon
+                            icon={<MoreHorizIcon/>}
+                            openIcon={(imageData && imageData.bookmark)?
+                                <BookmarkIcon/>:
+                                <BookmarkBorderIcon/>
+                            }
+                        />
+                    }
+                    onClose={((event, reason) => {
+                        if (reason === "toggle") toggleBookmark()
+                    })}
                     open={editOpen}
                     FabProps={{tabIndex: -1}}
                 >
@@ -110,7 +134,7 @@ function ImageViewer(props: PropTypes) {
                 open={drawerTR}
                 toggleTR={toggleTR}
                 title={imageData?.title}
-                imageID={imageData?.image_id}
+                imageId={imageData?.image_id}
             />
         </View>
     );
@@ -217,6 +241,7 @@ interface PropTypes {
 export interface ImageData {
     image_id: number,
     title: string,
+    bookmark: number,
     image_width: number,
     image_height: number,
 }

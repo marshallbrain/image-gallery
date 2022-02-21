@@ -41,7 +41,11 @@ const getGenericQuery = (query: toAny<SearchPropsType>["generic"]) => ({
     genericQuery: [
         header,
         imageHeader,
-        query.title && titleSlice
+        ...suffix([
+            query.title && titleSlice,
+            query.bookmark && bookmarkSlice
+        ])
+
     ],
     genericParam: {
         title: query.title,
@@ -65,7 +69,7 @@ const getTagQuery = (query: toAny<SearchPropsType>["tag"]) => ({
                 query.excTags.map((
                     (value: any, index: any) => `@excTags${index}`
                 )).join(","))
-        ], " and")
+        ])
     ],
     tagParam: {
         incTagsLen: query.incTags?.length,
@@ -90,7 +94,7 @@ const getCollectionQuery = (query: toAny<SearchPropsType>["collection"]) => ({
                 query.excCols.map((
                     (value: any, index: any) => `@excCols${index}`
                 )).join(","))
-        ], " and")
+        ])
     ],
     collectionParam: {
         incColsLen: query.incCols?.length,
@@ -112,6 +116,9 @@ const imageHeader = "" +
 
 const titleSlice = "" +
     "where title like '%' || @title || '%'"
+
+const bookmarkSlice = "" +
+    "where bookmark = 1"
 
 //---------------
 
@@ -153,7 +160,7 @@ function join<T>(array: T[], sep = " ") {
     return _.compact(array).join(sep)
 }
 
-function suffix(array: (string | undefined | false)[], s: string) {
+function suffix(array: (string | undefined | false)[], s: string = " and") {
     return _.compact(array).map((value, index, pact) =>
         value + ((index < pact.length - 1) ? s : ""))
 }

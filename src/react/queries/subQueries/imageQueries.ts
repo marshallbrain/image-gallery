@@ -7,7 +7,7 @@ export const imageGetQueries = {
     },
     getImageData: {
         query: "" +
-            "select image_id, title, image_width, image_height\n" +
+            "select image_id, title, bookmark, image_width, image_height\n" +
             "from images\n" +
             "where image_id = ?",
         order: "",
@@ -19,6 +19,18 @@ export const imageRunQueries = {
         query: "" +
             "update images " +
             "set title = @title " +
-            "where image_id = @imageID",
+            "where image_id = @imageId",
+    },
+    bookmark: {
+        query: "" +
+            "update images\n" +
+            "set bookmark = 1\n" +
+            "where image_id = @imageId"
+    },
+    unBookmark: {
+        query: "" +
+        "update images\n" +
+        "set bookmark = 0\n" +
+        "where image_id = @imageId"
     }
 }
