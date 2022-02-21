@@ -2,7 +2,7 @@ import {db} from "@electron/database/database";
 import {appData} from "@utils/utilities";
 import dayjs from "dayjs";
 
-const currentDBVersion = 2
+const currentDBVersion = 3
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -36,10 +36,23 @@ function createTables() {
 const updateDB = db.transaction((version: number) => {
     createTables()
 
-    switch (version) {
-        case 1: {
-            moveTable(tableDef.tags)
-            moveTable(tableDef.collections)
+    for (let i = version; i < currentDBVersion; i++) {
+        switch (i) {
+            case 1: {
+                moveTable(tableDef.tags)
+                moveTable(tableDef.collections)
+                break
+            }
+            case 2: {
+                moveTable(
+                    tableDef.images,
+                    "image_id, title, image_width, image_height, date_added, extension, " +
+                    "original_metadata, original_exif",
+                    "image_id, title, image_width, image_height, date_added, extension, " +
+                    "original_metadata, original_exif"
+                )
+                break
+            }
         }
     }
 
@@ -68,14 +81,16 @@ const tableDef = {
     images: {
         name: "images",
         def: "" +
-            "image_id integer primary key," +
-            "title text not null," +
-            "image_width integer not null," +
-            "image_height integer not null," +
-            "date_added integer not null," +
-            "extension text not null," +
-            "original_metadata text not null," +
-            "original_exif text not null "
+            "image_id integer primary key,\n" +
+            "title text not null,\n" +
+            "bookmark integer not null default 0 check (bookmark IN (0, 1)),\n" +
+
+            "image_width integer not null,\n" +
+            "image_height integer not null,\n" +
+            "date_added integer not null,\n" +
+            "extension text not null,\n" +
+            "original_metadata text not null,\n" +
+            "original_exif text not null"
     },
     tags: {
         name: "tags",
@@ -118,7 +133,7 @@ const tableDef = {
             "references collections (collection_id) " +
             "on update cascade " +
             "on delete cascade"
-    }
+    },
 }
 
 // const update = (version: number) => {

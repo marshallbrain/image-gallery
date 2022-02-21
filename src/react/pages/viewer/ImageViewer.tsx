@@ -1,7 +1,8 @@
-import React, {KeyboardEvent, useEffect, useRef, useState} from 'react/index';
+import React, {KeyboardEvent, useEffect, useReducer, useRef, useState} from 'react/index';
 import channels from "@utils/channels";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon, styled} from "@mui/material";
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import EditAttributesIcon from '@mui/icons-material/EditAttributes';
 import CloseIcon from '@mui/icons-material/Close';
@@ -10,8 +11,10 @@ import {Image} from "../App";
 import TitleRename from "@components/TitleRename";
 import EditIcon from '@mui/icons-material/Edit';
 import getQueries from "../../queries/getQueries";
-import {useQuery} from "@components/hooks/sqlHooks";
+import {runQuery, useQuery} from "@components/hooks/sqlHooks";
 import {sendChannel} from "@components/hooks/channelHooks";
+import runQueries from "../../queries/runQueries";
+import {useSnackbar} from "@components/snackbar/Snackbar";
 
 const drawerWidth = 450;
 
@@ -19,14 +22,17 @@ function ImageViewer(props: PropTypes) {
 
     const {index, imageList, onIndexChange, onClose} = props
 
-    const [image, setImage] = React.useState<Image | null>(null)
-    const [editOpen, setEditOpen] = useState(false)
-    const [imageFull, setImageFull] = useState(false)
-    const [drawerTR, setDrawerTR] = useState(false)
+    const queueMessage = useSnackbar()
+    const [image, setImage] = useState<Image | null>(null)
+    const [open, dispatch] = useReducer(toggleReducer, toggleBase)
 
-    const [[imageData]] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
+    const [[imageData], updateData] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
 
     const imageRef = useRef<HTMLDivElement>(null)
+
+    const toggle = (type: ToggleKey) => () => {
+        dispatch(type)
+    }
 
     useEffect(() => {
         imageRef.current?.focus()
@@ -46,18 +52,23 @@ function ImageViewer(props: PropTypes) {
             e.preventDefault()
             onIndexChange(index - 1)
         }
+        if (e.key === " ") {
+            toggleBookmark()
+        }
     }
 
-    const toggleEditMetadata = () => {
-        setEditOpen(!editOpen)
-    }
-
-    const toggleImageFull = () => {
-        setImageFull(!imageFull)
-    }
-
-    const toggleTR = () => {
-        setDrawerTR(!drawerTR)
+    const toggleBookmark = () => {
+        if (imageData.bookmark) {
+            runQuery(runQueries.image.unBookmark, {imageId: imageData.image_id}).then(() => {
+                updateData()
+                queueMessage("Unbookmarked image", "info")
+            })
+        } else {
+            runQuery(runQueries.image.bookmark, {imageId: imageData.image_id}).then(() => {
+                updateData()
+                queueMessage("Bookmarked image", "info")
+            })
+        }
     }
 
     return (
@@ -66,34 +77,45 @@ function ImageViewer(props: PropTypes) {
                 tabIndex={1}
                 ref={imageRef}
                 onKeyDown={keyPressEvent}
-                open={editOpen}
+                open={open.metadata}
                 landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
             >
                 {(image) && <ImageDisplay
                     key={image.image_id}
                     src={`image://${image.image_id}.${image.extension}`}
                     landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
-                    fullscreen={imageFull}
-                    onClick={toggleImageFull}
+                    fullscreen={open.full}
+                    onClick={toggle("full")}
                 />}
                 <Options
                     ariaLabel="speed-dial"
                     sx={{position: 'fixed', bottom: 16, right: 16}}
-                    icon={<SpeedDialIcon icon={<MoreHorizIcon/>} openIcon={<BookmarkBorderIcon/>}/>}
-                    open={editOpen}
+                    icon={
+                        <SpeedDialIcon
+                            icon={<MoreHorizIcon/>}
+                            openIcon={(imageData && imageData.bookmark)?
+                                <BookmarkIcon/>:
+                                <BookmarkBorderIcon/>
+                            }
+                        />
+                    }
+                    onClose={((event, reason) => {
+                        if (reason === "toggle") toggleBookmark()
+                    })}
+                    open={open.metadata}
                     FabProps={{tabIndex: -1}}
                 >
                     <SpeedDialAction
                         key={"editMetadata"}
                         icon={<EditAttributesIcon/>}
                         tooltipTitle={"Edit metadata"}
-                        onClick={toggleEditMetadata}
+                        onClick={toggle("metadata")}
                     />
                     <SpeedDialAction
                         key={"editTitle"}
                         icon={<EditIcon/>}
                         tooltipTitle={"Edit title"}
-                        onClick={toggleTR}
+                        onClick={toggle("titleRename")}
                     />
                     <SpeedDialAction
                         key={"close"}
@@ -104,13 +126,13 @@ function ImageViewer(props: PropTypes) {
                 </Options>
             </ImageContainer>
             {imageData &&
-                <MetadataEdit editOpen={editOpen} drawerWidth={drawerWidth} imageData={imageData}/>
+                <MetadataEdit editOpen={open.metadata} drawerWidth={drawerWidth} imageData={imageData}/>
             }
             <TitleRename
-                open={drawerTR}
-                toggleTR={toggleTR}
+                open={open.titleRename}
+                toggleTR={toggle("titleRename")}
                 title={imageData?.title}
-                imageID={imageData?.image_id}
+                imageId={imageData?.image_id}
             />
         </View>
     );
@@ -207,6 +229,23 @@ const View = styled("div")({
     },
 })
 
+const toggleBase = {
+    metadata: false,
+    full: false,
+    titleRename: false
+}
+
+type Toggle = typeof toggleBase
+type ToggleKey = keyof Toggle
+
+function toggleReducer(state: Toggle, action: ToggleKey): Toggle {
+    switch (action) {
+        case "metadata": return {...state, metadata: !state.metadata}
+        case "full": return {...state, full: !state.full}
+        case "titleRename": return {...state, titleRename: !state.titleRename}
+    }
+}
+
 interface PropTypes {
     index: number
     imageList: Image[]
@@ -217,6 +256,7 @@ interface PropTypes {
 export interface ImageData {
     image_id: number,
     title: string,
+    bookmark: number,
     image_width: number,
     image_height: number,
 }

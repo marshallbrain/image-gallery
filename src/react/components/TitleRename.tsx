@@ -10,7 +10,7 @@ const TitleRename = (props: PropTypes) => {
     const {
         open,
         toggleTR,
-        imageID,
+        imageId,
         title
     } = props
 
@@ -25,7 +25,7 @@ const TitleRename = (props: PropTypes) => {
     }
 
     const saveTitle = () => {
-        runQuery(runQueries.image.setImageTitle, {imageID, title: editTitle}).then(() => {
+        runQuery(runQueries.image.setImageTitle, {imageId, title: editTitle}).then(() => {
             toggleTR()
             sendChannel(channels.update.windowTitle, [editTitle])
         })
@@ -63,7 +63,7 @@ interface PropTypes {
     open: boolean
     toggleTR: () => void
     title: string | undefined
-    imageID: number | undefined
+    imageId: number | undefined
 }
 
 export default TitleRename
