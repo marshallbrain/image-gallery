@@ -1,9 +1,11 @@
-import React from 'react/index';
+import React, {useRef} from 'react/index';
 import {Box, Checkbox, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
 import {Image} from "../App";
 import CheckBoxFilled from "@components/icons/CheckBoxFilled";
+import {runQuery} from "@components/hooks/sqlHooks";
+import runQueries from "../../queries/runQueries";
 
 const headerOffset = 0
 
@@ -13,8 +15,10 @@ function ImageGrid(props: PropTypes) {
         images,
         onImageSelected,
         selected,
-        setSelected
+        selectImages
     } = props
+
+    const multiSelect = useRef({last: 1, shift: false})
 
     const Cell = (column: number) => (cell: any) => {
 
@@ -52,15 +56,12 @@ function ImageGrid(props: PropTypes) {
                             color={"info"}
                             checkedIcon={<CheckBoxFilled/>}
                             onClick={(event) => {
+                                multiSelect.current = {...multiSelect.current, shift: event.shiftKey}
                                 event.stopPropagation()
                             }}
                             onChange={() => {
-                                if (selected.has(image_id)) {
-                                    selected.delete(image_id)
-                                    setSelected(new Set(selected))
-                                } else {
-                                    setSelected(new Set(selected.add(image_id)))
-                                }
+                                selectImages(id+1, multiSelect.current)
+                                multiSelect.current = {...multiSelect.current, last: id+1}
                             }}
                             sx={{
                                 position: "absolute",
@@ -127,7 +128,7 @@ interface PropTypes {
     images: Image[]
     onImageSelected: (index: number, imageList: Image[]) => void
     selected: Set<number>
-    setSelected: (selected: Set<number>) => void
+    selectImages: (id: number, multi: {last: number, shift: boolean}) => void
 }
 
 export default ImageGrid;

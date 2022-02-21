@@ -10,8 +10,10 @@ import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
-import {useSearch} from "@components/hooks/sqlHooks";
+import {runQuery, useQuery, useSearch} from "@components/hooks/sqlHooks";
 import {sendChannel, useChannel} from "@components/hooks/channelHooks";
+import runQueries from "../../queries/runQueries";
+import getQueries from "../../queries/getQueries";
 
 function ImageGallery(props: PropTypes) {
 
@@ -29,6 +31,7 @@ function ImageGallery(props: PropTypes) {
     const [exportDialog, setExportDialog] = useState(false)
 
     const [images, updateSearch] = useSearch(searchMap(searchProp), [searchProp])
+    const [selectedList, updateSelected] = useQuery<number>(getQueries.image.getSelectedImages)
 
     useChannel(channels.update.reloadSearch, () => {
         updateSearch()
@@ -37,17 +40,30 @@ function ImageGallery(props: PropTypes) {
     useEffect(() => {
         sendChannel(channels.update.windowTitle, ["Gallery"])
     }, [])
+    useEffect(() => {
+        console.log(selectedList)
+        setSelected(new Set(selectedList))
+    }, [selectedList])
 
     const selectAll = () => {
-        setSelected(new Set(images.map(((value) => value.image_id))))
+        // setSelected(new Set(images.map(((value) => value.image_id))))
     }
 
     const deselectAll = () => {
-        setSelected(new Set())
+        // setSelected(new Set())
     }
 
     const toggleExportDialog = () => {
         setExportDialog((!exportDialog))
+    }
+
+    const selectImages = (id: number, multi: {last: number, shift: boolean}) => {
+        console.log(multi.shift)
+        if (multi.shift) {
+            runQuery(runQueries.image.selectMultiImages, [multi.last, id]).then(updateSelected)
+        } else {
+            runQuery(runQueries.image.selectImages, [id]).then(updateSelected)
+        }
     }
 
     return (
@@ -87,7 +103,7 @@ function ImageGallery(props: PropTypes) {
                         images={images}
                         onImageSelected={onImageSelected}
                         selected={selected}
-                        setSelected={setSelected}
+                        selectImages={selectImages}
                     />
                 </Grid>
             </Grid>
