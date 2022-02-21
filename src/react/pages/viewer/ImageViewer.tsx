@@ -14,6 +14,7 @@ import getQueries from "../../queries/getQueries";
 import {runQuery, useQuery} from "@components/hooks/sqlHooks";
 import {sendChannel} from "@components/hooks/channelHooks";
 import runQueries from "../../queries/runQueries";
+import {useSnackbar} from "@components/snackbar/Snackbar";
 
 const drawerWidth = 450;
 
@@ -21,7 +22,8 @@ function ImageViewer(props: PropTypes) {
 
     const {index, imageList, onIndexChange, onClose} = props
 
-    const [image, setImage] = React.useState<Image | null>(null)
+    const queueMessage = useSnackbar()
+    const [image, setImage] = useState<Image | null>(null)
     const [open, dispatch] = useReducer(toggleReducer, toggleBase)
 
     const [[imageData], updateData] = useQuery<ImageData>(getQueries.image.getImageData, [index], [imageList[index].image_id])
@@ -57,9 +59,15 @@ function ImageViewer(props: PropTypes) {
 
     const toggleBookmark = () => {
         if (imageData.bookmark) {
-            runQuery(runQueries.image.unBookmark, {imageId: imageData.image_id}).then(updateData)
+            runQuery(runQueries.image.unBookmark, {imageId: imageData.image_id}).then(() => {
+                updateData()
+                queueMessage("Unbookmarked image", "info")
+            })
         } else {
-            runQuery(runQueries.image.bookmark, {imageId: imageData.image_id}).then(updateData)
+            runQuery(runQueries.image.bookmark, {imageId: imageData.image_id}).then(() => {
+                updateData()
+                queueMessage("Bookmarked image", "info")
+            })
         }
     }
 
