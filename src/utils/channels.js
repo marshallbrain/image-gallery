@@ -19,6 +19,9 @@ const channels = {
         run: i(),
         get: i(),
         search: i(),
+    },
+    settings: {
+        toggleVisualZoom: i(),
     }
 }
 
