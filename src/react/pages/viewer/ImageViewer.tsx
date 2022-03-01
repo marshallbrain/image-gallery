@@ -85,7 +85,10 @@ function ImageViewer(props: PropTypes) {
                     src={`image://${image.image_id}.${image.extension}`}
                     landscape={(imageData) ? (imageData.image_width > imageData.image_height) : false}
                     fullscreen={open.full}
-                    onClick={toggle("full")}
+                    onClick={() => {
+                        sendChannel(channels.settings.toggleVisualZoom, [!open.full])
+                        toggle("full")()
+                    }}
                 />}
                 <Options
                     ariaLabel="speed-dial"
