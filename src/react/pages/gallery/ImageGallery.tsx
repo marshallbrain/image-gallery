@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react/index';
 import ImageGrid from "./ImageGrid";
 import ImageSearch from "./ImageSearch";
-import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
+import {Button, Dialog, Divider, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import {Image, SearchPropsState, SearchPropsType} from "../App";
 import {genericSearchMap} from "./advancedSearch/GenericFilters";
 import {tagSearchMap} from "./advancedSearch/TagFilters";
@@ -10,7 +10,7 @@ import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
-import {runQuery, useQuery, useSearch} from "@components/hooks/sqlHooks";
+import {getQuery, runQuery, useQuery, useSearch} from "@components/hooks/sqlHooks";
 import {sendChannel, useChannel} from "@components/hooks/channelHooks";
 import runQueries from "../../queries/runQueries";
 import getQueries from "../../queries/getQueries";
@@ -41,7 +41,7 @@ function ImageGallery(props: PropTypes) {
         sendChannel(channels.update.windowTitle, ["Gallery"])
     }, [])
     useEffect(() => {
-        console.log(selectedList)
+        // console.log(selectedList)
         setSelected(new Set(selectedList))
     }, [selectedList])
 
@@ -58,12 +58,23 @@ function ImageGallery(props: PropTypes) {
     }
 
     const selectImages = (id: number, multi: {last: number, shift: boolean}) => {
-        console.log(multi.shift)
-        if (multi.shift) {
-            runQuery(runQueries.image.selectMultiImages, [multi.last, id]).then(updateSelected)
-        } else {
-            runQuery(runQueries.image.selectImages, [id]).then(updateSelected)
-        }
+        const range = [
+            (multi.shift && id > multi.last)? multi.last: id,
+            (multi.shift && id < multi.last)? multi.last: id
+        ]
+        console.log(range)
+
+        getQuery(getQueries.image.allSelected, range).then(([{n}]) => {
+            if (Math.abs(id - ((multi.shift)? multi.last: id)) + 1 == n) {
+                console.log(id)
+                runQuery(runQueries.image.deselectImages, range)
+                    .then(updateSelected)
+            } else {
+                runQuery(runQueries.image.selectImages, range)
+                    .then(updateSelected)
+            }
+        })
+
     }
 
     return (
@@ -80,14 +91,29 @@ function ImageGallery(props: PropTypes) {
                             alignItems="center"
                             spacing={1}
                         >
-                            <IconButton color="info" sx={{pr: 0}} onClick={deselectAll}>
+                            <IconButton color="info" sx={{}} onClick={deselectAll}>
                                 <IndeterminateCheckBoxIcon/>
                             </IconButton>
                             <Button variant="outlined" color={"info"} onClick={selectAll}>Select all</Button>
+                            <Divider orientation="vertical" flexItem />
                             <Typography variant={"subtitle1"} sx={{fontWeight: "bold", px: 2}}>
                                 <StyledText>{selected.size}</StyledText>
                                 {(selected.size > 1) ? " Images" : " Image"} selected
                             </Typography>
+                            <Divider orientation="vertical" flexItem />
+                            <Button
+                                variant="outlined"
+                                color={"info"}
+                            >
+                                Bookmark
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color={"info"}
+                            >
+                                Edit Metadata
+                            </Button>
+                            <Divider orientation="vertical" flexItem />
                             <Button
                                 variant="outlined"
                                 color={"info"}

@@ -10,6 +10,13 @@ export const imageGetQueries = {
             "select image_id\n" +
             "from selected",
         pluck: true
+    },
+    allSelected: {
+        query: "" +
+            "select count(*) as n\n" +
+            "from selected s\n" +
+            "inner join search f on s.image_id = f.image_id\n" +
+            "where f.id between ? and ?"
     }
 }
 
@@ -28,22 +35,25 @@ export const imageRunQueries = {
     },
     unBookmark: {
         query: "" +
-        "update images\n" +
-        "set bookmark = 0\n" +
-        "where image_id = @imageId"
+            "update images\n" +
+            "set bookmark = 0\n" +
+            "where image_id = @imageId"
     },
     selectImages: {
         query: "" +
             "insert or ignore into selected (image_id)\n" +
             "select image_id\n" +
             "from search\n" +
-            "where id = ?"
-    },
-    selectMultiImages: {
-        query: "" +
-            "insert or ignore into selected (image_id)\n" +
-            "select image_id\n" +
-            "from search\n" +
             "where id between ? and ?"
+    },
+    deselectImages: {
+        query: "" +
+            "delete from selected\n" +
+            "where image_id in (\n" +
+                "select s.image_id\n" +
+                "from selected s\n" +
+                "inner join search f on s.image_id = f.image_id\n" +
+                "where f.id between ? and ?\n" +
+            ")"
     }
 }

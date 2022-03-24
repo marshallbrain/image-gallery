@@ -32,6 +32,18 @@ export const useQuery = <T>(
     return [value, triggerUpdate]
 }
 
+export const getQuery = (
+    query: GetQuery,
+    args?: any[] | { [p: string]: any } | undefined,
+    search?: string
+): Promise<any[]> => new Promise<any[]>((resolve) => {
+    const fullQuery: string = query.query + "\n" + ((search) ? search : (query.order || ""))
+
+    window.api.db.getQuery(fullQuery, (data) => {
+        resolve(data)
+    }, (args) ? args : [], !!(query.pluck))
+})
+
 export const runQuery = (
     query: RunQuery,
     args?: any[] | { [p: string]: any } | undefined,

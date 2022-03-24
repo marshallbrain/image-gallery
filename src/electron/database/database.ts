@@ -24,6 +24,7 @@ const createChannelListeners = () => {
             event.reply(channel, response)
 
         } catch (e) {
+            console.log(e)
             event.reply(channel, e)
         }
     })
@@ -36,6 +37,7 @@ const createChannelListeners = () => {
             event.reply(channel, response)
 
         } catch (e) {
+            console.log(e)
             event.reply(channel, e)
         }
     })
