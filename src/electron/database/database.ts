@@ -16,14 +16,15 @@ export default () => {
 }
 
 const createChannelListeners = () => {
-    ipcMain.on(channels.sql.get, (event, {channel, query, args}) => {
+    ipcMain.on(channels.sql.get, (event, {channel, query, args, pluck}) => {
         try {
             const response = db.transaction(() => {
-                return db.prepare(query).all(args)
+                return db.prepare(query).pluck(pluck).all(args)
             })()
             event.reply(channel, response)
 
         } catch (e) {
+            console.log(e)
             event.reply(channel, e)
         }
     })
@@ -36,6 +37,7 @@ const createChannelListeners = () => {
             event.reply(channel, response)
 
         } catch (e) {
+            console.log(e)
             event.reply(channel, e)
         }
     })

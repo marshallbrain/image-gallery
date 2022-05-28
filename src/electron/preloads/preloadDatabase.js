@@ -3,12 +3,12 @@ import channels from "@utils/channels";
 
 export const databasePreload = (ipcRenderer) => {
     return {
-        getQuery: (query, callback, args) => {
+        getQuery: (query, callback, args, pluck) => {
             const channel = uuid()
             ipcRenderer.once(channel, (event, data) => {
                 callback(data)
             })
-            ipcRenderer.send(channels.sql.get, {channel, query, args})
+            ipcRenderer.send(channels.sql.get, {channel, query, args, pluck})
         },
         runQuery: (query, callback, args) => {
             const channel = uuid()

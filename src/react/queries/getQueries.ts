@@ -10,7 +10,8 @@ const get = {
 
 export interface GetQuery {
     query: string
-    order: string
+    order?: string
+    pluck?: boolean
 }
 
 export default get
