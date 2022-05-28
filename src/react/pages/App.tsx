@@ -17,7 +17,7 @@ function App() {
     }
 
     const closeImage = () => {
-        setImageIndex(-1)
+        // setImageIndex(-1)
         setImageList([])
     }
 
@@ -31,7 +31,7 @@ function App() {
                     onClose={closeImage}
                 /> :
                 <SearchPropsState.Provider value={{searchProp, setSearchProp}}>
-                    <ImageGallery onImageSelected={selectImage}/>
+                    <ImageGallery onImageSelected={selectImage} imageIndex={imageIndex}/>
                 </SearchPropsState.Provider>
             }
         </React.Fragment>
