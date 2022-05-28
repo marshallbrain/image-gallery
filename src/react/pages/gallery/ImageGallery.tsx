@@ -14,6 +14,7 @@ import {getQuery, runQuery, useQuery, useSearch} from "@components/hooks/sqlHook
 import {sendChannel, useChannel} from "@components/hooks/channelHooks";
 import runQueries from "../../queries/runQueries";
 import getQueries from "../../queries/getQueries";
+import MetadataDialog from "@components/dialogs/MetadataDialog";
 
 function ImageGallery(props: PropTypes) {
 
@@ -29,6 +30,7 @@ function ImageGallery(props: PropTypes) {
 
     const [selected, setSelected] = useState<Set<number>>(new Set())
     const [exportDialog, setExportDialog] = useState(false)
+    const [dialogs, setDialogs] = useState({metadata: false})
 
     const [images, updateSearch] = useSearch(searchMap(searchProp), [searchProp])
     const [selectedList, updateSelected] = useQuery<number>(getQueries.image.getSelectedImages)
@@ -60,6 +62,13 @@ function ImageGallery(props: PropTypes) {
 
     const toggleExportDialog = () => {
         setExportDialog((!exportDialog))
+    }
+
+    const toggleDialogs = (dialog: keyof typeof dialogs) => () => {
+        setDialogs({
+            ...dialogs,
+            [dialog]: !dialogs[dialog]
+        })
     }
 
     const selectImages = (id: number, multi: {last: number, shift: boolean}) => {
@@ -115,6 +124,7 @@ function ImageGallery(props: PropTypes) {
                             <Button
                                 variant="outlined"
                                 color={"info"}
+                                onClick={toggleDialogs("metadata")}
                             >
                                 Edit Metadata
                             </Button>
@@ -147,6 +157,16 @@ function ImageGallery(props: PropTypes) {
                 <ExportDialog
                     toggle={toggleExportDialog}
                     selected={selected}
+                />
+            </Dialog>
+            <Dialog
+                open={dialogs.metadata}
+                onClose={toggleDialogs("metadata")}
+                fullWidth
+                maxWidth={"sm"}
+            >
+                <MetadataDialog
+                    onClose={toggleDialogs("metadata")}
                 />
             </Dialog>
         </React.Fragment>

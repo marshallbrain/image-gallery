@@ -17,7 +17,14 @@ export const imageGetQueries = {
             "from selected s\n" +
             "inner join search f on s.image_id = f.image_id\n" +
             "where f.id between ? and ?"
-    }
+    },
+    getCommonBookmark: {
+        query: "" +
+            "select min(i.bookmark)" +
+            "from images i" +
+            "left join selected s on i.image_id = s.image_id",
+        order: "order by name"
+    },
 }
 
 export const imageRunQueries = {
