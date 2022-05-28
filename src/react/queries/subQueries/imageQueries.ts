@@ -46,6 +46,12 @@ export const imageRunQueries = {
             "from search\n" +
             "where id between ? and ?"
     },
+    selectAllImages: {
+        query: "" +
+            "insert or ignore into selected (image_id)\n" +
+            "select image_id\n" +
+            "from search\n"
+    },
     deselectImages: {
         query: "" +
             "delete from selected\n" +
@@ -55,5 +61,9 @@ export const imageRunQueries = {
                 "inner join search f on s.image_id = f.image_id\n" +
                 "where f.id between ? and ?\n" +
             ")"
-    }
+    },
+    deselectAllImages: {
+        query: "" +
+            "delete from selected"
+    },
 }

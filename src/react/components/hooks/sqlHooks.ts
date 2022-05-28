@@ -54,7 +54,7 @@ export const runQuery = (
             return
         }
         resolve((response as RunResult).lastInsertRowid)
-    }, args)
+    }, args || [])
 )
 
 export const useSearch = (

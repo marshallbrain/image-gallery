@@ -46,10 +46,15 @@ function ImageGallery(props: PropTypes) {
     }, [selectedList])
 
     const selectAll = () => {
+        runQuery(runQueries.image.deselectAllImages)
+            .then(() => runQuery(runQueries.image.selectAllImages))
+            .then(updateSelected)
         // setSelected(new Set(images.map(((value) => value.image_id))))
     }
 
     const deselectAll = () => {
+        runQuery(runQueries.image.deselectAllImages)
+            .then(updateSelected)
         // setSelected(new Set())
     }
 
