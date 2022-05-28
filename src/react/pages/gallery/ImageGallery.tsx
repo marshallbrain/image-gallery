@@ -91,6 +91,17 @@ function ImageGallery(props: PropTypes) {
 
     }
 
+    const toggleBookmark = () => {
+        getQuery(getQueries.image.getCommonBookmark, []).then((bookmark) => {
+            console.log(bookmark[0].bookmark)
+            if (bookmark[0].bookmark > 0) {
+                runQuery(runQueries.image.selectionUnbookmarkImages).then()
+            } else {
+                runQuery(runQueries.image.selectionBookmarkImages).then()
+            }
+        })
+    }
+
     return (
         <React.Fragment>
             <Grid container direction="column" sx={{height: "100vh"}}>
@@ -118,6 +129,7 @@ function ImageGallery(props: PropTypes) {
                             <Button
                                 variant="outlined"
                                 color={"info"}
+                                onClick={toggleBookmark}
                             >
                                 Bookmark
                             </Button>

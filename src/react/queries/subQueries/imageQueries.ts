@@ -20,11 +20,11 @@ export const imageGetQueries = {
     },
     getCommonBookmark: {
         query: "" +
-            "select min(i.bookmark)" +
-            "from images i" +
-            "left join selected s on i.image_id = s.image_id",
-        order: "order by name"
-    },
+            "select min(i.bookmark) as bookmark\n" +
+            "from images i\n" +
+            "inner join selected s on i.image_id = s.image_id",
+        order: "order by bookmark"
+    }
 }
 
 export const imageRunQueries = {
@@ -73,4 +73,18 @@ export const imageRunQueries = {
         query: "" +
             "delete from selected"
     },
+    selectionBookmarkImages: {
+        query: "" +
+            "update images\n" +
+            "set bookmark = 1\n" +
+            "where bookmark = 0 and\n" +
+            "image_id in (select image_id from selected)"
+    },
+    selectionUnbookmarkImages: {
+        query: "" +
+            "update images\n" +
+            "set bookmark = 0\n" +
+            "where bookmark = 1 and\n" +
+            "image_id in (select image_id from selected)"
+    }
 }
