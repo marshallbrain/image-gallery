@@ -1,4 +1,4 @@
-import React, {useState} from 'react/index';
+import React, {useEffect, useState} from 'react/index';
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
 import {ChipBase} from "@components/selectors/ChipSelector";
@@ -17,7 +17,7 @@ function App() {
     }
 
     const closeImage = () => {
-        setImageIndex(-1)
+        // setImageIndex(-1)
         setImageList([])
     }
 
@@ -31,7 +31,7 @@ function App() {
                     onClose={closeImage}
                 /> :
                 <SearchPropsState.Provider value={{searchProp, setSearchProp}}>
-                    <ImageGallery onImageSelected={selectImage}/>
+                    <ImageGallery onImageSelected={selectImage} imageIndex={imageIndex}/>
                 </SearchPropsState.Provider>
             }
         </React.Fragment>
@@ -66,6 +66,7 @@ export interface Image {
 export interface SearchPropsType {
     generic?: {
         title?: string
+        author?: string
         bookmark?: boolean
     }
     tag?: {

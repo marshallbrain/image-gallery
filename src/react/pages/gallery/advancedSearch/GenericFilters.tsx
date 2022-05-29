@@ -9,19 +9,25 @@ const AdvancedSearch = (props: PropTypes) => {
     const {searchProp, setSearchProp} = useContext(SearchPropTemp)
 
     const [title, setTitle] = useState(useDefault(searchProp.generic?.title, ""))
+    const [author, setAuthor] = useState(useDefault(searchProp.generic?.author, ""))
     const [bookmark, setBookmark] = useState(useDefault(searchProp.generic?.bookmark, false))
 
     useEffect(() => {
         setSearchProp({
             generic: {
                 title,
+                author,
                 bookmark
             }
         })
-    }, [title, bookmark])
+    }, [title, author, bookmark])
 
     const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value)
+    }
+
+    const changeAuthor = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAuthor(event.target.value)
     }
 
     const toggleBookmark = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +41,13 @@ const AdvancedSearch = (props: PropTypes) => {
                 label="Search Title"
                 variant="outlined"
                 onChange={changeTitle}
+                fullWidth
+            />
+            <TextField
+                value={author}
+                label="Search Author"
+                variant="outlined"
+                onChange={changeAuthor}
                 fullWidth
             />
             <FormGroup>
@@ -57,8 +70,9 @@ export interface GenericSearchType {
 }
 
 export const genericSearchMap = (search: SearchPropsType["generic"]): toAny<SearchPropsType>["generic"] => ({
-    title: search?.title,
-    bookmark: search?.bookmark
+        title: search?.title,
+        author: search?.author,
+        bookmark: search?.bookmark,
 })
 
 export default AdvancedSearch

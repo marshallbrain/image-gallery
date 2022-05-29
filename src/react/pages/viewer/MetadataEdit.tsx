@@ -1,14 +1,16 @@
-import {Drawer, Stack} from '@mui/material';
-import React from 'react/index';
+import {Drawer, Stack, TextField} from '@mui/material';
+import React, {useEffect, useState} from 'react/index';
 import {ImageData} from "./ImageViewer";
 import getQueries from "../../queries/getQueries";
 import AsyncSelect from "@components/selectors/AsyncSelect";
 import runQueries from "../../queries/runQueries";
-import {runQuery} from "@components/hooks/sqlHooks";
+import {getQuery, runQuery, useQuery} from "@components/hooks/sqlHooks";
 
 const MetadataEdit = (props: PropTypes) => {
 
     const {editOpen, drawerWidth, imageData} = props
+
+    const [author] = useQuery<{author: string}>(getQueries.image.getAuthor, [imageData], [imageData?.image_id])
 
     const updateImageTags = (
         reason: "create" | "select" | "remove" | "clear"
@@ -70,6 +72,13 @@ const MetadataEdit = (props: PropTypes) => {
                     pt: 4,
                 }}
             >
+                <TextField
+                    label="Author"
+                    value={(author.length > 0)? author[0].author: "placeholder"}
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
                 <AsyncSelect
                     optionsQuery={getQueries.tag.getTags}
                     valueQuery={getQueries.tag.getImageTags}

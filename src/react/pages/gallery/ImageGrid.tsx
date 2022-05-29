@@ -1,4 +1,4 @@
-import React, {useRef} from 'react/index';
+import React, {useEffect, useRef, useState} from 'react/index';
 import {Box, Checkbox, styled} from "@mui/material";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FixedSizeGrid as WindowGrid} from "react-window";
@@ -9,23 +9,46 @@ import runQueries from "../../queries/runQueries";
 
 const headerOffset = 0
 
-function ImageGrid(props: PropTypes) {
+function ImageGridInner(props: InnerPropTypes) {
 
     const {
         images,
         onImageSelected,
         selected,
-        selectImages
+        selectImages,
+        imageIndex,
+        columnCount,
+        colWidth,
+        height,
+        rowCount,
+        width,
     } = props
 
     const multiSelect = useRef({last: 1, shift: false})
+    const listRef = React.createRef();
+    const [update, setUpdate] = useState(0)
+
+    useEffect(() => {
+    }, [selected])
+
+    useEffect(() => {
+        if (update > 1) {
+            return
+        }
+        // @ts-ignore
+        listRef.current.scrollToItem({
+            columnIndex: 0,
+            rowIndex: Math.ceil((imageIndex+1)/5)
+        })
+        setUpdate(update+1)
+    }, [selected])
 
     const Cell = (column: number) => (cell: any) => {
 
         const id = cell.rowIndex * column + cell.columnIndex
 
         if (images.length > id) {
-            const {image_id, title} = images[id]
+            const {image_id, title, extension} = images[id]
 
             return (
                 <ImageCell
@@ -72,7 +95,7 @@ function ImageGrid(props: PropTypes) {
                         />
                     </Box>
                     <Img
-                        src={`preview://${image_id}`}
+                        src={`image://${image_id}.${extension}`}
                         alt={title}
                         loading={"lazy"}
                     />
@@ -83,6 +106,28 @@ function ImageGrid(props: PropTypes) {
     }
 
     return (
+        <WindowGrid
+            // @ts-ignore
+            ref={listRef}
+            columnCount={columnCount}
+            columnWidth={colWidth}
+            height={height}
+            rowCount={rowCount}
+            rowHeight={colWidth}
+            width={width}
+        >
+            {Cell(columnCount)}
+        </WindowGrid>
+    );
+
+}
+
+function ImageGrid(props: PropTypes) {
+    const {
+        images
+    } = props
+
+    return (
         <Box sx={{height: "-webkit-fill-available", marginX: 1}}>
             <AutoSizer>
                 {({height, width}) => {
@@ -91,27 +136,25 @@ function ImageGrid(props: PropTypes) {
                     const widthOffset = (Math.floor(width / columnCount) * rowCount > height) ? 16 : 0
                     const colWidth = Math.floor((width - widthOffset) / columnCount)
                     return (
-                        <WindowGrid
+                        <ImageGridInner
                             columnCount={columnCount}
-                            columnWidth={colWidth}
+                            colWidth={colWidth}
                             height={height}
                             rowCount={rowCount}
-                            rowHeight={colWidth}
                             width={width}
-                        >
-                            {Cell(columnCount)}
-                        </WindowGrid>
+                            {...props}
+                        />
                     )
                 }}
             </AutoSizer>
         </Box>
     );
-
 }
 
 const Img = styled("img")({
-    maxWidth: "100%",
-    maxHeight: "100%",
+    objectFit: "contain",
+    width: "100%",
+    height: "100%",
 })
 
 const ImageCell = styled("div")({
@@ -124,11 +167,25 @@ const ImageCell = styled("div")({
     cursor: "not-allowed"
 })
 
+interface InnerPropTypes {
+    images: Image[]
+    onImageSelected: (index: number, imageList: Image[]) => void
+    selected: Set<number>
+    selectImages: (id: number, multi: {last: number, shift: boolean}) => void
+    imageIndex: number
+    columnCount: number
+    colWidth: number
+    height: number
+    rowCount: number
+    width: number
+}
+
 interface PropTypes {
     images: Image[]
     onImageSelected: (index: number, imageList: Image[]) => void
     selected: Set<number>
     selectImages: (id: number, multi: {last: number, shift: boolean}) => void
+    imageIndex: number
 }
 
 export default ImageGrid;

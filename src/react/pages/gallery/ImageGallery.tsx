@@ -18,7 +18,7 @@ import MetadataDialog from "@components/dialogs/MetadataDialog";
 
 function ImageGallery(props: PropTypes) {
 
-    const {onImageSelected} = props
+    const {onImageSelected, imageIndex} = props
 
     const searchMap = (search: SearchPropsType): toAny<SearchPropsType> => ({
         generic: genericSearchMap(search["generic"]),
@@ -157,6 +157,7 @@ function ImageGallery(props: PropTypes) {
                         onImageSelected={onImageSelected}
                         selected={selected}
                         selectImages={selectImages}
+                        imageIndex={imageIndex}
                     />
                 </Grid>
             </Grid>
@@ -192,6 +193,7 @@ const StyledText = styled("span")(({theme}) => ({
 
 interface PropTypes {
     onImageSelected: (index: number, imageList: Image[]) => void
+    imageIndex: number
 }
 
 export default ImageGallery;
