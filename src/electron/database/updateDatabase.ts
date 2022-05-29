@@ -2,7 +2,7 @@ import {db} from "@electron/database/database";
 import {appData} from "@utils/utilities";
 import dayjs from "dayjs";
 
-const currentDBVersion = 3
+const currentDBVersion = 4
 
 export default () => {
     const userVersion = db.pragma("user_version", {simple: true}) as number
@@ -92,6 +92,7 @@ const tableDef = {
             "image_id integer primary key,\n" +
             "title text not null,\n" +
             "bookmark integer not null default 0 check (bookmark IN (0, 1)),\n" +
+            "author text,\n" +
 
             "image_width integer not null,\n" +
             "image_height integer not null,\n" +
@@ -141,7 +142,7 @@ const tableDef = {
             "references collections (collection_id)\n" +
             "on update cascade\n" +
             "on delete cascade"
-    },
+    }
 }
 
 const tempTableDef = {

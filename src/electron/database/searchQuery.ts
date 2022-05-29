@@ -50,12 +50,14 @@ const getGenericQuery = (query: toAny<SearchPropsType>["generic"]) => ({
         imageHeader,
         ...suffix([
             query.title && titleSlice,
+            query.author && authorSlice,
             query.bookmark && bookmarkSlice
         ])
 
     ],
     genericParam: {
         title: query.title,
+        author: query.author
     }
 
 })
@@ -130,6 +132,9 @@ const imageHeader = "" +
 
 const titleSlice = "" +
     "where title like '%' || @title || '%'"
+
+const authorSlice = "" +
+    "where author like '%' || @author || '%'"
 
 const bookmarkSlice = "" +
     "where bookmark = 1"

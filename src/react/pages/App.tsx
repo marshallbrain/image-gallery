@@ -1,4 +1,4 @@
-import React, {useState} from 'react/index';
+import React, {useEffect, useState} from 'react/index';
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
 import {ChipBase} from "@components/selectors/ChipSelector";
@@ -66,6 +66,7 @@ export interface Image {
 export interface SearchPropsType {
     generic?: {
         title?: string
+        author?: string
         bookmark?: boolean
     }
     tag?: {
