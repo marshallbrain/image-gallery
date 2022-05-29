@@ -117,7 +117,6 @@ function ImportImages(props: PropTypes) {
     }
     const importImages = () => {
         sendChannel(channels.execute.importImages, [files, mappers])
-        console.log("close")
         close()
     }
 

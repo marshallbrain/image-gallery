@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react/index';
 import ImageGrid from "./ImageGrid";
 import ImageSearch from "./ImageSearch";
-import {Button, Dialog, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
+import {Button, Dialog, Divider, Grid, IconButton, Paper, Stack, styled, Typography} from "@mui/material";
 import {Image, SearchPropsState, SearchPropsType} from "../App";
 import {genericSearchMap} from "./advancedSearch/GenericFilters";
 import {tagSearchMap} from "./advancedSearch/TagFilters";
@@ -10,12 +10,15 @@ import {toAny} from "../../utilities";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import ExportDialog from "@components/dialogs/ExportDialog";
 import channels from "@utils/channels";
-import {useSearch} from "@components/hooks/sqlHooks";
+import {getQuery, runQuery, useQuery, useSearch} from "@components/hooks/sqlHooks";
 import {sendChannel, useChannel} from "@components/hooks/channelHooks";
+import runQueries from "../../queries/runQueries";
+import getQueries from "../../queries/getQueries";
+import MetadataDialog from "@components/dialogs/MetadataDialog";
 
 function ImageGallery(props: PropTypes) {
 
-    const {onImageSelected} = props
+    const {onImageSelected, imageIndex} = props
 
     const searchMap = (search: SearchPropsType): toAny<SearchPropsType> => ({
         generic: genericSearchMap(search["generic"]),
@@ -27,8 +30,10 @@ function ImageGallery(props: PropTypes) {
 
     const [selected, setSelected] = useState<Set<number>>(new Set())
     const [exportDialog, setExportDialog] = useState(false)
+    const [dialogs, setDialogs] = useState({metadata: false})
 
     const [images, updateSearch] = useSearch(searchMap(searchProp), [searchProp])
+    const [selectedList, updateSelected] = useQuery<number>(getQueries.image.getSelectedImages)
 
     useChannel(channels.update.reloadSearch, () => {
         updateSearch()
@@ -37,17 +42,64 @@ function ImageGallery(props: PropTypes) {
     useEffect(() => {
         sendChannel(channels.update.windowTitle, ["Gallery"])
     }, [])
+    useEffect(() => {
+        // console.log(selectedList)
+        setSelected(new Set(selectedList))
+    }, [selectedList])
 
     const selectAll = () => {
-        setSelected(new Set(images.map(((value) => value.image_id))))
+        runQuery(runQueries.image.deselectAllImages)
+            .then(() => runQuery(runQueries.image.selectAllImages))
+            .then(updateSelected)
+        // setSelected(new Set(images.map(((value) => value.image_id))))
     }
 
     const deselectAll = () => {
-        setSelected(new Set())
+        runQuery(runQueries.image.deselectAllImages)
+            .then(updateSelected)
+        // setSelected(new Set())
     }
 
     const toggleExportDialog = () => {
         setExportDialog((!exportDialog))
+    }
+
+    const toggleDialogs = (dialog: keyof typeof dialogs) => () => {
+        setDialogs({
+            ...dialogs,
+            [dialog]: !dialogs[dialog]
+        })
+    }
+
+    const selectImages = (id: number, multi: {last: number, shift: boolean}) => {
+        const range = [
+            (multi.shift && id > multi.last)? multi.last: id,
+            (multi.shift && id < multi.last)? multi.last: id
+        ]
+        console.log(range)
+
+        getQuery(getQueries.image.allSelected, range).then(([{n}]) => {
+            if (Math.abs(id - ((multi.shift)? multi.last: id)) + 1 == n) {
+                console.log(id)
+                runQuery(runQueries.image.deselectImages, range)
+                    .then(updateSelected)
+            } else {
+                runQuery(runQueries.image.selectImages, range)
+                    .then(updateSelected)
+            }
+        })
+
+    }
+
+    const toggleBookmark = () => {
+        getQuery(getQueries.image.getCommonBookmark, []).then((bookmark) => {
+            console.log(bookmark[0].bookmark)
+            if (bookmark[0].bookmark > 0) {
+                runQuery(runQueries.image.selectionUnbookmarkImages).then()
+            } else {
+                runQuery(runQueries.image.selectionBookmarkImages).then()
+            }
+        })
     }
 
     return (
@@ -64,14 +116,31 @@ function ImageGallery(props: PropTypes) {
                             alignItems="center"
                             spacing={1}
                         >
-                            <IconButton color="info" sx={{pr: 0}} onClick={deselectAll}>
+                            <IconButton color="info" sx={{}} onClick={deselectAll}>
                                 <IndeterminateCheckBoxIcon/>
                             </IconButton>
                             <Button variant="outlined" color={"info"} onClick={selectAll}>Select all</Button>
+                            <Divider orientation="vertical" flexItem />
                             <Typography variant={"subtitle1"} sx={{fontWeight: "bold", px: 2}}>
                                 <StyledText>{selected.size}</StyledText>
                                 {(selected.size > 1) ? " Images" : " Image"} selected
                             </Typography>
+                            <Divider orientation="vertical" flexItem />
+                            <Button
+                                variant="outlined"
+                                color={"info"}
+                                onClick={toggleBookmark}
+                            >
+                                Bookmark
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color={"info"}
+                                onClick={toggleDialogs("metadata")}
+                            >
+                                Edit Metadata
+                            </Button>
+                            <Divider orientation="vertical" flexItem />
                             <Button
                                 variant="outlined"
                                 color={"info"}
@@ -87,7 +156,8 @@ function ImageGallery(props: PropTypes) {
                         images={images}
                         onImageSelected={onImageSelected}
                         selected={selected}
-                        setSelected={setSelected}
+                        selectImages={selectImages}
+                        imageIndex={imageIndex}
                     />
                 </Grid>
             </Grid>
@@ -102,6 +172,16 @@ function ImageGallery(props: PropTypes) {
                     selected={selected}
                 />
             </Dialog>
+            <Dialog
+                open={dialogs.metadata}
+                onClose={toggleDialogs("metadata")}
+                fullWidth
+                maxWidth={"sm"}
+            >
+                <MetadataDialog
+                    onClose={toggleDialogs("metadata")}
+                />
+            </Dialog>
         </React.Fragment>
     )
 
@@ -113,6 +193,7 @@ const StyledText = styled("span")(({theme}) => ({
 
 interface PropTypes {
     onImageSelected: (index: number, imageList: Image[]) => void
+    imageIndex: number
 }
 
 export default ImageGallery;

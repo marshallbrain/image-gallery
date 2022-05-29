@@ -172,7 +172,7 @@ const getJsonData = (file: ImageFile) => {
             pathModule.join(fileInfo.dir, `${fileInfo.name}.json`),
             'utf8'
         ))
-    return undefined
+    return {filename: fileInfo.base}
 }
 
 const getInsertMapper = (mappers: Mapper[], jsonData: any) => {

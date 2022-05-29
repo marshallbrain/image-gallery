@@ -22,7 +22,8 @@ interface types {
         getQuery: (
             query: string,
             callback: (data: any[]) => void,
-            args?: any[]|{[p: string]: any}
+            args: any[]|{[p: string]: any},
+            pluck: boolean
         ) => void,
         runQuery: (
             query: string,

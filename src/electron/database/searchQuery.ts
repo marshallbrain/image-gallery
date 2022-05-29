@@ -25,6 +25,7 @@ export default () => {
         }
 
         const query = join([
+            insert,
             join(genericQuery),
             tagQuery.length > 2 && "intersect",
             tagQuery.length > 2 && join(tagQuery),
@@ -33,7 +34,13 @@ export default () => {
             orderByTitle
         ])
 
-        event.reply(channel, db.prepare(query).all(param))
+        const searchTransaction = db.transaction(() => {
+            db.prepare("delete from temp.search").run()
+            db.prepare(query).run(param)
+            return db.prepare("select image_id, title, extension from temp.search").all()
+        })
+
+        event.reply(channel, searchTransaction())
     })
 }
 
@@ -41,10 +48,16 @@ const getGenericQuery = (query: toAny<SearchPropsType>["generic"]) => ({
     genericQuery: [
         header,
         imageHeader,
-        query.title && titleSlice
+        ...suffix([
+            query.title && titleSlice,
+            query.author && authorSlice,
+            query.bookmark && bookmarkSlice
+        ])
+
     ],
     genericParam: {
         title: query.title,
+        author: query.author
     }
 
 })
@@ -65,7 +78,7 @@ const getTagQuery = (query: toAny<SearchPropsType>["tag"]) => ({
                 query.excTags.map((
                     (value: any, index: any) => `@excTags${index}`
                 )).join(","))
-        ], " and")
+        ])
     ],
     tagParam: {
         incTagsLen: query.incTags?.length,
@@ -90,7 +103,7 @@ const getCollectionQuery = (query: toAny<SearchPropsType>["collection"]) => ({
                 query.excCols.map((
                     (value: any, index: any) => `@excCols${index}`
                 )).join(","))
-        ], " and")
+        ])
     ],
     collectionParam: {
         incColsLen: query.incCols?.length,
@@ -99,8 +112,15 @@ const getCollectionQuery = (query: toAny<SearchPropsType>["collection"]) => ({
     }
 })
 
+//---------------
+
+const insert = "insert into temp.search " +
+    "(image_id, title, extension)"
+
 const header = "select " +
     "i.image_id, i.title, i.extension"
+
+//---------------
 
 const orderByTitle = "" +
     "order by i.title"
@@ -112,6 +132,12 @@ const imageHeader = "" +
 
 const titleSlice = "" +
     "where title like '%' || @title || '%'"
+
+const authorSlice = "" +
+    "where author like '%' || @author || '%'"
+
+const bookmarkSlice = "" +
+    "where bookmark = 1"
 
 //---------------
 
@@ -153,7 +179,7 @@ function join<T>(array: T[], sep = " ") {
     return _.compact(array).join(sep)
 }
 
-function suffix(array: (string | undefined | false)[], s: string) {
+function suffix(array: (string | undefined | false)[], s: string = " and") {
     return _.compact(array).map((value, index, pact) =>
         value + ((index < pact.length - 1) ? s : ""))
 }

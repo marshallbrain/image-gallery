@@ -1,8 +1,7 @@
-import React, {useState} from 'react/index';
-import PersistentDialogs from "@components/dialogs/PersistentDialogs";
+import React, {useEffect, useState} from 'react/index';
 import ImageGallery from "./gallery/ImageGallery";
 import ImageViewer from "./viewer/ImageViewer";
-import {ChipBase} from "../image_viewer/components/TagSelector";
+import {ChipBase} from "@components/selectors/ChipSelector";
 
 function App() {
 
@@ -13,19 +12,17 @@ function App() {
     })
 
     const selectImage = (index: number, list: Image[]) => {
-        console.log((imageList.length > 0 && imageIndex > -1))
         setImageIndex(index)
         setImageList(list)
     }
 
     const closeImage = () => {
-        setImageIndex(-1)
+        // setImageIndex(-1)
         setImageList([])
     }
 
     return (
         <React.Fragment>
-            <PersistentDialogs/>
             {(imageList.length > 0 && imageIndex > -1) ?
                 <ImageViewer
                     index={imageIndex}
@@ -34,7 +31,7 @@ function App() {
                     onClose={closeImage}
                 /> :
                 <SearchPropsState.Provider value={{searchProp, setSearchProp}}>
-                    <ImageGallery onImageSelected={selectImage}/>
+                    <ImageGallery onImageSelected={selectImage} imageIndex={imageIndex}/>
                 </SearchPropsState.Provider>
             }
         </React.Fragment>
@@ -69,6 +66,8 @@ export interface Image {
 export interface SearchPropsType {
     generic?: {
         title?: string
+        author?: string
+        bookmark?: boolean
     }
     tag?: {
         incTags?: Tag[]

@@ -96,7 +96,7 @@ interface PropTypes {
     ) => void
 }
 
-interface ChipBase {
+export interface ChipBase {
     name: string
     value?: string
 }

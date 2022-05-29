@@ -50,6 +50,14 @@ export default (createWindow: WindowSetupFunction) => {
 
 const createChannelListeners = (window: BrowserWindow) => {
 
+    ipcMain.on(channels.settings.toggleVisualZoom, (event, [enable]) => {
+        if (enable) {
+            window.webContents.setVisualZoomLevelLimits(1, 3).then();
+        } else {
+            window.webContents.setVisualZoomLevelLimits(1, 1).then();
+        }
+    })
+
     ipcMain.on(channels.update.windowTitle, (event, [title]) => {
         if (event.frameId == window.id){
             window.setTitle(title)
