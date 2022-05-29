@@ -63,7 +63,6 @@ export const useSearch = (
 ): [Image[], () => void] => {
     const [value, setValue] = useState<Image[]>([])
     const triggerUpdate = () => {
-        console.log(query)
         window.api.db.search((data) => {
             setValue(data)
         }, query)

@@ -69,13 +69,10 @@ export interface GenericSearchType {
     title?: string
 }
 
-export const genericSearchMap = (search: SearchPropsType["generic"]): toAny<SearchPropsType>["generic"] => {
-    console.log(search)
-    return {
+export const genericSearchMap = (search: SearchPropsType["generic"]): toAny<SearchPropsType>["generic"] => ({
         title: search?.title,
         author: search?.author,
         bookmark: search?.bookmark,
-    }
-}
+})
 
 export default AdvancedSearch

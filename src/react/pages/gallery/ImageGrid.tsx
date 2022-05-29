@@ -35,6 +35,7 @@ function ImageGridInner(props: InnerPropTypes) {
         if (update > 1) {
             return
         }
+        // @ts-ignore
         listRef.current.scrollToItem({
             columnIndex: 0,
             rowIndex: Math.ceil((imageIndex+1)/5)
@@ -42,14 +43,12 @@ function ImageGridInner(props: InnerPropTypes) {
         setUpdate(update+1)
     }, [selected])
 
-    console.log("update")
-
     const Cell = (column: number) => (cell: any) => {
 
         const id = cell.rowIndex * column + cell.columnIndex
 
         if (images.length > id) {
-            const {image_id, title} = images[id]
+            const {image_id, title, extension} = images[id]
 
             return (
                 <ImageCell
@@ -96,7 +95,7 @@ function ImageGridInner(props: InnerPropTypes) {
                         />
                     </Box>
                     <Img
-                        src={`preview://${image_id}`}
+                        src={`image://${image_id}.${extension}`}
                         alt={title}
                         loading={"lazy"}
                     />
@@ -108,6 +107,7 @@ function ImageGridInner(props: InnerPropTypes) {
 
     return (
         <WindowGrid
+            // @ts-ignore
             ref={listRef}
             columnCount={columnCount}
             columnWidth={colWidth}
@@ -152,8 +152,9 @@ function ImageGrid(props: PropTypes) {
 }
 
 const Img = styled("img")({
-    maxWidth: "100%",
-    maxHeight: "100%",
+    objectFit: "contain",
+    width: "100%",
+    height: "100%",
 })
 
 const ImageCell = styled("div")({

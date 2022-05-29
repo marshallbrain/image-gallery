@@ -24,6 +24,13 @@ export const imageGetQueries = {
             "from images i\n" +
             "inner join selected s on i.image_id = s.image_id",
         order: "order by bookmark"
+    },
+    getAuthor: {
+        query: "" +
+            "select author\n" +
+            "from images\n" +
+            "where image_id = ?",
+        order: "order by author"
     }
 }
 
