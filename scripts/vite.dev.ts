@@ -16,7 +16,7 @@ const sharedConfig: InlineConfig = {
     try {
         const viteDevServer = await createServer({
             ...sharedConfig,
-            configFile: 'scripts/vite.config.renderer.ts',
+            configFile: 'src/react/vite.config.renderer.ts',
         });
 
         await viteDevServer.listen();
