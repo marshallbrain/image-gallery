@@ -8,7 +8,7 @@
   "private": true,
   "homepage": "./",
   "scripts": {
-    "dev": "ts-node scripts/vite.dev.ts"
+    "dev": "ts-node build_utils/vite.dev.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",

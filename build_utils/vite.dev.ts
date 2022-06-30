@@ -1,4 +1,4 @@
-import {createServer, InlineConfig} from "vite";
+import {build, createServer, InlineConfig} from "vite";
 
 const mode = process.env.MODE = process.env.MODE || 'development';
 
@@ -20,6 +20,11 @@ const sharedConfig: InlineConfig = {
         });
 
         await viteDevServer.listen();
+
+        await build({
+            ...sharedConfig,
+            configFile: 'src/electron/vite.config.main.ts'
+        })
     } catch (e) {
         console.error(e);
         process.exit(1);
