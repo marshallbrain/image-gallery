@@ -6,7 +6,7 @@
   "description": "Image collection management application",
   "license": "MIT",
   "private": true,
-  "homepage": "./",
+  "main": "dist/electron/index.cjs",
   "scripts": {
     "dev": "ts-node build_utils/vite.dev.ts"
   },
